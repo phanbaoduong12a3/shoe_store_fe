@@ -1,0 +1,7 @@
+export enum ECartActions {
+    ADD_TO_CART = 'ADD_TO_CART',
+    GET_CART = 'GET_CART',
+    UPDATE_CART = 'UPDATE_CART',
+    REMOVE_FROM_CART = 'REMOVE_FROM_CART',
+    CLEAR_CART = 'CLEAR_CART'
+}

@@ -1,0 +1,41 @@
+.header {
+  background: #fff;
+  border-bottom: 1px solid #e3e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .left-section {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .right-section {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      padding: 4px 12px;
+      border-radius: 8px;
+      transition: background 0.3s;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.05);
+      }
+
+      .user-name {
+        color: #000;
+        max-width: 120px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+}

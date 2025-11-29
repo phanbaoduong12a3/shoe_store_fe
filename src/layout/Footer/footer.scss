@@ -1,0 +1,20 @@
+.footer {
+  background: #fff;
+  padding: 40px 80px;
+  font-size: 14px;
+  color: #444;
+  .title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+  .link-items {
+    margin-bottom: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+    
+    &:hover {
+      color: #1677ff;
+    }
+  }
+}
