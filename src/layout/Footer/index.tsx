@@ -1,11 +1,11 @@
-import TextDefault from "@/components/Text/Text";
-import { Col, Divider, Layout, Row } from "antd";
-import './footer.scss'
+import TextDefault from '@/components/Text/Text';
+import { Col, Divider, Layout, Row } from 'antd';
+import './footer.scss';
 
 const FooterAntd = Layout.Footer;
 
 const Footer = () => {
-  return(
+  return (
     <FooterAntd className="footer">
       <Row gutter={[40, 20]}>
         <Col xs={24} md={6}>
@@ -39,11 +39,11 @@ const Footer = () => {
 
       <Divider style={{ marginTop: 30 }} />
 
-      <div style={{ textAlign: "center", color: "#888" }}>
+      <div style={{ textAlign: 'center', color: '#888' }}>
         © {new Date().getFullYear()} Chung shoe. All rights reserved.
       </div>
     </FooterAntd>
-  )
-}
+  );
+};
 
-export default Footer
+export default Footer;

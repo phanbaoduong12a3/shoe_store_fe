@@ -1,155 +1,155 @@
 .product-page {
-    padding: 24px;
+  padding: 24px;
 
-    .product-card {
-        border-radius: 8px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  .product-card {
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-        .ant-card-head {
-            border-bottom: 1px solid #f0f0f0;
+    .ant-card-head {
+      border-bottom: 1px solid #f0f0f0;
 
-            .ant-card-head-title {
-                font-size: 18px;
-                font-weight: 600;
-                color: #262626;
-            }
-        }
-
-        .filter-section {
-            margin-bottom: 16px;
-            padding: 16px;
-            background: #fafafa;
-            border-radius: 6px;
-        }
-
-        .product-image-preview {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            .no-image {
-                width: 60px;
-                height: 60px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: #f5f5f5;
-                border-radius: 4px;
-                font-size: 11px;
-                color: #8c8c8c;
-            }
-
-            .ant-image {
-                border-radius: 4px;
-                overflow: hidden;
-                border: 1px solid #f0f0f0;
-            }
-        }
-
-        .product-name {
-            font-weight: 500;
-            color: #262626;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .product-sku {
-            font-size: 12px;
-            color: #8c8c8c;
-        }
-
-        .product-price {
-            .sale-price {
-                color: #ff4d4f;
-                font-weight: 600;
-                font-size: 14px;
-            }
-
-            .original-price {
-                color: #8c8c8c;
-                font-size: 12px;
-                text-decoration: line-through;
-            }
-
-            .normal-price {
-                color: #262626;
-                font-weight: 500;
-                font-size: 14px;
-            }
-        }
-
-        .stock-count {
-            font-weight: 500;
-
-            &.out-of-stock {
-                color: #ff4d4f;
-            }
-        }
-
-        .product-rating {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-
-            .rating-count {
-                font-size: 12px;
-                color: #8c8c8c;
-            }
-        }
-
-        .action-buttons {
-            .ant-btn {
-                &:hover {
-                    transform: scale(1.1);
-                    transition: transform 0.2s ease;
-                }
-
-                &.edit-btn:hover {
-                    color: #1890ff;
-                    background: #e6f7ff;
-                }
-
-                &.delete-btn:hover {
-                    color: #ff4d4f;
-                    background: #fff1f0;
-                }
-            }
-        }
-
-        .ant-table {
-            .ant-table-thead>tr>th {
-                background: #fafafa;
-                font-weight: 600;
-                color: #262626;
-                border-bottom: 2px solid #f0f0f0;
-                padding: 12px;
-            }
-
-            .ant-table-tbody>tr {
-                transition: all 0.3s ease;
-
-                &:hover {
-                    background: #fafafa;
-                }
-
-                >td {
-                    padding: 12px;
-                    border-bottom: 1px solid #f5f5f5;
-                }
-            }
-        }
-
-        .ant-pagination {
-            margin-top: 24px;
-
-            .ant-pagination-item-active {
-                background: #4a90e2;
-                border-color: #4a90e2;
-
-                a {
-                    color: #fff;
-                }
-            }
-        }
+      .ant-card-head-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #262626;
+      }
     }
+
+    .filter-section {
+      margin-bottom: 16px;
+      padding: 16px;
+      background: #fafafa;
+      border-radius: 6px;
+    }
+
+    .product-image-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .no-image {
+        width: 60px;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f5f5f5;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #8c8c8c;
+      }
+
+      .ant-image {
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+      }
+    }
+
+    .product-name {
+      font-weight: 500;
+      color: #262626;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .product-sku {
+      font-size: 12px;
+      color: #8c8c8c;
+    }
+
+    .product-price {
+      .sale-price {
+        color: #ff4d4f;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .original-price {
+        color: #8c8c8c;
+        font-size: 12px;
+        text-decoration: line-through;
+      }
+
+      .normal-price {
+        color: #262626;
+        font-weight: 500;
+        font-size: 14px;
+      }
+    }
+
+    .stock-count {
+      font-weight: 500;
+
+      &.out-of-stock {
+        color: #ff4d4f;
+      }
+    }
+
+    .product-rating {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+
+      .rating-count {
+        font-size: 12px;
+        color: #8c8c8c;
+      }
+    }
+
+    .action-buttons {
+      .ant-btn {
+        &:hover {
+          transform: scale(1.1);
+          transition: transform 0.2s ease;
+        }
+
+        &.edit-btn:hover {
+          color: #1890ff;
+          background: #e6f7ff;
+        }
+
+        &.delete-btn:hover {
+          color: #ff4d4f;
+          background: #fff1f0;
+        }
+      }
+    }
+
+    .ant-table {
+      .ant-table-thead > tr > th {
+        background: #fafafa;
+        font-weight: 600;
+        color: #262626;
+        border-bottom: 2px solid #f0f0f0;
+        padding: 12px;
+      }
+
+      .ant-table-tbody > tr {
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #fafafa;
+        }
+
+        > td {
+          padding: 12px;
+          border-bottom: 1px solid #f5f5f5;
+        }
+      }
+    }
+
+    .ant-pagination {
+      margin-top: 24px;
+
+      .ant-pagination-item-active {
+        background: #4a90e2;
+        border-color: #4a90e2;
+
+        a {
+          color: #fff;
+        }
+      }
+    }
+  }
 }

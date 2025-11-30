@@ -1,73 +1,72 @@
 .home-product-card {
-    width: 300px;
-    border-radius: 12px;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  background: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .home-product-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 300px;
     overflow: hidden;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-    &:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
     }
 
-    .home-product-image-wrapper {
-        position: relative;
-        width: 100%;
-        height: 300px;
-        overflow: hidden;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        &:hover img {
-            transform: scale(1.1);
-        }
-
-        .home-product-badge {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            color: white;
-
-            &.home-product-badge-new {
-                background: #10b981;
-            }
-
-            &.home-product-badge-sale {
-                background: #ef4444;
-            }
-        }
+    &:hover img {
+      transform: scale(1.1);
     }
 
-    .home-product-card-info {
-        padding: 16px;
+    .home-product-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: white;
 
-        .home-product-name {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            min-height: 56px;
-        }
+      &.home-product-badge-new {
+        background: #10b981;
+      }
 
-        .home-product-btn-add {
-            width: 100%;
-            height: 40px;
-            border-radius: 8px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
+      &.home-product-badge-sale {
+        background: #ef4444;
+      }
     }
+  }
+
+  .home-product-card-info {
+    padding: 16px;
+
+    .home-product-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      min-height: 56px;
+    }
+
+    .home-product-btn-add {
+      width: 100%;
+      height: 40px;
+      border-radius: 8px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+  }
 }

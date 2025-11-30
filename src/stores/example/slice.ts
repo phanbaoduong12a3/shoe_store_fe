@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import { getExampleAction } from './actions';
-import { TExampleRes } from '@/interfaces/example';
+import { TExampleRes } from '@/interface/example';
 
 type TExampleState = {
   detail: TExampleRes;

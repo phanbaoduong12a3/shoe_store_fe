@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Layout, Menu, Avatar, Dropdown, Button, theme } from "antd";
+import { useState } from 'react';
+import { Layout, Menu, Avatar, Dropdown, Button, theme } from 'antd';
 import {
   DashboardOutlined,
   ShoppingOutlined,
@@ -11,10 +11,10 @@ import {
   TagsOutlined,
   ShoppingCartOutlined,
   BarChartOutlined,
-} from "@ant-design/icons";
-import { Outlet, useNavigate } from "react-router-dom";
-import type { MenuProps } from "antd";
-import "./admin-layout.scss";
+} from '@ant-design/icons';
+import { Outlet, useNavigate } from 'react-router-dom';
+import type { MenuProps } from 'antd';
+import './admin-layout.scss';
 
 const { Header, Sider, Content } = Layout;
 
@@ -26,63 +26,63 @@ const AdminLayout = () => {
   } = theme.useToken();
 
   // Menu items cho sidebar
-  const menuItems: MenuProps["items"] = [
+  const menuItems: MenuProps['items'] = [
     {
-      key: "dashboard",
+      key: 'dashboard',
       icon: <DashboardOutlined />,
-      label: "Dashboard",
+      label: 'Dashboard',
     },
     {
-      key: "products",
+      key: 'products',
       icon: <ShoppingOutlined />,
-      label: "Sản phẩm",
+      label: 'Sản phẩm',
     },
     {
-      key: "orders",
+      key: 'orders',
       icon: <ShoppingCartOutlined />,
-      label: "Đơn hàng",
+      label: 'Đơn hàng',
     },
     {
-      key: "categories",
+      key: 'categories',
       icon: <TagsOutlined />,
-      label: "Danh mục",
+      label: 'Danh mục',
     },
     {
-      key: "users",
+      key: 'users',
       icon: <UserOutlined />,
-      label: "Người dùng",
+      label: 'Người dùng',
     },
     {
-      key: "statistics",
+      key: 'statistics',
       icon: <BarChartOutlined />,
-      label: "Thống kê",
+      label: 'Thống kê',
     },
     {
-      key: "settings",
+      key: 'settings',
       icon: <SettingOutlined />,
-      label: "Cài đặt",
+      label: 'Cài đặt',
     },
   ];
 
   // Dropdown menu cho user avatar
-  const userMenuItems: MenuProps["items"] = [
+  const userMenuItems: MenuProps['items'] = [
     {
-      key: "profile",
+      key: 'profile',
       icon: <UserOutlined />,
-      label: "Thông tin cá nhân",
+      label: 'Thông tin cá nhân',
     },
     {
-      key: "settings",
+      key: 'settings',
       icon: <SettingOutlined />,
-      label: "Cài đặt",
+      label: 'Cài đặt',
     },
     {
-      type: "divider",
+      type: 'divider',
     },
     {
-      key: "logout",
+      key: 'logout',
       icon: <LogoutOutlined />,
-      label: "Đăng xuất",
+      label: 'Đăng xuất',
       danger: true,
     },
   ];
@@ -92,10 +92,10 @@ const AdminLayout = () => {
   };
 
   const handleUserMenuClick = ({ key }: { key: string }) => {
-    if (key === "logout") {
+    if (key === 'logout') {
       // TODO: Implement logout logic
-      console.log("Logout");
-      navigate("/login");
+      console.log('Logout');
+      navigate('/login');
     } else {
       navigate(`/admin/${key}`);
     }
@@ -103,13 +103,7 @@ const AdminLayout = () => {
 
   return (
     <Layout className="admin-layout">
-      <Sider
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        className="admin-sider"
-        width={250}
-      >
+      <Sider trigger={null} collapsible collapsed={collapsed} className="admin-sider" width={250}>
         <div className="logo">
           <ShoppingOutlined style={{ fontSize: 24 }} />
           {!collapsed && <span className="logo-text">Chung Shoe Admin</span>}
@@ -117,7 +111,7 @@ const AdminLayout = () => {
         <Menu
           theme="dark"
           mode="inline"
-          defaultSelectedKeys={["dashboard"]}
+          defaultSelectedKeys={['dashboard']}
           items={menuItems}
           onClick={handleMenuClick}
         />
@@ -125,7 +119,7 @@ const AdminLayout = () => {
       <Layout>
         <Header
           style={{
-            padding: "0 24px",
+            padding: '0 24px',
             background: colorBgContainer,
           }}
           className="admin-header"
@@ -136,7 +130,7 @@ const AdminLayout = () => {
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
               onClick={() => setCollapsed(!collapsed)}
               style={{
-                fontSize: "16px",
+                fontSize: '16px',
                 width: 64,
                 height: 64,
               }}
@@ -146,14 +140,10 @@ const AdminLayout = () => {
             <Dropdown
               menu={{ items: userMenuItems, onClick: handleUserMenuClick }}
               placement="bottomRight"
-              trigger={["click"]}
+              trigger={['click']}
             >
               <div className="user-info">
-                <Avatar
-                  size="large"
-                  icon={<UserOutlined />}
-                  style={{ cursor: "pointer" }}
-                />
+                <Avatar size="large" icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
                 {!collapsed && (
                   <div className="user-details">
                     <span className="user-name">Admin User</span>
@@ -166,9 +156,9 @@ const AdminLayout = () => {
         </Header>
         <Content
           style={{
-            margin: "24px 16px",
+            margin: '24px 16px',
             padding: 24,
-            minHeight: "calc(100vh - 64px - 48px)",
+            minHeight: 'calc(100vh - 64px - 48px)',
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}

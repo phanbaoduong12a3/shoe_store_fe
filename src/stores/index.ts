@@ -10,7 +10,7 @@ const store = configureStore({
 });
 
 export type TRootState = ReturnType<typeof store.getState>;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type AppThunkDispatch = ThunkDispatch<TRootState, any, UnknownAction>;
 
 export const useAppDispatch: () => AppThunkDispatch = useDispatch;

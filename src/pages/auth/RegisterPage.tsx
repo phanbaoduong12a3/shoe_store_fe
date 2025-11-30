@@ -1,9 +1,9 @@
-import { RoutePaths } from "@/routers/routes-constants";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import { Button, Form, Input, App } from "antd";
-import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/stores";
-import { postSignupAction } from "@/stores/auth";
+import { RoutePaths } from '@/routers/routes-constants';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import { Button, Form, Input, App } from 'antd';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/stores';
+import { postSignupAction } from '@/stores/auth';
 
 interface RegisterFormValues {
   email: string;
@@ -29,7 +29,7 @@ const RegisterPage = () => {
         phone: values.phone,
         onSuccess: (data) => {
           message.success({
-            content: data.data.message || "Đăng ký tài khoản thành công! 🎉",
+            content: data.data.message || 'Đăng ký tài khoản thành công! 🎉',
             duration: 3,
           });
 
@@ -43,9 +43,7 @@ const RegisterPage = () => {
         },
         onError: (error) => {
           message.error({
-            content:
-              error?.response?.data?.message ||
-              "Đăng ký thất bại! Vui lòng thử lại.",
+            content: error?.response?.data?.message || 'Đăng ký thất bại! Vui lòng thử lại.',
             duration: 3,
           });
         },
@@ -62,7 +60,7 @@ const RegisterPage = () => {
           <Form.Item
             label="Họ và tên"
             name="fullName"
-            rules={[{ required: true, message: "Vui lòng nhập họ và tên!" }]}
+            rules={[{ required: true, message: 'Vui lòng nhập họ và tên!' }]}
           >
             <Input placeholder="Nhập họ và tên của bạn" size="large" />
           </Form.Item>
@@ -71,8 +69,8 @@ const RegisterPage = () => {
             label="Email"
             name="email"
             rules={[
-              { required: true, message: "Vui lòng nhập email!" },
-              { type: "email", message: "Email không hợp lệ!" },
+              { required: true, message: 'Vui lòng nhập email!' },
+              { type: 'email', message: 'Email không hợp lệ!' },
             ]}
           >
             <Input placeholder="Nhập email của bạn" size="large" />
@@ -82,10 +80,10 @@ const RegisterPage = () => {
             label="Số điện thoại"
             name="phone"
             rules={[
-              { required: true, message: "Vui lòng nhập số điện thoại!" },
+              { required: true, message: 'Vui lòng nhập số điện thoại!' },
               {
                 pattern: /^[0-9]{10,11}$/,
-                message: "Số điện thoại phải có 10-11 chữ số!",
+                message: 'Số điện thoại phải có 10-11 chữ số!',
               },
             ]}
           >
@@ -96,33 +94,29 @@ const RegisterPage = () => {
             label="Mật khẩu"
             name="password"
             rules={[
-              { required: true, message: "Vui lòng nhập mật khẩu!" },
-              { min: 6, message: "Mật khẩu phải có ít nhất 6 ký tự!" },
+              { required: true, message: 'Vui lòng nhập mật khẩu!' },
+              { min: 6, message: 'Mật khẩu phải có ít nhất 6 ký tự!' },
             ]}
           >
             <Input.Password
               placeholder="Nhập mật khẩu của bạn"
               size="large"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
+              iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>
 
           <Form.Item
             label="Xác nhận mật khẩu"
             name="confirmPassword"
-            dependencies={["password"]}
+            dependencies={['password']}
             rules={[
-              { required: true, message: "Vui lòng xác nhận mật khẩu!" },
+              { required: true, message: 'Vui lòng xác nhận mật khẩu!' },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
+                  if (!value || getFieldValue('password') === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(
-                    new Error("Mật khẩu xác nhận không khớp!")
-                  );
+                  return Promise.reject(new Error('Mật khẩu xác nhận không khớp!'));
                 },
               }),
             ]}
@@ -130,9 +124,7 @@ const RegisterPage = () => {
             <Input.Password
               placeholder="Nhập lại mật khẩu của bạn"
               size="large"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
+              iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>
 
@@ -144,7 +136,7 @@ const RegisterPage = () => {
             loading={loading}
             style={{ height: 44 }}
           >
-            {loading ? "Đang đăng ký..." : "Đăng ký tài khoản"}
+            {loading ? 'Đang đăng ký...' : 'Đăng ký tài khoản'}
           </Button>
         </Form>
         <div className="bottom-text">

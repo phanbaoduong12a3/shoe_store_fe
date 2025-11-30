@@ -14,5 +14,5 @@ export enum EUserProfile {
   PRACTITIONER_ID = 'practitionerId',
   USER_ROLE = 'userRole',
   IS_GO_LIVE_TASK = 'isGoLiveTask',
-  IS_GO_LIVE_PROFILE = 'isGoLiveProfile'
+  IS_GO_LIVE_PROFILE = 'isGoLiveProfile',
 }

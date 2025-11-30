@@ -1,76 +1,76 @@
 .admin-login-page {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
 
-    .admin-login-card {
-        background: #fff;
-        width: 450px;
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  .admin-login-card {
+    background: #fff;
+    width: 450px;
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 
-        .admin-login-header {
-            text-align: center;
-            margin-bottom: 24px;
+    .admin-login-header {
+      text-align: center;
+      margin-bottom: 24px;
 
-            .lock-icon {
-                font-size: 48px;
-                color: #667eea;
-                margin-bottom: 16px;
-            }
+      .lock-icon {
+        font-size: 48px;
+        color: #667eea;
+        margin-bottom: 16px;
+      }
 
-            .title {
-                margin-bottom: 8px;
-                font-size: 28px;
-                font-weight: 700;
-                color: #1a1a1a;
-            }
+      .title {
+        margin-bottom: 8px;
+        font-size: 28px;
+        font-weight: 700;
+        color: #1a1a1a;
+      }
 
-            .sub-title {
-                color: #666;
-                font-size: 14px;
-                margin-bottom: 0;
-            }
-        }
-
-        .demo-note {
-            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
-            border: 2px solid #fdcb6e;
-            padding: 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-
-            p {
-                margin: 0;
-                font-size: 13px;
-                color: #2d3436;
-
-                strong {
-                    font-weight: 700;
-                    font-size: 14px;
-                }
-            }
-        }
-
-        .bottom-text {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 14px;
-
-            a {
-                color: #667eea;
-                cursor: pointer;
-                text-decoration: none;
-                font-weight: 500;
-
-                &:hover {
-                    text-decoration: underline;
-                }
-            }
-        }
+      .sub-title {
+        color: #666;
+        font-size: 14px;
+        margin-bottom: 0;
+      }
     }
+
+    .demo-note {
+      background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+      border: 2px solid #fdcb6e;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+
+      p {
+        margin: 0;
+        font-size: 13px;
+        color: #2d3436;
+
+        strong {
+          font-weight: 700;
+          font-size: 14px;
+        }
+      }
+    }
+
+    .bottom-text {
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+
+      a {
+        color: #667eea;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 500;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
 }

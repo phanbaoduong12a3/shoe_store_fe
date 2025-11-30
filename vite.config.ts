@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tsconfigPaths from 'vite-tsconfig-paths';
 import svgr from 'vite-plugin-svgr';
 import path from 'path';
+import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
   server: {
@@ -21,5 +22,5 @@ export default defineConfig({
   //     },
   //   },
   // },
-  plugins: [react(), tsconfigPaths(), svgr()],
+  plugins: [tailwindcss(), react(), tsconfigPaths(), svgr()],
 });

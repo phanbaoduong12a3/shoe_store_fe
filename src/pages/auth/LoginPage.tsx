@@ -1,11 +1,11 @@
-import { Button, Checkbox, Form, Input, App } from "antd";
-import { EyeInvisibleOutlined, EyeTwoTone } from "@ant-design/icons";
-import "./loginPage.scss";
-import TextDefault from "@/components/Text/Text";
-import { RoutePaths } from "@/routers/routes-constants";
-import { Link, useNavigate } from "react-router-dom";
-import { useAppDispatch, useAppSelector } from "@/stores";
-import { postSigninAction } from "@/stores/auth";
+import { Button, Checkbox, Form, Input, App } from 'antd';
+import { EyeInvisibleOutlined, EyeTwoTone } from '@ant-design/icons';
+import './loginPage.scss';
+import TextDefault from '@/components/Text/Text';
+import { RoutePaths } from '@/routers/routes-constants';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAppDispatch, useAppSelector } from '@/stores';
+import { postSigninAction } from '@/stores/auth';
 
 interface LoginFormValues {
   email: string;
@@ -27,10 +27,10 @@ const LoginPage = () => {
         password: values.password,
         onSuccess: (data) => {
           message.success({
-            content: data.data.message || "Đăng nhập thành công! 🎉",
+            content: data.data.message || 'Đăng nhập thành công! 🎉',
             duration: 2,
           });
-
+          console.log('Login successful:', data);
           // Reset form
           form.resetFields();
 
@@ -38,14 +38,15 @@ const LoginPage = () => {
           setTimeout(() => {
             navigate(RoutePaths.HOME);
             // Reload để Header cập nhật
-            window.location.reload();
+            // window.location.reload();
           }, 1000);
         },
         onError: (error) => {
+          console.error('Login error:', error);
           message.error({
             content:
               error?.response?.data?.message ||
-              "Đăng nhập thất bại! Vui lòng kiểm tra lại email và mật khẩu.",
+              'Đăng nhập thất bạiiii! Vui lòng kiểm tra lại email và mật khẩu.',
             duration: 3,
           });
         },
@@ -59,16 +60,16 @@ const LoginPage = () => {
         <h2 className="title">Chào mừng trở lại</h2>
         <p className="sub-title">Hãy đăng nhập tài khoản của bạn</p>
         <p className="demo-note">
-          <TextDefault fw="700">Demo Account:</TextDefault> email:
-          demo@example.com, password: password
+          <TextDefault fw="700">Demo Account:</TextDefault> email: demo@example.com, password:
+          password
         </p>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Email Address"
             name="email"
             rules={[
-              { required: true, message: "Vui lòng nhập email!" },
-              { type: "email", message: "Email không hợp lệ" },
+              { required: true, message: 'Vui lòng nhập email!' },
+              { type: 'email', message: 'Email không hợp lệ' },
             ]}
           >
             <Input placeholder="Nhập tài khoản email của bạn" size="large" />
@@ -77,26 +78,24 @@ const LoginPage = () => {
           <Form.Item
             label="Password"
             name="password"
-            rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+            rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
           >
             <Input.Password
               placeholder="Nhập mật khẩu của bạn"
               size="large"
-              iconRender={(visible) =>
-                visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />
-              }
+              iconRender={(visible) => (visible ? <EyeTwoTone /> : <EyeInvisibleOutlined />)}
             />
           </Form.Item>
 
           <div
             style={{
-              display: "flex",
-              justifyContent: "space-between",
+              display: 'flex',
+              justifyContent: 'space-between',
               marginBottom: 12,
             }}
           >
             <Checkbox name="remember">Remember me</Checkbox>
-            <a style={{ color: "#c83c3c" }}>Quên mật khẩu?</a>
+            <a style={{ color: '#c83c3c' }}>Quên mật khẩu?</a>
           </div>
 
           <Button
@@ -107,12 +106,11 @@ const LoginPage = () => {
             loading={loading}
             style={{ height: 44 }}
           >
-            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+            {loading ? 'Đang đăng nhập...' : 'Đăng nhập'}
           </Button>
         </Form>
         <div className="bottom-text">
-          Chưa có tài khoản?{" "}
-          <Link to={RoutePaths.REGISTER}>Đăng ký ngay</Link>
+          Chưa có tài khoản? <Link to={RoutePaths.REGISTER}>Đăng ký ngay</Link>
         </div>
       </div>
     </div>
