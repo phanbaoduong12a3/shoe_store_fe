@@ -55,7 +55,8 @@ const responseErrorHandler = async (err: AxiosError) => {
     throw new ResponseError(detail?.[0]?.msg ?? defaultMessage, { response: resp, data });
   }
 
-  if (detail) throw new ResponseError(detail?.msg ?? detail ?? defaultMessage, { response: resp, data });
+  if (detail)
+    throw new ResponseError(detail?.msg ?? detail ?? defaultMessage, { response: resp, data });
   return Promise.reject(err.response?.data);
 };
 
@@ -81,7 +82,7 @@ const unAuthorizationRefreshHandler = async (err: AxiosError) => {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
           },
-        },
+        }
       );
       if (!response || response.data.status_code !== STATUS_CODE.SUCCESS)
         throw new ResponseError('No data from Fief', {});

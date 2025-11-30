@@ -1,7 +1,7 @@
-import { Layout } from "antd";
-import Header from "./Header";
-import { Outlet } from "react-router-dom";
-import Footer from "./Footer";
+import { Layout } from 'antd';
+import Header from './Header';
+import { Outlet } from 'react-router-dom';
+import Footer from './Footer';
 
 const { Content } = Layout;
 
@@ -10,18 +10,18 @@ interface IProps {
 }
 
 const UserLayout = ({ children }: IProps) => {
-  return(
+  return (
     <Layout style={{ minHeight: '100vh' }}>
-      <Header/>
+      <Header />
       <Layout>
         <Content style={{ minHeight: 'calc(100vh - 64px - 325px)' }}>
           {children}
-          <Outlet/>
+          <Outlet />
         </Content>
       </Layout>
-      <Footer/>
+      <Footer />
     </Layout>
-  )
-}
+  );
+};
 
 export default UserLayout;

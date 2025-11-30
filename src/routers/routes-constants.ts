@@ -14,4 +14,4 @@ export const RoutePaths = {
   MY_ORDER: '/my-order',
   PAYMENT: '/payment',
   PAYMENT_CONFIRM: '/payment-confirm',
-}
+};

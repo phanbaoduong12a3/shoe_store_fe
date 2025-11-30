@@ -1,178 +1,178 @@
 .payment-page {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 40px 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 40px 24px;
 
-    .page-header {
-        margin-bottom: 32px;
-        text-align: center;
+  .page-header {
+    margin-bottom: 32px;
+    text-align: center;
+  }
+
+  .loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+  }
+
+  .empty-cart {
+    text-align: center;
+    padding: 60px 24px;
+    margin-top: 40px;
+
+    button {
+      margin-top: 16px;
     }
+  }
 
-    .loading-container {
+  .payment-form {
+    .payment-content {
+      align-items: flex-start;
+
+      .payment-left {
+        flex: 1;
         display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 400px;
-    }
+        flex-direction: column;
+        gap: 24px;
 
-    .empty-cart {
-        text-align: center;
-        padding: 60px 24px;
-        margin-top: 40px;
+        .info-card {
+          border-radius: 12px;
+          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 
-        button {
-            margin-top: 16px;
-        }
-    }
+          .card-title {
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+          }
 
-    .payment-form {
-        .payment-content {
-            align-items: flex-start;
+          .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            width: 100%;
 
-            .payment-left {
-                flex: 1;
-                display: flex;
-                flex-direction: column;
-                gap: 24px;
+            .payment-method-option {
+              padding: 16px;
+              border: 1px solid #d9d9d9;
+              border-radius: 8px;
+              transition: all 0.3s;
 
-                .info-card {
-                    border-radius: 12px;
-                    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-
-                    .card-title {
-                        margin-bottom: 24px;
-                        padding-bottom: 16px;
-                        border-bottom: 1px solid #f0f0f0;
-                    }
-
-                    .payment-methods {
-                        display: flex;
-                        flex-direction: column;
-                        gap: 12px;
-                        width: 100%;
-
-                        .payment-method-option {
-                            padding: 16px;
-                            border: 1px solid #d9d9d9;
-                            border-radius: 8px;
-                            transition: all 0.3s;
-
-                            &:hover {
-                                border-color: #1555d5;
-                                background: #f0f7ff;
-                            }
-                        }
-
-                        .ant-radio-wrapper-checked {
-                            border-color: #1555d5;
-                            background: #f0f7ff;
-                        }
-                    }
-                }
+              &:hover {
+                border-color: #1555d5;
+                background: #f0f7ff;
+              }
             }
 
-            .payment-right {
-                width: 450px;
-                position: sticky;
-                top: 24px;
-
-                .order-summary-card {
-                    border-radius: 12px;
-                    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-
-                    .summary-title {
-                        margin-bottom: 0;
-                    }
-
-                    .order-items {
-                        max-height: 300px;
-                        overflow-y: auto;
-                        display: flex;
-                        flex-direction: column;
-                        gap: 16px;
-
-                        .order-item {
-                            padding-bottom: 16px;
-                            border-bottom: 1px solid #f0f0f0;
-
-                            &:last-child {
-                                border-bottom: none;
-                                padding-bottom: 0;
-                            }
-
-                            .item-image {
-                                width: 60px;
-                                height: 60px;
-                                object-fit: cover;
-                                border-radius: 8px;
-                                background: #f5f5f5;
-                            }
-                        }
-                    }
-
-                    .voucher-section,
-                    .loyalty-section {
-                        margin: 16px 0;
-                    }
-
-                    .price-summary {
-                        .total-row {
-                            padding: 16px 0;
-                            background: linear-gradient(135deg, #f0f7ff 0%, #e6f4ff 100%);
-                            margin: 0 -24px;
-                            padding: 20px 24px;
-                            border-radius: 8px;
-                        }
-                    }
-
-                    .submit-btn {
-                        margin-top: 24px;
-                        height: 50px;
-                        font-size: 16px;
-                        font-weight: 600;
-                        border-radius: 8px;
-                        background: linear-gradient(135deg, #1555d5 0%, #1890ff 100%);
-                        border: none;
-
-                        &:hover {
-                            background: linear-gradient(135deg, #0d47a1 0%, #1555d5 100%);
-                            transform: translateY(-2px);
-                            box-shadow: 0 4px 12px rgba(21, 85, 213, 0.3);
-                        }
-                    }
-                }
+            .ant-radio-wrapper-checked {
+              border-color: #1555d5;
+              background: #f0f7ff;
             }
+          }
         }
+      }
+
+      .payment-right {
+        width: 450px;
+        position: sticky;
+        top: 24px;
+
+        .order-summary-card {
+          border-radius: 12px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+          .summary-title {
+            margin-bottom: 0;
+          }
+
+          .order-items {
+            max-height: 300px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+
+            .order-item {
+              padding-bottom: 16px;
+              border-bottom: 1px solid #f0f0f0;
+
+              &:last-child {
+                border-bottom: none;
+                padding-bottom: 0;
+              }
+
+              .item-image {
+                width: 60px;
+                height: 60px;
+                object-fit: cover;
+                border-radius: 8px;
+                background: #f5f5f5;
+              }
+            }
+          }
+
+          .voucher-section,
+          .loyalty-section {
+            margin: 16px 0;
+          }
+
+          .price-summary {
+            .total-row {
+              padding: 16px 0;
+              background: linear-gradient(135deg, #f0f7ff 0%, #e6f4ff 100%);
+              margin: 0 -24px;
+              padding: 20px 24px;
+              border-radius: 8px;
+            }
+          }
+
+          .submit-btn {
+            margin-top: 24px;
+            height: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1555d5 0%, #1890ff 100%);
+            border: none;
+
+            &:hover {
+              background: linear-gradient(135deg, #0d47a1 0%, #1555d5 100%);
+              transform: translateY(-2px);
+              box-shadow: 0 4px 12px rgba(21, 85, 213, 0.3);
+            }
+          }
+        }
+      }
     }
+  }
 }
 
 @media (max-width: 1024px) {
-    .payment-page {
-        .payment-form {
-            .payment-content {
-                flex-direction: column;
+  .payment-page {
+    .payment-form {
+      .payment-content {
+        flex-direction: column;
 
-                .payment-right {
-                    width: 100%;
-                    position: static;
-                }
-            }
+        .payment-right {
+          width: 100%;
+          position: static;
         }
+      }
     }
+  }
 }
 
 @media (max-width: 768px) {
-    .payment-page {
-        padding: 24px 16px;
+  .payment-page {
+    padding: 24px 16px;
 
-        .payment-form {
-            .payment-left {
-                .info-card {
-                    .ant-form-item {
-                        margin-bottom: 16px;
-                    }
-                }
-            }
+    .payment-form {
+      .payment-left {
+        .info-card {
+          .ant-form-item {
+            margin-bottom: 16px;
+          }
         }
+      }
     }
+  }
 }

@@ -1,4 +1,4 @@
-import client from "./api-clients";
+import client from './api-clients';
 
 export interface AddToCartRequest {
   sessionId?: string;
@@ -77,16 +77,14 @@ export interface RemoveFromCartRequest {
   variantId: string;
 }
 
-export const addToCart = async (
-  data: AddToCartRequest
-): Promise<AddToCartResponse> => {
-  const response = await client.post("/api/v1/cart/add", data);
+export const addToCart = async (data: AddToCartRequest): Promise<AddToCartResponse> => {
+  const response = await client.post('/api/v1/cart/add', data);
   return response.data;
 };
 
 export const getCart = async (sessionId?: string): Promise<GetCartResponse> => {
   const params = sessionId ? { sessionId } : {};
-  const response = await client.get("/api/v1/cart", { params });
+  const response = await client.get('/api/v1/cart', { params });
   return response.data;
 };
 

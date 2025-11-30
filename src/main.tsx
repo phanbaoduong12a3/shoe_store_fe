@@ -34,6 +34,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <App />
       </AntdApp>
     </ConfigProvider>
-  </Provider>,
+  </Provider>
   // </React.StrictMode>,
 );

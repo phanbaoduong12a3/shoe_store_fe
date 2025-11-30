@@ -1,490 +1,483 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-    Card,
-    Form,
-    Input,
-    Button,
-    Radio,
-    Flex,
-    Spin,
-    App,
-    Divider,
-    InputNumber,
-} from "antd";
-import { ShoppingCartOutlined, EnvironmentOutlined, CreditCardOutlined } from "@ant-design/icons";
-import TextDefault from "@/components/Text/Text";
-import { useAppDispatch, useAppSelector } from "@/stores";
-import { clearCartAction, getCartAction } from "@/stores/cart";
-import { createOrderAction } from "@/stores/order";
-import { getOrCreateSessionId, isUserLoggedIn } from "@/utils/cart-utils";
-import { RoutePaths } from "@/routers/routes-constants";
-import type { CustomerInfo, ShippingAddress } from "@/services/order-service";
-import { createPaymentOrder } from "@/services/payment-service";
-import "./payment.scss";
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, Form, Input, Button, Radio, Flex, Spin, App, Divider, InputNumber } from 'antd';
+import { ShoppingCartOutlined, EnvironmentOutlined, CreditCardOutlined } from '@ant-design/icons';
+import TextDefault from '@/components/Text/Text';
+import { useAppDispatch, useAppSelector } from '@/stores';
+import { clearCartAction, getCartAction } from '@/stores/cart';
+import { createOrderAction } from '@/stores/order';
+import { getOrCreateSessionId, isUserLoggedIn } from '@/utils/cart-utils';
+import { RoutePaths } from '@/routers/routes-constants';
+import type { CustomerInfo, ShippingAddress } from '@/services/order-service';
+import { createPaymentOrder } from '@/services/payment-service';
+import './payment.scss';
 
 const PaymentPage = () => {
-    const [form] = Form.useForm();
-    const navigate = useNavigate();
-    const dispatch = useAppDispatch();
-    const { cart, loading: cartLoading } = useAppSelector((state) => state.cart);
-    const { loading: orderLoading } = useAppSelector((state) => state.order);
-    const { message } = App.useApp();
-    const userId = localStorage.getItem("userId");
+  const [form] = Form.useForm();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const { cart, loading: cartLoading } = useAppSelector((state) => state.cart);
+  const { loading: orderLoading } = useAppSelector((state) => state.order);
+  const { message } = App.useApp();
+  const userId = localStorage.getItem('userId');
 
-    const [paymentMethod, setPaymentMethod] = useState<'COD' | 'BANK_TRANSFER' | 'CREDIT_CARD' | 'zalopay'>('COD');
-    const [loyaltyPoints, setLoyaltyPoints] = useState(0);
-    const [voucherCode, setVoucherCode] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<
+    'COD' | 'BANK_TRANSFER' | 'CREDIT_CARD' | 'zalopay'
+  >('COD');
+  const [loyaltyPoints, setLoyaltyPoints] = useState(0);
+  const [voucherCode, setVoucherCode] = useState('');
 
-    useEffect(() => {
-        const isLoggedIn = isUserLoggedIn();
-        const sessionId = !isLoggedIn ? getOrCreateSessionId() : (userId || '');
+  useEffect(() => {
+    const isLoggedIn = isUserLoggedIn();
+    const sessionId = !isLoggedIn ? getOrCreateSessionId() : userId || '';
 
-        dispatch(
-            getCartAction({
-                sessionId,
-                onError: (error) => {
-                    console.error("Error loading cart:", error);
-                    message.error("Không thể tải giỏ hàng!");
-                },
-            })
-        );
-    }, [dispatch, userId, message]);
+    dispatch(
+      getCartAction({
+        sessionId,
+        onError: (error) => {
+          console.error('Error loading cart:', error);
+          message.error('Không thể tải giỏ hàng!');
+        },
+      })
+    );
+  }, [dispatch, userId, message]);
 
-    const shippingFee = 50000;
-    const taxRate = 0.1;
+  const shippingFee = 50000;
+  const taxRate = 0.1;
 
-    const subtotal = cart?.items.reduce((sum, item) => {
-        return sum + (item.price * item.quantity);
+  const subtotal =
+    cart?.items.reduce((sum, item) => {
+      return sum + item.price * item.quantity;
     }, 0) || 0;
 
-    const tax = subtotal * taxRate;
-    const loyaltyPointsDiscount = loyaltyPoints * 1000; // 1 point = 1000đ
-    const discount = loyaltyPointsDiscount;
-    const totalAmount = subtotal + shippingFee + tax - discount;
+  const tax = subtotal * taxRate;
+  const loyaltyPointsDiscount = loyaltyPoints * 1000; // 1 point = 1000đ
+  const discount = loyaltyPointsDiscount;
+  const totalAmount = subtotal + shippingFee + tax - discount;
 
-    const handleSubmitOrder = async (values: any) => {
-        if (!cart || cart.items.length === 0) {
-            message.warning("Giỏ hàng trống!");
-            return;
-        }
+  const handleSubmitOrder = async (values: any) => {
+    if (!cart || cart.items.length === 0) {
+      message.warning('Giỏ hàng trống!');
+      return;
+    }
 
-        const customer: CustomerInfo = {
-            name: values.customerName,
-            phone: values.customerPhone,
-            email: values.customerEmail,
-        };
-
-        const shippingAddress: ShippingAddress = {
-            recipientName: values.recipientName,
-            phone: values.recipientPhone,
-            address: values.address,
-            ward: values.ward,
-            district: values.district,
-            city: values.city,
-            country: "Vietnam",
-        };
-
-        const items = cart.items.map(item => ({
-            productId: item.productId._id,
-            variantId: item.variantId,
-            productName: item.productName,
-            color: item.color,
-            size: item.size,
-            sku: `${item.productId._id}-${item.variantId}`,
-            quantity: item.quantity,
-            price: item.price,
-            subtotal: item.price * item.quantity,
-        }));
-
-        const isLoggedIn = isUserLoggedIn();
-
-        dispatch(
-            createOrderAction({
-                userId: isLoggedIn && userId ? userId : undefined,
-                customer,
-                shippingAddress,
-                items,
-                subtotal,
-                shippingFee,
-                discount,
-                voucherCode: voucherCode || undefined,
-                loyaltyPointsUsed: loyaltyPoints,
-                loyaltyPointsDiscount,
-                totalAmount,
-                paymentMethod: paymentMethod.toLowerCase(),
-                note: values.note,
-                onSuccess: async (response) => {
-                    message.success("Đặt hàng thành công! 🎉");
-
-                    // Clear cart after successful order
-                    if (isLoggedIn && userId) {
-                        dispatch(clearCartAction({}));
-                    } else {
-                        dispatch(clearCartAction({ sessionId: getOrCreateSessionId() }));
-                    }
-
-                    // If payment method is E-Wallet, redirect to ZaloPay
-                    if (paymentMethod === 'zalopay') {
-                        try {
-                            const paymentResponse = await createPaymentOrder({
-                                newTotal: totalAmount
-                            });
-
-
-                            if (paymentResponse.vnpUrl) {
-                                // Redirect to ZaloPay payment page
-                                window.location.href = paymentResponse.vnpUrl;
-                                return;
-                            }
-                        } catch (error) {
-                            console.error("Payment error:", error);
-                            message.error("Không thể tạo link thanh toán! Vui lòng thử lại.");
-                        }
-                    }
-
-                    // For other payment methods, navigate to confirmation page
-                    navigate(`${RoutePaths.PAYMENT_CONFIRM}?orderNumber=${response.data.order.orderNumber}`);
-                },
-                onError: (error) => {
-                    message.error(
-                        error?.response?.data?.data?.message || "Không thể tạo đơn hàng!"
-                    );
-                },
-            })
-        );
+    const customer: CustomerInfo = {
+      name: values.customerName,
+      phone: values.customerPhone,
+      email: values.customerEmail,
     };
 
-    if (cartLoading && !cart) {
-        return (
-            <div className="loading-container">
-                <Spin size="large" tip="Đang tải thông tin..." />
-            </div>
-        );
-    }
+    const shippingAddress: ShippingAddress = {
+      recipientName: values.recipientName,
+      phone: values.recipientPhone,
+      address: values.address,
+      ward: values.ward,
+      district: values.district,
+      city: values.city,
+      country: 'Vietnam',
+    };
 
-    if (!cart || cart.items.length === 0) {
-        return (
-            <div className="payment-page">
-                <Card className="empty-cart">
-                    <TextDefault fs={18} fw="600">Giỏ hàng trống!</TextDefault>
-                    <Button type="primary" onClick={() => navigate(RoutePaths.HOME)}>
-                        Quay lại trang chủ
-                    </Button>
-                </Card>
-            </div>
-        );
-    }
+    const items = cart.items.map((item) => ({
+      productId: item.productId._id,
+      variantId: item.variantId,
+      productName: item.productName,
+      color: item.color,
+      size: item.size,
+      sku: `${item.productId._id}-${item.variantId}`,
+      quantity: item.quantity,
+      price: item.price,
+      subtotal: item.price * item.quantity,
+    }));
 
-    return (
-        <div className="payment-page">
-            <div className="page-header">
-                <TextDefault fs={32} fw="700">Thanh toán</TextDefault>
-                <TextDefault color="#6b7280">Vui lòng điền đầy đủ thông tin để hoàn tất đơn hàng</TextDefault>
-            </div>
+    const isLoggedIn = isUserLoggedIn();
 
-            <Form
-                form={form}
-                layout="vertical"
-                onFinish={handleSubmitOrder}
-                className="payment-form"
-            >
-                <Flex gap={24} className="payment-content">
-                    <div className="payment-left">
-                        {/* Customer Information */}
-                        <Card className="info-card">
-                            <Flex align="center" gap={12} className="card-title">
-                                <ShoppingCartOutlined style={{ fontSize: 24, color: "#1555d5" }} />
-                                <TextDefault fs={20} fw="700">Thông tin khách hàng</TextDefault>
-                            </Flex>
+    dispatch(
+      createOrderAction({
+        userId: isLoggedIn && userId ? userId : undefined,
+        customer,
+        shippingAddress,
+        items,
+        subtotal,
+        shippingFee,
+        discount,
+        voucherCode: voucherCode || undefined,
+        loyaltyPointsUsed: loyaltyPoints,
+        loyaltyPointsDiscount,
+        totalAmount,
+        paymentMethod: paymentMethod.toLowerCase(),
+        note: values.note,
+        onSuccess: async (response) => {
+          message.success('Đặt hàng thành công! 🎉');
 
-                            <Form.Item
-                                label="Họ và tên"
-                                name="customerName"
-                                rules={[{ required: true, message: "Vui lòng nhập họ tên!" }]}
-                            >
-                                <Input size="large" placeholder="Nguyễn Văn A" />
-                            </Form.Item>
+          // Clear cart after successful order
+          if (isLoggedIn && userId) {
+            dispatch(clearCartAction({}));
+          } else {
+            dispatch(clearCartAction({ sessionId: getOrCreateSessionId() }));
+          }
 
-                            <Form.Item
-                                label="Số điện thoại"
-                                name="customerPhone"
-                                rules={[
-                                    { required: true, message: "Vui lòng nhập số điện thoại!" },
-                                    { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ!" }
-                                ]}
-                            >
-                                <Input size="large" placeholder="0123456789" />
-                            </Form.Item>
+          // If payment method is E-Wallet, redirect to ZaloPay
+          if (paymentMethod === 'zalopay') {
+            try {
+              const paymentResponse = await createPaymentOrder({
+                newTotal: totalAmount,
+              });
 
-                            <Form.Item
-                                label="Email"
-                                name="customerEmail"
-                                rules={[
-                                    { required: true, message: "Vui lòng nhập email!" },
-                                    { type: "email", message: "Email không hợp lệ!" }
-                                ]}
-                            >
-                                <Input size="large" placeholder="example@email.com" />
-                            </Form.Item>
-                        </Card>
+              if (paymentResponse.vnpUrl) {
+                // Redirect to ZaloPay payment page
+                window.location.href = paymentResponse.vnpUrl;
+                return;
+              }
+            } catch (error) {
+              console.error('Payment error:', error);
+              message.error('Không thể tạo link thanh toán! Vui lòng thử lại.');
+            }
+          }
 
-                        {/* Shipping Address */}
-                        <Card className="info-card">
-                            <Flex align="center" gap={12} className="card-title">
-                                <EnvironmentOutlined style={{ fontSize: 24, color: "#1555d5" }} />
-                                <TextDefault fs={20} fw="700">Địa chỉ giao hàng</TextDefault>
-                            </Flex>
-
-                            <Form.Item
-                                label="Tên người nhận"
-                                name="recipientName"
-                                rules={[{ required: true, message: "Vui lòng nhập tên người nhận!" }]}
-                            >
-                                <Input size="large" placeholder="Nguyễn Văn A" />
-                            </Form.Item>
-
-                            <Form.Item
-                                label="Số điện thoại người nhận"
-                                name="recipientPhone"
-                                rules={[
-                                    { required: true, message: "Vui lòng nhập số điện thoại!" },
-                                    { pattern: /^[0-9]{10}$/, message: "Số điện thoại không hợp lệ!" }
-                                ]}
-                            >
-                                <Input size="large" placeholder="0123456789" />
-                            </Form.Item>
-
-                            <Form.Item
-                                label="Địa chỉ cụ thể"
-                                name="address"
-                                rules={[{ required: true, message: "Vui lòng nhập địa chỉ!" }]}
-                            >
-                                <Input size="large" placeholder="Số nhà, tên đường" />
-                            </Form.Item>
-
-                            <Flex gap={16}>
-                                <Form.Item
-                                    label="Phường/Xã"
-                                    name="ward"
-                                    rules={[{ required: true, message: "Vui lòng nhập phường/xã!" }]}
-                                    style={{ flex: 1 }}
-                                >
-                                    <Input size="large" placeholder="Phường 1" />
-                                </Form.Item>
-
-                                <Form.Item
-                                    label="Quận/Huyện"
-                                    name="district"
-                                    rules={[{ required: true, message: "Vui lòng nhập quận/huyện!" }]}
-                                    style={{ flex: 1 }}
-                                >
-                                    <Input size="large" placeholder="Quận 1" />
-                                </Form.Item>
-                            </Flex>
-
-                            <Form.Item
-                                label="Tỉnh/Thành phố"
-                                name="city"
-                                rules={[{ required: true, message: "Vui lòng nhập tỉnh/thành phố!" }]}
-                            >
-                                <Input size="large" placeholder="TP. Hồ Chí Minh" />
-                            </Form.Item>
-                        </Card>
-
-                        {/* Payment Method */}
-                        <Card className="info-card">
-                            <Flex align="center" gap={12} className="card-title">
-                                <CreditCardOutlined style={{ fontSize: 24, color: "#1555d5" }} />
-                                <TextDefault fs={20} fw="700">Phương thức thanh toán</TextDefault>
-                            </Flex>
-
-                            <Radio.Group
-                                value={paymentMethod}
-                                onChange={(e) => setPaymentMethod(e.target.value)}
-                                className="payment-methods"
-                            >
-                                <Radio value="COD" className="payment-method-option">
-                                    <Flex vertical gap={4}>
-                                        <TextDefault fw="600">Thanh toán khi nhận hàng (COD)</TextDefault>
-                                        <TextDefault fs={13} color="#6b7280">
-                                            Thanh toán bằng tiền mặt khi nhận hàng
-                                        </TextDefault>
-                                    </Flex>
-                                </Radio>
-                                <Radio value="BANK_TRANSFER" className="payment-method-option">
-                                    <Flex vertical gap={4}>
-                                        <TextDefault fw="600">Chuyển khoản ngân hàng</TextDefault>
-                                        <TextDefault fs={13} color="#6b7280">
-                                            Chuyển khoản qua tài khoản ngân hàng
-                                        </TextDefault>
-                                    </Flex>
-                                </Radio>
-                                <Radio value="CREDIT_CARD" className="payment-method-option">
-                                    <Flex vertical gap={4}>
-                                        <TextDefault fw="600">Thẻ tín dụng/Ghi nợ</TextDefault>
-                                        <TextDefault fs={13} color="#6b7280">
-                                            Thanh toán bằng thẻ Visa, Mastercard
-                                        </TextDefault>
-                                    </Flex>
-                                </Radio>
-                                <Radio value="zalopay" className="payment-method-option">
-                                    <Flex vertical gap={4}>
-                                        <TextDefault fw="600">Ví điện tử (ZaloPay)</TextDefault>
-                                        <TextDefault fs={13} color="#6b7280">
-                                            Thanh toán qua ZaloPay
-                                        </TextDefault>
-                                    </Flex>
-                                </Radio>
-                            </Radio.Group>
-                        </Card>
-
-                        {/* Additional Info */}
-                        <Card className="info-card">
-                            <TextDefault fs={18} fw="700" style={{ marginBottom: 16 }}>
-                                Thông tin bổ sung
-                            </TextDefault>
-
-                            <Form.Item label="Ghi chú đơn hàng" name="note">
-                                <Input.TextArea
-                                    rows={4}
-                                    placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn"
-                                />
-                            </Form.Item>
-                        </Card>
-                    </div>
-
-                    {/* Order Summary */}
-                    <div className="payment-right">
-                        <Card className="order-summary-card">
-                            <TextDefault fs={24} fw="700" className="summary-title">
-                                Đơn hàng của bạn
-                            </TextDefault>
-
-                            <Divider />
-
-                            <div className="order-items">
-                                {cart.items.map((item, index) => (
-                                    <Flex key={index} justify="space-between" className="order-item">
-                                        <Flex gap={12}>
-                                            <img
-                                                src={item.image}
-                                                alt={item.productName}
-                                                className="item-image"
-                                            />
-                                            <Flex vertical gap={4}>
-                                                <TextDefault fw="600">{item.productName}</TextDefault>
-                                                <TextDefault fs={13} color="#6b7280">
-                                                    {item.color} / Size {item.size}
-                                                </TextDefault>
-                                                <TextDefault fs={13} color="#6b7280">
-                                                    x{item.quantity}
-                                                </TextDefault>
-                                            </Flex>
-                                        </Flex>
-                                        <TextDefault fw="600" color="#1555d5">
-                                            {(item.price * item.quantity).toLocaleString("vi-VN")}đ
-                                        </TextDefault>
-                                    </Flex>
-                                ))}
-                            </div>
-
-                            <Divider />
-
-                            {/* Voucher */}
-                            <div className="voucher-section">
-                                <TextDefault fw="600" style={{ marginBottom: 8 }}>Mã giảm giá</TextDefault>
-                                <Flex gap={8}>
-                                    <Input
-                                        placeholder="Nhập mã giảm giá"
-                                        value={voucherCode}
-                                        onChange={(e) => setVoucherCode(e.target.value)}
-                                    />
-                                    <Button>Áp dụng</Button>
-                                </Flex>
-                            </div>
-
-                            {/* Loyalty Points */}
-                            <div className="loyalty-section">
-                                <TextDefault fw="600" style={{ marginBottom: 8 }}>Điểm tích lũy</TextDefault>
-                                <Flex gap={8} align="center">
-                                    <InputNumber
-                                        min={0}
-                                        max={100}
-                                        value={loyaltyPoints}
-                                        onChange={(val) => setLoyaltyPoints(val || 0)}
-                                        placeholder="Số điểm"
-                                        style={{ flex: 1 }}
-                                    />
-                                    <TextDefault fs={13} color="#6b7280">
-                                        (1 điểm = 1,000đ)
-                                    </TextDefault>
-                                </Flex>
-                            </div>
-
-                            <Divider />
-
-                            {/* Price Summary */}
-                            <Flex vertical gap={12} className="price-summary">
-                                <Flex justify="space-between">
-                                    <TextDefault color="#6b7280">Tạm tính:</TextDefault>
-                                    <TextDefault fw="600">{subtotal.toLocaleString("vi-VN")}đ</TextDefault>
-                                </Flex>
-
-                                <Flex justify="space-between">
-                                    <TextDefault color="#6b7280">Phí vận chuyển:</TextDefault>
-                                    <TextDefault fw="600">{shippingFee.toLocaleString("vi-VN")}đ</TextDefault>
-                                </Flex>
-
-                                <Flex justify="space-between">
-                                    <TextDefault color="#6b7280">Thuế VAT (10%):</TextDefault>
-                                    <TextDefault fw="600">{tax.toLocaleString("vi-VN")}đ</TextDefault>
-                                </Flex>
-
-                                {discount > 0 && (
-                                    <Flex justify="space-between">
-                                        <TextDefault color="#52c41a">Giảm giá:</TextDefault>
-                                        <TextDefault fw="600" color="#52c41a">
-                                            -{discount.toLocaleString("vi-VN")}đ
-                                        </TextDefault>
-                                    </Flex>
-                                )}
-
-                                <Divider style={{ margin: "12px 0" }} />
-
-                                <Flex justify="space-between" className="total-row">
-                                    <TextDefault fs={18} fw="700">Tổng cộng:</TextDefault>
-                                    <TextDefault fs={28} fw="700" color="#1555d5">
-                                        {totalAmount.toLocaleString("vi-VN")}đ
-                                    </TextDefault>
-                                </Flex>
-                            </Flex>
-
-                            <Button
-                                type="primary"
-                                size="large"
-                                block
-                                htmlType="submit"
-                                loading={orderLoading}
-                                className="submit-btn"
-                            >
-                                {paymentMethod === 'zalopay' ? 'Thanh toán qua ZaloPay' : 'Đặt hàng'}
-                            </Button>
-
-                            <TextDefault
-                                fs={12}
-                                color="#6b7280"
-                                style={{ textAlign: "center", marginTop: 16 }}
-                            >
-                                Bằng việc đặt hàng, bạn đồng ý với{" "}
-                                <a href="#">Điều khoản sử dụng</a> của chúng tôi
-                            </TextDefault>
-                        </Card>
-                    </div>
-                </Flex>
-            </Form>
-        </div>
+          // For other payment methods, navigate to confirmation page
+          navigate(`${RoutePaths.PAYMENT_CONFIRM}?orderNumber=${response.data.order.orderNumber}`);
+        },
+        onError: (error) => {
+          message.error(error?.response?.data?.data?.message || 'Không thể tạo đơn hàng!');
+        },
+      })
     );
+  };
+
+  if (cartLoading && !cart) {
+    return (
+      <div className="loading-container">
+        <Spin size="large" tip="Đang tải thông tin..." />
+      </div>
+    );
+  }
+
+  if (!cart || cart.items.length === 0) {
+    return (
+      <div className="payment-page">
+        <Card className="empty-cart">
+          <TextDefault fs={18} fw="600">
+            Giỏ hàng trống!
+          </TextDefault>
+          <Button type="primary" onClick={() => navigate(RoutePaths.HOME)}>
+            Quay lại trang chủ
+          </Button>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="payment-page">
+      <div className="page-header">
+        <TextDefault fs={32} fw="700">
+          Thanh toán
+        </TextDefault>
+        <TextDefault color="#6b7280">
+          Vui lòng điền đầy đủ thông tin để hoàn tất đơn hàng
+        </TextDefault>
+      </div>
+
+      <Form form={form} layout="vertical" onFinish={handleSubmitOrder} className="payment-form">
+        <Flex gap={24} className="payment-content">
+          <div className="payment-left">
+            {/* Customer Information */}
+            <Card className="info-card">
+              <Flex align="center" gap={12} className="card-title">
+                <ShoppingCartOutlined style={{ fontSize: 24, color: '#1555d5' }} />
+                <TextDefault fs={20} fw="700">
+                  Thông tin khách hàng
+                </TextDefault>
+              </Flex>
+
+              <Form.Item
+                label="Họ và tên"
+                name="customerName"
+                rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}
+              >
+                <Input size="large" placeholder="Nguyễn Văn A" />
+              </Form.Item>
+
+              <Form.Item
+                label="Số điện thoại"
+                name="customerPhone"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                  { pattern: /^[0-9]{10}$/, message: 'Số điện thoại không hợp lệ!' },
+                ]}
+              >
+                <Input size="large" placeholder="0123456789" />
+              </Form.Item>
+
+              <Form.Item
+                label="Email"
+                name="customerEmail"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập email!' },
+                  { type: 'email', message: 'Email không hợp lệ!' },
+                ]}
+              >
+                <Input size="large" placeholder="example@email.com" />
+              </Form.Item>
+            </Card>
+
+            {/* Shipping Address */}
+            <Card className="info-card">
+              <Flex align="center" gap={12} className="card-title">
+                <EnvironmentOutlined style={{ fontSize: 24, color: '#1555d5' }} />
+                <TextDefault fs={20} fw="700">
+                  Địa chỉ giao hàng
+                </TextDefault>
+              </Flex>
+
+              <Form.Item
+                label="Tên người nhận"
+                name="recipientName"
+                rules={[{ required: true, message: 'Vui lòng nhập tên người nhận!' }]}
+              >
+                <Input size="large" placeholder="Nguyễn Văn A" />
+              </Form.Item>
+
+              <Form.Item
+                label="Số điện thoại người nhận"
+                name="recipientPhone"
+                rules={[
+                  { required: true, message: 'Vui lòng nhập số điện thoại!' },
+                  { pattern: /^[0-9]{10}$/, message: 'Số điện thoại không hợp lệ!' },
+                ]}
+              >
+                <Input size="large" placeholder="0123456789" />
+              </Form.Item>
+
+              <Form.Item
+                label="Địa chỉ cụ thể"
+                name="address"
+                rules={[{ required: true, message: 'Vui lòng nhập địa chỉ!' }]}
+              >
+                <Input size="large" placeholder="Số nhà, tên đường" />
+              </Form.Item>
+
+              <Flex gap={16}>
+                <Form.Item
+                  label="Phường/Xã"
+                  name="ward"
+                  rules={[{ required: true, message: 'Vui lòng nhập phường/xã!' }]}
+                  style={{ flex: 1 }}
+                >
+                  <Input size="large" placeholder="Phường 1" />
+                </Form.Item>
+
+                <Form.Item
+                  label="Quận/Huyện"
+                  name="district"
+                  rules={[{ required: true, message: 'Vui lòng nhập quận/huyện!' }]}
+                  style={{ flex: 1 }}
+                >
+                  <Input size="large" placeholder="Quận 1" />
+                </Form.Item>
+              </Flex>
+
+              <Form.Item
+                label="Tỉnh/Thành phố"
+                name="city"
+                rules={[{ required: true, message: 'Vui lòng nhập tỉnh/thành phố!' }]}
+              >
+                <Input size="large" placeholder="TP. Hồ Chí Minh" />
+              </Form.Item>
+            </Card>
+
+            {/* Payment Method */}
+            <Card className="info-card">
+              <Flex align="center" gap={12} className="card-title">
+                <CreditCardOutlined style={{ fontSize: 24, color: '#1555d5' }} />
+                <TextDefault fs={20} fw="700">
+                  Phương thức thanh toán
+                </TextDefault>
+              </Flex>
+
+              <Radio.Group
+                value={paymentMethod}
+                onChange={(e) => setPaymentMethod(e.target.value)}
+                className="payment-methods"
+              >
+                <Radio value="COD" className="payment-method-option">
+                  <Flex vertical gap={4}>
+                    <TextDefault fw="600">Thanh toán khi nhận hàng (COD)</TextDefault>
+                    <TextDefault fs={13} color="#6b7280">
+                      Thanh toán bằng tiền mặt khi nhận hàng
+                    </TextDefault>
+                  </Flex>
+                </Radio>
+                <Radio value="BANK_TRANSFER" className="payment-method-option">
+                  <Flex vertical gap={4}>
+                    <TextDefault fw="600">Chuyển khoản ngân hàng</TextDefault>
+                    <TextDefault fs={13} color="#6b7280">
+                      Chuyển khoản qua tài khoản ngân hàng
+                    </TextDefault>
+                  </Flex>
+                </Radio>
+                <Radio value="CREDIT_CARD" className="payment-method-option">
+                  <Flex vertical gap={4}>
+                    <TextDefault fw="600">Thẻ tín dụng/Ghi nợ</TextDefault>
+                    <TextDefault fs={13} color="#6b7280">
+                      Thanh toán bằng thẻ Visa, Mastercard
+                    </TextDefault>
+                  </Flex>
+                </Radio>
+                <Radio value="zalopay" className="payment-method-option">
+                  <Flex vertical gap={4}>
+                    <TextDefault fw="600">Ví điện tử (ZaloPay)</TextDefault>
+                    <TextDefault fs={13} color="#6b7280">
+                      Thanh toán qua ZaloPay
+                    </TextDefault>
+                  </Flex>
+                </Radio>
+              </Radio.Group>
+            </Card>
+
+            {/* Additional Info */}
+            <Card className="info-card">
+              <TextDefault fs={18} fw="700" style={{ marginBottom: 16 }}>
+                Thông tin bổ sung
+              </TextDefault>
+
+              <Form.Item label="Ghi chú đơn hàng" name="note">
+                <Input.TextArea
+                  rows={4}
+                  placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn"
+                />
+              </Form.Item>
+            </Card>
+          </div>
+
+          {/* Order Summary */}
+          <div className="payment-right">
+            <Card className="order-summary-card">
+              <TextDefault fs={24} fw="700" className="summary-title">
+                Đơn hàng của bạn
+              </TextDefault>
+
+              <Divider />
+
+              <div className="order-items">
+                {cart.items.map((item, index) => (
+                  <Flex key={index} justify="space-between" className="order-item">
+                    <Flex gap={12}>
+                      <img src={item.image} alt={item.productName} className="item-image" />
+                      <Flex vertical gap={4}>
+                        <TextDefault fw="600">{item.productName}</TextDefault>
+                        <TextDefault fs={13} color="#6b7280">
+                          {item.color} / Size {item.size}
+                        </TextDefault>
+                        <TextDefault fs={13} color="#6b7280">
+                          x{item.quantity}
+                        </TextDefault>
+                      </Flex>
+                    </Flex>
+                    <TextDefault fw="600" color="#1555d5">
+                      {(item.price * item.quantity).toLocaleString('vi-VN')}đ
+                    </TextDefault>
+                  </Flex>
+                ))}
+              </div>
+
+              <Divider />
+
+              {/* Voucher */}
+              <div className="voucher-section">
+                <TextDefault fw="600" style={{ marginBottom: 8 }}>
+                  Mã giảm giá
+                </TextDefault>
+                <Flex gap={8}>
+                  <Input
+                    placeholder="Nhập mã giảm giá"
+                    value={voucherCode}
+                    onChange={(e) => setVoucherCode(e.target.value)}
+                  />
+                  <Button>Áp dụng</Button>
+                </Flex>
+              </div>
+
+              {/* Loyalty Points */}
+              <div className="loyalty-section">
+                <TextDefault fw="600" style={{ marginBottom: 8 }}>
+                  Điểm tích lũy
+                </TextDefault>
+                <Flex gap={8} align="center">
+                  <InputNumber
+                    min={0}
+                    max={100}
+                    value={loyaltyPoints}
+                    onChange={(val) => setLoyaltyPoints(val || 0)}
+                    placeholder="Số điểm"
+                    style={{ flex: 1 }}
+                  />
+                  <TextDefault fs={13} color="#6b7280">
+                    (1 điểm = 1,000đ)
+                  </TextDefault>
+                </Flex>
+              </div>
+
+              <Divider />
+
+              {/* Price Summary */}
+              <Flex vertical gap={12} className="price-summary">
+                <Flex justify="space-between">
+                  <TextDefault color="#6b7280">Tạm tính:</TextDefault>
+                  <TextDefault fw="600">{subtotal.toLocaleString('vi-VN')}đ</TextDefault>
+                </Flex>
+
+                <Flex justify="space-between">
+                  <TextDefault color="#6b7280">Phí vận chuyển:</TextDefault>
+                  <TextDefault fw="600">{shippingFee.toLocaleString('vi-VN')}đ</TextDefault>
+                </Flex>
+
+                <Flex justify="space-between">
+                  <TextDefault color="#6b7280">Thuế VAT (10%):</TextDefault>
+                  <TextDefault fw="600">{tax.toLocaleString('vi-VN')}đ</TextDefault>
+                </Flex>
+
+                {discount > 0 && (
+                  <Flex justify="space-between">
+                    <TextDefault color="#52c41a">Giảm giá:</TextDefault>
+                    <TextDefault fw="600" color="#52c41a">
+                      -{discount.toLocaleString('vi-VN')}đ
+                    </TextDefault>
+                  </Flex>
+                )}
+
+                <Divider style={{ margin: '12px 0' }} />
+
+                <Flex justify="space-between" className="total-row">
+                  <TextDefault fs={18} fw="700">
+                    Tổng cộng:
+                  </TextDefault>
+                  <TextDefault fs={28} fw="700" color="#1555d5">
+                    {totalAmount.toLocaleString('vi-VN')}đ
+                  </TextDefault>
+                </Flex>
+              </Flex>
+
+              <Button
+                type="primary"
+                size="large"
+                block
+                htmlType="submit"
+                loading={orderLoading}
+                className="submit-btn"
+              >
+                {paymentMethod === 'zalopay' ? 'Thanh toán qua ZaloPay' : 'Đặt hàng'}
+              </Button>
+
+              <TextDefault fs={12} color="#6b7280" style={{ textAlign: 'center', marginTop: 16 }}>
+                Bằng việc đặt hàng, bạn đồng ý với <a href="#">Điều khoản sử dụng</a> của chúng tôi
+              </TextDefault>
+            </Card>
+          </div>
+        </Flex>
+      </Form>
+    </div>
+  );
 };
 
 export default PaymentPage;

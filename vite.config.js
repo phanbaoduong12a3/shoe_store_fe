@@ -4,21 +4,21 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import svgr from 'vite-plugin-svgr';
 import path from 'path';
 export default defineConfig({
-    server: {
-        port: 4001,
+  server: {
+    port: 4001,
+  },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@styles': path.resolve(__dirname, 'src/themes'),
     },
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, 'src'),
-            '@styles': path.resolve(__dirname, 'src/themes'),
-        },
-    },
-    // css: {
-    //   preprocessorOptions: {
-    //     scss: {
-    //       additionalData: `@import '@styles/variables';`, // default import variables.scss to all scss files
-    //     },
-    //   },
-    // },
-    plugins: [react(), tsconfigPaths(), svgr()],
+  },
+  // css: {
+  //   preprocessorOptions: {
+  //     scss: {
+  //       additionalData: `@import '@styles/variables';`, // default import variables.scss to all scss files
+  //     },
+  //   },
+  // },
+  plugins: [react(), tsconfigPaths(), svgr()],
 });
