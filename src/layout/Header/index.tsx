@@ -1,6 +1,6 @@
 import { RoutePaths } from '@/routers/routes-constants';
 import { UserOutlined } from '@ant-design/icons';
-import { Avatar, Dropdown } from 'antd';
+import { Avatar } from 'antd';
 import { MessageSquareText, ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -65,47 +65,64 @@ const Header = () => {
             </a>
 
             {user ? (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: 'user_infor',
-                      label: <div onClick={() => navigate('/profile')}>Thông tin cá nhân</div>,
-                    },
-                    {
-                      key: 'logout',
-                      label: <div onClick={handleLogout}>Đăng xuất</div>,
-                    },
-                  ],
-                }}
-                trigger={['hover']}
-              >
-                {/* WRAP trong 1 div duy nhất */}
+              // <Dropdown
+              //   menu={{
+              //     items: [
+              //       {
+              //         key: 'user_infor',
+              //         label: <div onClick={() => navigate('/profile')}>Thông tin cá nhân</div>,
+              //       },
+              //       {
+              //         key: 'logout',
+              //         label: <div onClick={handleLogout}>Đăng xuất</div>,
+              //       },
+              //     ],
+              //   }}
+              //   trigger={['hover']}
+              // >
+              //   {/* WRAP trong 1 div duy nhất */}
+              //   <div className="flex items-center gap-2 cursor-pointer">
+              //     <Avatar src={user.avatar} size={36} icon={<UserOutlined />} />
+              //     <p className="text-white font-semibold">{user.fullName}</p>
+              //   </div>
+              // </Dropdown>
+              <div className="dropdown">
                 <div className="flex items-center gap-2 cursor-pointer">
                   <Avatar src={user.avatar} size={36} icon={<UserOutlined />} />
-                  <p className="text-white font-semibold">{user.fullName}</p>
+                  <div onClick={handleLogout}>Đăng xuất</div>
                 </div>
-              </Dropdown>
+                <div className="dropdown-content">
+                  <div onClick={() => navigate('/profile')}>Thông tin cá nhân</div>
+                  <a onClick={() => navigate(RoutePaths.REGISTER)}>Đăng ký</a>
+                </div>
+              </div>
             ) : (
-              <Dropdown
-                menu={{
-                  items: [
-                    {
-                      key: '1',
-                      label: <div onClick={() => navigate(RoutePaths.LOGIN)}>Đăng nhập</div>,
-                    },
-                    {
-                      key: '2',
-                      label: <div onClick={() => navigate(RoutePaths.REGISTER)}>Đăng ký</div>,
-                    },
-                  ],
-                }}
-                trigger={['hover']}
-              >
-                <a href="#" className="hover:text-yellow-400">
-                  TÀI KHOẢN
-                </a>
-              </Dropdown>
+              <div className="dropdown">
+                <div>TÀI KHOẢN</div>
+                <div className="dropdown-content">
+                  <a onClick={() => navigate(RoutePaths.LOGIN)}>Đăng nhập</a>
+                  <a onClick={() => navigate(RoutePaths.REGISTER)}>Đăng ký</a>
+                </div>
+              </div>
+              // <Dropdown
+              //   menu={{
+              //     items: [
+              //       {
+              //         key: '1',
+              //         label: <div onClick={() => navigate(RoutePaths.LOGIN)}>Đăng nhập</div>,
+              //       },
+              //       {
+              //         key: '2',
+              //         label: <div onClick={() => navigate(RoutePaths.REGISTER)}>Đăng ký</div>,
+              //       },
+              //     ],
+              //   }}
+              //   trigger={['hover']}
+              // >
+              //   <a href="#" className="hover:text-yellow-400">
+              //     TÀI KHOẢN
+              //   </a>
+              // </Dropdown>
             )}
             <div
               onClick={() => navigate(RoutePaths.MY_ORDER)}
