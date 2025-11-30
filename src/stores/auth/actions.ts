@@ -24,8 +24,8 @@ interface PostSignupPayload extends SignupRequest {
 const postSigninAction = createAsyncThunk(
   EAuthActions.POST_SIGNIN,
   async (payload: PostSigninPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
     try {
-      const { onSuccess, onError, ...data } = payload;
       const response = await postSignin(data);
 
       // Call onSuccess callback if provided
@@ -36,8 +36,8 @@ const postSigninAction = createAsyncThunk(
       return response;
     } catch (error: any) {
       // Call onError callback if provided
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -52,7 +52,7 @@ const postSignupAction = createAsyncThunk(
   EAuthActions.POST_SIGNUP,
   async (payload: PostSignupPayload, { rejectWithValue }) => {
     try {
-      const { onSuccess, onError, ...data } = payload;
+      const { onSuccess, ...data } = payload;
       const response = await postSignup(data);
 
       // Call onSuccess callback if provided

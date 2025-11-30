@@ -30,7 +30,7 @@ const LoginPage = () => {
             content: data.data.message || 'Đăng nhập thành công! 🎉',
             duration: 2,
           });
-
+          console.log('Login successful:', data);
           // Reset form
           form.resetFields();
 
@@ -38,14 +38,15 @@ const LoginPage = () => {
           setTimeout(() => {
             navigate(RoutePaths.HOME);
             // Reload để Header cập nhật
-            window.location.reload();
+            // window.location.reload();
           }, 1000);
         },
         onError: (error) => {
+          console.error('Login error:', error);
           message.error({
             content:
               error?.response?.data?.message ||
-              'Đăng nhập thất bại! Vui lòng kiểm tra lại email và mật khẩu.',
+              'Đăng nhập thất bạiiii! Vui lòng kiểm tra lại email và mật khẩu.',
             duration: 3,
           });
         },

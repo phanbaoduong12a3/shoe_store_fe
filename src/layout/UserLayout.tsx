@@ -1,26 +1,16 @@
-import { Layout } from 'antd';
+import Footer from './Footer';
 import Header from './Header';
 import { Outlet } from 'react-router-dom';
-import Footer from './Footer';
 
-const { Content } = Layout;
-
-interface IProps {
-  children?: React.ReactNode;
-}
-
-const UserLayout = ({ children }: IProps) => {
+const UserLayout = () => {
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <div className="min-h-screen overflow-hidden">
       <Header />
-      <Layout>
-        <Content style={{ minHeight: 'calc(100vh - 64px - 325px)' }}>
-          {children}
-          <Outlet />
-        </Content>
-      </Layout>
+      <div className="max-w-container mx-auto min-h-screen px-10">
+        <Outlet />
+      </div>
       <Footer />
-    </Layout>
+    </div>
   );
 };
 

@@ -22,8 +22,8 @@ interface AddToCartPayload extends AddToCartRequest {
 const addToCartAction = createAsyncThunk(
   ECartActions.ADD_TO_CART,
   async (payload: AddToCartPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
     try {
-      const { onSuccess, onError, ...data } = payload;
       const response = await addToCart(data);
 
       if (onSuccess) {
@@ -32,8 +32,8 @@ const addToCartAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -54,7 +54,7 @@ const getCartAction = createAsyncThunk(
   ECartActions.GET_CART,
   async (payload: GetCartPayload, { rejectWithValue }) => {
     try {
-      const { onSuccess, onError, sessionId } = payload;
+      const { onSuccess, sessionId } = payload;
       const response = await getCart(sessionId);
 
       if (onSuccess) {
@@ -83,9 +83,14 @@ interface UpdateCartPayload extends UpdateCartRequest {
 const updateCartAction = createAsyncThunk(
   ECartActions.UPDATE_CART,
   async (payload: UpdateCartPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
     try {
-      const { onSuccess, onError, ...data } = payload;
-      const response = await updateCart(data);
+      const response = await updateCart(
+        data.productId,
+        data.variantId,
+        data.quantity,
+        data.sessionId!
+      );
 
       if (onSuccess) {
         onSuccess(response);
@@ -93,8 +98,8 @@ const updateCartAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -113,9 +118,9 @@ interface RemoveFromCartPayload extends RemoveFromCartRequest {
 const removeFromCartAction = createAsyncThunk(
   ECartActions.REMOVE_FROM_CART,
   async (payload: RemoveFromCartPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
     try {
-      const { onSuccess, onError, ...data } = payload;
-      const response = await removeFromCart(data);
+      const response = await removeFromCart(data.productId, data.variantId, data.sessionId!);
 
       if (onSuccess) {
         onSuccess(response);
@@ -123,8 +128,8 @@ const removeFromCartAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -144,9 +149,9 @@ interface ClearCartPayload {
 const clearCartAction = createAsyncThunk(
   ECartActions.CLEAR_CART,
   async (payload: ClearCartPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, sessionId } = payload;
     try {
-      const { onSuccess, onError, sessionId } = payload;
-      const response = await clearCart(sessionId);
+      const response = await clearCart(sessionId!);
 
       if (onSuccess) {
         onSuccess(response);
@@ -154,8 +159,8 @@ const clearCartAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {

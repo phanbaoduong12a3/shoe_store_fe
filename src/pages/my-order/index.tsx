@@ -124,7 +124,7 @@ const MyOrderPage = () => {
         <Card className="empty-cart-card">
           <Empty
             description={
-              <div>
+              <div className="flex flex-col">
                 <TextDefault fs={18} fw="600" style={{ marginBottom: 8 }}>
                   Giỏ hàng của bạn đang trống
                 </TextDefault>

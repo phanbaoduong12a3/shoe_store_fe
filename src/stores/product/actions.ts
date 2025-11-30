@@ -25,8 +25,8 @@ interface GetProductsPayload extends GetProductsParams {
 const getProductsAction = createAsyncThunk(
   EProductActions.GET_PRODUCTS,
   async (payload: GetProductsPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...params } = payload;
     try {
-      const { onSuccess, onError, ...params } = payload;
       const response = await getProducts(params);
 
       if (onSuccess) {
@@ -35,8 +35,8 @@ const getProductsAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -56,8 +56,8 @@ interface GetProductDetailPayload {
 const getProductDetailAction = createAsyncThunk(
   EProductActions.GET_PRODUCT_DETAIL,
   async (payload: GetProductDetailPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, id } = payload;
     try {
-      const { onSuccess, onError, id } = payload;
       const { getProductDetail } = await import('@/services/product-service');
       const response = await getProductDetail(id);
 
@@ -67,8 +67,8 @@ const getProductDetailAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -87,8 +87,8 @@ interface CreateProductPayload extends CreateProductRequest {
 const createProductAction = createAsyncThunk(
   EProductActions.CREATE_PRODUCT,
   async (payload: CreateProductPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
     try {
-      const { onSuccess, onError, ...data } = payload;
       const response = await createProduct(data);
 
       if (onSuccess) {
@@ -97,8 +97,8 @@ const createProductAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -117,8 +117,8 @@ interface ToggleProductStatusPayload extends ToggleProductStatusRequest {
 const toggleProductStatusAction = createAsyncThunk(
   EProductActions.TOGGLE_PRODUCT_STATUS,
   async (payload: ToggleProductStatusPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
     try {
-      const { onSuccess, onError, ...data } = payload;
       const response = await toggleProductStatus(data);
 
       if (onSuccess) {
@@ -127,8 +127,8 @@ const toggleProductStatusAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {
@@ -147,8 +147,8 @@ interface DeleteProductPayload extends DeleteProductRequest {
 const deleteProductAction = createAsyncThunk(
   EProductActions.DELETE_PRODUCT,
   async (payload: DeleteProductPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
     try {
-      const { onSuccess, onError, ...data } = payload;
       const response = await deleteProduct(data);
 
       if (onSuccess) {
@@ -157,8 +157,8 @@ const deleteProductAction = createAsyncThunk(
 
       return response;
     } catch (error: any) {
-      if (payload.onError) {
-        payload.onError(error);
+      if (onError) {
+        onError(error);
       }
 
       if (!error.response) {

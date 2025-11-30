@@ -22,5 +22,5 @@ export default defineConfig({
   //     },
   //   },
   // },
-  plugins: [react(), tsconfigPaths(), svgr(), tailwindcss()],
+  plugins: [tailwindcss(), react(), tsconfigPaths(), svgr()],
 });
