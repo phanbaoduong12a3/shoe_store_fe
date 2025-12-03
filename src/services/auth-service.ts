@@ -13,7 +13,7 @@ export interface SignupRequest {
 }
 
 export interface User {
-  id: string;
+  _id: string;
   email: string;
   fullName: string;
   phone: string;
@@ -27,7 +27,8 @@ export interface AuthResponse {
   data: {
     message: string;
     user: User;
-    token: string;
+    accessToken: string;
+    refreshToken: string;
   };
 }
 
@@ -45,5 +46,24 @@ export const postSignin = async (data: SigninRequest): Promise<AuthResponse> => 
 
 export const postSignup = async (data: SignupRequest): Promise<SignupResponse> => {
   const response = await client.post('/api/v1/signup', data);
+  return response.data;
+};
+
+export const getUserInfo = async (): Promise<User> => {
+  const response = await client.get('/api/v1/me');
+  return response.data.data.user;
+};
+
+export interface RefreshTokenResponse {
+  status: number;
+  data: {
+    token: string;
+    refreshToken: string;
+    message?: string;
+  };
+}
+
+export const postRefreshToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
+  const response = await client.post('/api/v1/refresh-token', { refreshToken });
   return response.data;
 };

@@ -5,9 +5,7 @@ import { RoutePaths } from '@/routers/routes-constants';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { postSigninAction } from '@/stores/auth';
 import './admin-login.scss';
-import { setItem } from '@/utils/storage';
-import { EAuthToken } from '@/variables/storage';
-
+import { authTokenService } from '@/services/auth-token-service';
 interface LoginFormValues {
   email: string;
   password: string;
@@ -34,8 +32,10 @@ const AdminLoginPage = () => {
             });
             return;
           }
-          setItem(EAuthToken.ACCESS_TOKEN, result.data.token);
-
+          // setItem(EAuthToken.ACCESS_TOKEN, result.data.token);
+          console.log('Setting access token:', result.data);
+          authTokenService.setAccessToken(result.data.accessToken);
+          authTokenService.setRefreshToken(result.data.refreshToken);
           message.success({
             content: `Chào mừng ${result.data.user.fullName}! Đăng nhập thành công 🎉`,
             duration: 2,

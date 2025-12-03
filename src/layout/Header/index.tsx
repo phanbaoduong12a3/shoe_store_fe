@@ -1,40 +1,18 @@
 import { RoutePaths } from '@/routers/routes-constants';
+import { authTokenService } from '@/services/auth-token-service';
+import { useAppSelector } from '@/stores';
 import { UserOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
 import { MessageSquareText, ShoppingBag } from 'lucide-react';
-import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
-interface User {
-  id: string;
-  email: string;
-  fullName: string;
-  phone: string;
-  avatar: string;
-  role: string;
-  loyaltyPoints: number;
-}
 
 const Header = () => {
   const navigate = useNavigate();
-
-  const [user, setUser] = useState<User | null>(() => {
-    // Chỉ chạy 1 lần khi khởi tạo state
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch (error) {
-        console.error('Error parsing user data:', error);
-        return null;
-      }
-    }
-    return null;
-  });
+  const user = useAppSelector((state) => state.auth.user);
+  const cartData = useAppSelector((state) => state.cart);
   const handleLogout = () => {
-    localStorage.removeItem('user');
-    localStorage.removeItem('token');
-    setUser(null);
+    // localStorage.removeItem(EAuthToken.ACCESS_TOKEN);
+    authTokenService.clearAuthTokens();
     navigate(RoutePaths.HOME);
     window.location.reload();
   };
@@ -128,7 +106,7 @@ const Header = () => {
               onClick={() => navigate(RoutePaths.MY_ORDER)}
               className="flex items-center hover:text-yellow-400 cursor-pointer gap-2"
             >
-              GIỎ HÀNG (0)
+              GIỎ HÀNG ({cartData.cart?.items.length || 0})
               <ShoppingBag className="ml-1" size={18} />
             </div>
           </div>

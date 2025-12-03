@@ -9,7 +9,6 @@ const getExampleAction = createAsyncThunk(
     try {
       const response = await fetch(`https://fakestoreapi.com/products/${id}`);
       const jsonData = await response.json();
-      console.log('jsonData', jsonData);
       return jsonData;
     } catch (error: any) {
       if (!error.response) {

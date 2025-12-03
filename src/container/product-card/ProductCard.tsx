@@ -6,7 +6,7 @@ import { RoutePaths } from '@/routers/routes-constants';
 import { Product } from '@/services/product-service';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { addToCartAction } from '@/stores/cart';
-import { getOrCreateSessionId, isUserLoggedIn } from '@/utils/cart-utils';
+import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 
 interface IProps {
   product: Product;
@@ -16,11 +16,12 @@ const ProductCard = ({ product }: IProps) => {
   const dispatch = useAppDispatch();
   const { message } = App.useApp();
   const { loading: addingToCart } = useAppSelector((state) => state.cart);
-
+  const user = useAppSelector((state) => state.auth.user);
   const primaryImage = product.images.find((img) => img.isPrimary) || product.images[0];
   const displayPrice = product.salePrice || product.price;
   const hasDiscount = !!product.salePrice;
-  const userId = localStorage.getItem('userId') || '';
+
+  const userId = user ? user._id : '';
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -31,15 +32,13 @@ const ProductCard = ({ product }: IProps) => {
       return;
     }
 
-    const isLoggedIn = isUserLoggedIn();
-    const sessionId = !isLoggedIn ? getOrCreateSessionId() : userId;
-
     dispatch(
       addToCartAction({
         productId: product._id,
         variantId: firstVariant._id,
         quantity: 1,
-        sessionId,
+        sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
+        userId: userId !== '' ? userId : undefined,
         onSuccess: (data) => {
           message.success({
             content: data.data.message || 'Đã thêm vào giỏ hàng! 🛒',

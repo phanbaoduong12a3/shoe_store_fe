@@ -46,6 +46,7 @@ const addToCartAction = createAsyncThunk(
 
 interface GetCartPayload {
   sessionId?: string;
+  userId?: string;
   onSuccess?: (data: GetCartResponse) => void;
   onError?: (error: any) => void;
 }
@@ -54,8 +55,8 @@ const getCartAction = createAsyncThunk(
   ECartActions.GET_CART,
   async (payload: GetCartPayload, { rejectWithValue }) => {
     try {
-      const { onSuccess, sessionId } = payload;
-      const response = await getCart(sessionId);
+      const { onSuccess, sessionId, userId } = payload;
+      const response = await getCart(sessionId, userId);
 
       if (onSuccess) {
         onSuccess(response);

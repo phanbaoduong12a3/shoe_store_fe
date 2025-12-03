@@ -1,4 +1,6 @@
 export enum EAuthActions {
-  POST_SIGNIN = 'POST_SIGNIN',
-  POST_SIGNUP = 'POST_SIGNUP',
+  POST_SIGNIN = 'auth/postSignin',
+  POST_SIGNUP = 'auth/postSignup',
+  GET_USER_INFO = 'auth/getUserInfo',
+  REFRESH_TOKEN = 'auth/refreshToken',
 }

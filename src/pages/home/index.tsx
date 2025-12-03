@@ -1,66 +1,54 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { getProductsAction } from '@/stores/product';
 import { getCategoriesAction } from '@/stores/category';
 import { getBrandsAction } from '@/stores/brand';
 import HeroSection from './components/hero';
-import BrandCarousel from './components/brand_carousel';
-import CategoryCarousel from './components/category_carousel';
+// import BrandCarousel from './components/brand_carousel';
+// import CategoryCarousel from './components/category_carousel';
 import { Divider, Spin } from 'antd';
 import ProductCard from '@/container/product-card/ProductCard';
 import IntroSection from './components/intro_section';
 import { FacebookFilled, InstagramFilled, PinterestFilled, TwitchFilled } from '@ant-design/icons';
-
 const HomePage = () => {
   const dispatch = useAppDispatch();
   const { products, loading: productsLoading } = useAppSelector((state) => state.product);
-  const { brands, loading: brandsLoading } = useAppSelector((state) => state.brand);
-  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
-  useEffect(() => {
-    // Call API get categories
+
+  const loadInitialData = useCallback(() => {
+    // Không await từng cái → cho chạy song song
     dispatch(
       getCategoriesAction({
         isActive: true,
-        onSuccess: (data) => {
-          console.log('Categories loaded:', data);
-        },
-        onError: (error) => {
-          console.error('Error loading categories:', error);
-        },
+        onSuccess: (data) => console.log('Categories loaded:', data),
+        onError: (err) => console.error('Error loading categories:', err),
       })
     );
 
-    // Call API get brands
     dispatch(
       getBrandsAction({
-        onSuccess: (data) => {
-          console.log('Brands loaded:', data);
-        },
-        onError: (error) => {
-          console.error('Error loading brands:', error);
-        },
+        onSuccess: (data) => console.log('Brands loaded:', data),
+        onError: (err) => console.error('Error loading brands:', err),
       })
     );
 
-    // Call API get products
     dispatch(
       getProductsAction({
         page: 1,
         limit: 8,
-        onSuccess: (data) => {
-          console.log('Products loaded:', data);
-        },
-        onError: (error) => {
-          console.error('Error loading products:', error);
-        },
+        onSuccess: (data) => console.log('Products loaded:', data),
+        onError: (err) => console.error('Error loading products:', err),
       })
     );
   }, [dispatch]);
 
+  useEffect(() => {
+    loadInitialData();
+  }, [loadInitialData]);
+
   return (
     <div className="mt-6">
       <HeroSection />
-      <div>
+      {/* <div>
         <h2 className="text-2xl font-bold mb-6 text-gray-800">DANH MỤC NỔI BẬT</h2>
         {categoriesLoading ? (
           <div className="flex justify-center items-center h-32">
@@ -85,7 +73,7 @@ const HomePage = () => {
             />
           </div>
         )}
-      </div>
+      </div> */}
       <div>
         <h2 className="text-2xl font-bold mb-6 text-red-600">GỢI Ý CHO BẠN</h2>
         {productsLoading ? (
