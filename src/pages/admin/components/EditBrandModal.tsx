@@ -55,15 +55,13 @@ const EditBrandModal = ({ open, brand, onCancel, onSuccess }: EditBrandModalProp
       const values = await form.validateFields();
       setLoading(true);
 
-      const logoFile = fileList[0]?.originFileObj;
-
       dispatch(
         updateBrandAction({
           id: brand._id,
           name: values.name,
           slug: values.slug,
           description: values.description,
-          logo: logoFile,
+          logo: fileList[0] as any,
           isActive: values.isActive ?? true,
           onSuccess: (data) => {
             message.success({

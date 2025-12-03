@@ -70,12 +70,21 @@ export const createBrand = async (data: CreateBrandRequest): Promise<CreateBrand
   return response.data;
 };
 
+export interface AntdUploadFileObject {
+  uid: string;
+  name: string;
+  lastModified: number;
+  size: number;
+  type: string;
+  originFileObj?: File;
+}
+
 export interface UpdateBrandRequest {
   id: string;
   name: string;
   slug: string;
   description?: string;
-  logo?: File;
+  logo?: AntdUploadFileObject;
   isActive: boolean;
 }
 
@@ -92,15 +101,24 @@ export const updateBrand = async (data: UpdateBrandRequest): Promise<UpdateBrand
   formData.append('name', data.name);
   formData.append('slug', data.slug);
   if (data.description) formData.append('description', data.description);
-  if (data.logo) formData.append('logo', data.logo);
   formData.append('isActive', String(data.isActive));
+  if (data.logo && data.logo.originFileObj) {
+    const file = data.logo.originFileObj;
+    if (file) {
+      formData.append('logo', file as File);
+    }
+  }
 
-  const response = await client.put(`/api/v1/admin/brands/${data.id}`, formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data',
-    },
-  });
-  return response.data;
+  try {
+    const response = await client.put(`/api/v1/admin/brands/${data.id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export interface UpdateBrandLogoRequest {
@@ -132,6 +150,7 @@ export const updateBrandLogo = async (
 
 export interface ToggleBrandStatusRequest {
   id: string;
+  isActive: boolean;
 }
 
 export interface ToggleBrandStatusResponse {
@@ -145,7 +164,10 @@ export interface ToggleBrandStatusResponse {
 export const toggleBrandStatus = async (
   data: ToggleBrandStatusRequest
 ): Promise<ToggleBrandStatusResponse> => {
-  const response = await client.patch(`/api/v1/admin/brands/${data.id}/toggle`);
+  const requestBody = {
+    isActive: data.isActive,
+  };
+  const response = await client.put(`/api/v1/admin/brands/${data.id}/status`, requestBody);
   return response.data;
 };
 

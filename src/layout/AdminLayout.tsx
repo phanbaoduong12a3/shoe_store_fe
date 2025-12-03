@@ -11,6 +11,7 @@ import {
   TagsOutlined,
   ShoppingCartOutlined,
   BarChartOutlined,
+  ShopOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
@@ -33,6 +34,16 @@ const AdminLayout = () => {
       label: 'Dashboard',
     },
     {
+      key: 'categories',
+      icon: <TagsOutlined />,
+      label: 'Danh mục',
+    },
+    {
+      key: 'brands',
+      icon: <ShopOutlined />,
+      label: 'Thương hiệu',
+    },
+    {
       key: 'products',
       icon: <ShoppingOutlined />,
       label: 'Sản phẩm',
@@ -41,11 +52,6 @@ const AdminLayout = () => {
       key: 'orders',
       icon: <ShoppingCartOutlined />,
       label: 'Đơn hàng',
-    },
-    {
-      key: 'categories',
-      icon: <TagsOutlined />,
-      label: 'Danh mục',
     },
     {
       key: 'users',

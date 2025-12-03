@@ -63,6 +63,7 @@ const BrandPage = () => {
     dispatch(
       toggleBrandStatusAction({
         id: brand._id,
+        isActive: !brand.isActive,
         onSuccess: (data) => {
           message.success({
             content: data.data.message || 'Cập nhật trạng thái thành công!',

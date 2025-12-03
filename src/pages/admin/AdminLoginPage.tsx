@@ -69,17 +69,6 @@ const AdminLoginPage = () => {
           <h2 className="title">Đăng nhập Admin</h2>
           <p className="sub-title">Chỉ dành cho quản trị viên</p>
         </div>
-
-        <div className="demo-note">
-          <p>
-            <strong>API Endpoint:</strong>
-          </p>
-          <p>POST http://localhost:8080/api/v1/signin</p>
-          <p style={{ marginTop: 8, fontSize: 12, color: '#666' }}>
-            ⚠️ Chỉ tài khoản có role = 'admin' mới được phép đăng nhập
-          </p>
-        </div>
-
         <Form form={form} layout="vertical" onFinish={onFinish} autoComplete="off">
           <Form.Item
             label="Email"
