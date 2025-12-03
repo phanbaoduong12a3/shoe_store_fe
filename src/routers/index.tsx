@@ -20,6 +20,7 @@ import ProductDetailPage from '@/pages/product-detail';
 import MyOrderPage from '@/pages/my-order';
 import PaymentPage from '@/pages/payment';
 import PaymentConfirmPage from '@/pages/payment-confirm';
+import OrderPage from '@/pages/admin/OrderPage';
 
 const AppRoutes = () => {
   const routes = useMemo(
@@ -47,6 +48,7 @@ const AppRoutes = () => {
               <Route element={<CategoryPage />} path={RoutePaths.ADMIN_CATEGORIES} />
               <Route element={<BrandPage />} path={RoutePaths.ADMIN_BRANDS} />
               <Route element={<ProductPage />} path={RoutePaths.ADMIN_PRODUCTS} />
+              <Route element={<OrderPage />} path={RoutePaths.ADMIN_ORDERS} />
             </Route>
           </>
         )

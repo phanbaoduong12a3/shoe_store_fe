@@ -27,6 +27,20 @@ export interface OrderItem {
   price: number;
   subtotal: number;
 }
+export interface GetOrdersParams {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+  brandId?: string;
+  search?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  gender?: 'male' | 'female' | 'unisex' | 'kids';
+  sortBy?: string;
+  order?: 'asc' | 'desc';
+  isFeatured?: boolean;
+  isNew?: boolean;
+}
 
 export interface CreateOrderRequest {
   userId?: string;
@@ -65,7 +79,18 @@ export interface Order {
   createdAt: string;
   updatedAt: string;
 }
-
+export interface GetOrdersResponse {
+  status: number;
+  data: {
+    orders: Order[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+}
 export interface CreateOrderResponse {
   status: number;
   data: {
@@ -73,6 +98,11 @@ export interface CreateOrderResponse {
     order: Order;
   };
 }
+
+export const getOrders = async (params: GetOrdersParams = {}): Promise<GetOrdersResponse> => {
+  const response = await client.get('/api/v1/admin/orders', { params });
+  return response.data;
+};
 
 export const createOrder = async (data: CreateOrderRequest): Promise<CreateOrderResponse> => {
   const response = await client.post('/api/v1/orders', data);
