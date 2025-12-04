@@ -1,17 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  Table,
-  Card,
-  Space,
-  Button,
-  App,
-  Switch,
-  Image,
-  Modal,
-  Input,
-  Select,
-  InputNumber,
-} from 'antd';
+import { Table, Card, Space, Button, App, Switch, Image, Modal, Input, InputNumber } from 'antd';
 import {
   EditOutlined,
   DeleteOutlined,
@@ -30,6 +18,8 @@ import { Product } from '@/services/product-service';
 import CreateProductModal from './components/CreateProductModal';
 import './product-page.scss';
 import CustomDropdown from '@/components/CustomDropdown';
+import { getBrandsAction } from '@/stores/brand';
+import { getCategoriesAction } from '@/stores/category';
 
 const ProductPage = () => {
   const dispatch = useAppDispatch();
@@ -52,6 +42,13 @@ const ProductPage = () => {
     { label: 'Unisex', value: 'unisex' },
     { label: 'Trẻ em', value: 'kids' },
   ];
+  const [brandList, setBrandList] = useState<any[]>([]);
+  const [categoryList, setCategoryList] = useState<any[]>([]);
+
+  useEffect(() => {
+    fetchBrands();
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     fetchProducts();
@@ -70,6 +67,42 @@ const ProductPage = () => {
         onError: (error: any) => {
           message.error({
             content: error?.response?.data?.message || 'Không thể tải danh sách sản phẩm!',
+            duration: 3,
+          });
+        },
+      })
+    );
+  };
+
+  const fetchBrands = () => {
+    dispatch(
+      getBrandsAction({
+        page: currentPage,
+        limit: pageSize,
+        search: searchText || undefined,
+        onSuccess: (data: any) => {
+          setBrandList(data?.data?.brands || []);
+        },
+        onError: (error: any) => {
+          message.error({
+            content: error?.response?.data?.message || 'Không thể tải danh sách thương hiệu!',
+            duration: 3,
+          });
+        },
+      })
+    );
+  };
+
+  const fetchCategories = () => {
+    dispatch(
+      getCategoriesAction({
+        isActive: true,
+        onSuccess: (data: any) => {
+          setCategoryList(data?.data?.categories || []);
+        },
+        onError: (error: any) => {
+          message.error({
+            content: error?.response?.data?.message || 'Không thể tải danh sách thương hiệu!',
             duration: 3,
           });
         },
@@ -325,22 +358,28 @@ const ProductPage = () => {
       >
         <div className="filter-section">
           <Space wrap>
-            <Select
+            <CustomDropdown
               placeholder="Danh mục"
-              allowClear
-              style={{ width: 150 }}
-              onChange={(value: any) => setFilters({ ...filters, categoryId: value })}
-            >
-              {/* TODO: Load categories */}
-            </Select>
-            <Select
+              value={filters.categoryId}
+              options={categoryList?.map((b) => ({
+                label: b.name,
+                value: b._id,
+              }))}
+              onChange={(value) => {
+                setFilters({ ...filters, categoryId: value });
+              }}
+            />
+            <CustomDropdown
               placeholder="Thương hiệu"
-              allowClear
-              style={{ width: 150 }}
-              onChange={(value: any) => setFilters({ ...filters, brandId: value })}
-            >
-              {/* TODO: Load brands */}
-            </Select>
+              value={filters.brandId}
+              options={brandList?.map((b) => ({
+                label: b.name,
+                value: b._id,
+              }))}
+              onChange={(value) => {
+                setFilters({ ...filters, brandId: value });
+              }}
+            />
             <CustomDropdown
               placeholder="Giới tính"
               value={filters.gender}
