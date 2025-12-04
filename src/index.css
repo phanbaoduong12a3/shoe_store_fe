@@ -257,13 +257,11 @@ button {
   }
 }
 
-/* Container */
 .dropdown {
   position: relative;
   display: inline-block;
 }
 
-/* Button */
 .dropdown button {
   width: 100%;
   background: #fff;
@@ -272,16 +270,15 @@ button {
   padding: 6px 10px;
   font-size: 14px;
   text-align: left;
-  color: rgba(0,0,0,0.45);
+  color: rgba(0, 0, 0, 0.45);
   cursor: pointer;
 }
 
 .dropdown.open button {
   border-color: #1677ff;
-  color: rgba(0,0,0,0.85);
+  color: rgba(0, 0, 0, 0.85);
 }
 
-/* Menu */
 .dropdown-content {
   display: none;
   position: absolute;
@@ -291,7 +288,7 @@ button {
   background: white;
   border: 1px solid #d9d9d9;
   border-radius: 6px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 999;
 }
 
@@ -299,13 +296,12 @@ button {
   display: block;
 }
 
-/* Item */
 .dropdown-content a {
   padding: 8px 12px;
   display: block;
   cursor: pointer;
   font-size: 14px;
-  color: rgba(0,0,0,0.85);
+  color: rgba(0, 0, 0, 0.85);
 }
 
 .dropdown-content a:hover {

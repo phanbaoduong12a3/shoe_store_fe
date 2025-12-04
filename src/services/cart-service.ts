@@ -67,12 +67,14 @@ export interface GetCartResponse {
 
 export interface UpdateCartRequest {
   sessionId?: string;
+  userId?: string;
   productId: string;
   variantId: string;
   quantity: number;
 }
 
 export interface RemoveFromCartRequest {
+  userId?: string;
   sessionId?: string;
   productId: string;
   variantId: string;
@@ -101,13 +103,15 @@ export const updateCart = async (
   productId: string,
   variantId: string,
   quantity: number,
-  sessionId: string
+  sessionId?: string,
+  userId?: string
 ): Promise<CartResponse> => {
-  const response = await client.put(`/api/v1/cart/item`, {
+  const response = await client.put(`/api/v1/cart/update`, {
     productId,
     variantId,
     quantity,
     sessionId,
+    userId,
   });
   return response.data;
 };
@@ -115,19 +119,17 @@ export const updateCart = async (
 export const removeFromCart = async (
   productId: string,
   variantId: string,
-  sessionId: string
+  sessionId?: string,
+  userId?: string
 ): Promise<CartResponse> => {
   const response = await client.delete(`/api/v1/cart/remove`, {
-    params: { sessionId },
-    data: { productId, variantId },
+    params: { sessionId, userId, productId, variantId },
   });
   return response.data;
 };
 
-export const clearCart = async (sessionId: string): Promise<CartResponse> => {
-  const response = await client.delete(`/api/v1/cart/clear`, {
-    params: { sessionId },
-  });
+export const clearCart = async (): Promise<CartResponse> => {
+  const response = await client.delete(`/api/v1/cart/clear`);
   return response.data;
 };
 

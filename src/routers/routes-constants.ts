@@ -12,6 +12,7 @@ export const RoutePaths = {
   PRODUCT_DETAIL: '/product-detail/:id',
   PRODUCT_DETAIL_LINK: (id: string) => `/product-detail/${id}`,
 
+  CART: '/cart',
   MY_ORDER: '/my-order',
   PAYMENT: '/payment',
   PAYMENT_CONFIRM: '/payment-confirm',

@@ -7,6 +7,7 @@ export type TCartState = {
   loading: boolean;
   error: string | null;
   cartCount: number;
+  itemLoading: { [variantId: string]: boolean };
 };
 
 const initialState: TCartState = {
@@ -14,6 +15,7 @@ const initialState: TCartState = {
   loading: false,
   error: null,
   cartCount: 0,
+  itemLoading: {},
 };
 
 const cartSlice = createSlice({
@@ -59,17 +61,29 @@ const cartSlice = createSlice({
 
     // Update cart
     builder
-      .addCase(updateCartAction.pending, (state) => {
-        state.loading = true;
+      .addCase(updateCartAction.pending, (state, action) => {
+        // Lấy variantId từ meta.arg
+        const variantId = action.meta?.arg?.variantId;
+        if (variantId) {
+          state.itemLoading[variantId] = true;
+        }
         state.error = null;
       })
       .addCase(updateCartAction.fulfilled, (state, action) => {
-        state.loading = false;
+        // Lấy variantId từ meta.arg
+        const variantId = action.meta?.arg?.variantId;
+        if (variantId) {
+          state.itemLoading[variantId] = false;
+        }
         state.cart = action.payload.data.cart;
         state.cartCount = action.payload.data.cart.items.length;
       })
       .addCase(updateCartAction.rejected, (state, action) => {
-        state.loading = false;
+        // Lấy variantId từ meta.arg
+        const variantId = action.meta?.arg?.variantId;
+        if (variantId) {
+          state.itemLoading[variantId] = false;
+        }
         state.error = action.error.message || 'Failed to update cart';
       });
 

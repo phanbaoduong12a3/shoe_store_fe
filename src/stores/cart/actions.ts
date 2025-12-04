@@ -90,7 +90,8 @@ const updateCartAction = createAsyncThunk(
         data.productId,
         data.variantId,
         data.quantity,
-        data.sessionId!
+        data.sessionId,
+        data.userId
       );
 
       if (onSuccess) {
@@ -121,7 +122,12 @@ const removeFromCartAction = createAsyncThunk(
   async (payload: RemoveFromCartPayload, { rejectWithValue }) => {
     const { onSuccess, onError, ...data } = payload;
     try {
-      const response = await removeFromCart(data.productId, data.variantId, data.sessionId!);
+      const response = await removeFromCart(
+        data.productId,
+        data.variantId,
+        data.sessionId,
+        data.userId
+      );
 
       if (onSuccess) {
         onSuccess(response);
@@ -150,9 +156,9 @@ interface ClearCartPayload {
 const clearCartAction = createAsyncThunk(
   ECartActions.CLEAR_CART,
   async (payload: ClearCartPayload, { rejectWithValue }) => {
-    const { onSuccess, onError, sessionId } = payload;
+    const { onSuccess, onError } = payload;
     try {
-      const response = await clearCart(sessionId!);
+      const response = await clearCart();
 
       if (onSuccess) {
         onSuccess(response);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, Form, Input, Button, Radio, Flex, Spin, App, Divider, InputNumber } from 'antd';
 import { ShoppingCartOutlined, EnvironmentOutlined, CreditCardOutlined } from '@ant-design/icons';
@@ -29,19 +29,24 @@ const PaymentPage = () => {
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
 
-  useEffect(() => {
-    const sessionId = isLogged() ? userId : getOrCreateSessionId();
-
+  const loadCart = useCallback(() => {
     dispatch(
       getCartAction({
-        sessionId,
+        userId: user ? user._id : undefined,
+        sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
+        onSuccess: (data) => {
+          console.log('Cart loaded:', data);
+        },
         onError: (error) => {
           console.error('Error loading cart:', error);
-          message.error('Không thể tải giỏ hàng!');
         },
       })
     );
-  }, [dispatch, userId, message]);
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    loadCart();
+  }, [loadCart]);
 
   const shippingFee = 50000;
   const taxRate = 0.1;
@@ -106,15 +111,27 @@ const PaymentPage = () => {
         totalAmount,
         paymentMethod: paymentMethod.toLowerCase(),
         note: values.note,
-        onSuccess: async (response) => {
+        onSuccess: async () => {
           message.success('Đặt hàng thành công! 🎉');
 
           // Clear cart after successful order
-          if (isLoggedIn && userId) {
+          if (isLoggedIn && userId.length > 0) {
             dispatch(clearCartAction({}));
-          } else {
-            dispatch(clearCartAction({ sessionId: getOrCreateSessionId() }));
+            dispatch(
+              getCartAction({
+                userId: userId,
+                onSuccess: () => {
+                  navigate(`${RoutePaths.CART}`);
+                },
+                onError: (error) => {
+                  console.error('Error reloading cart:', error);
+                },
+              })
+            );
           }
+          //  else {
+          //   dispatch(clearCartAction({ sessionId: getOrCreateSessionId() }));
+          // }
 
           // If payment method is E-Wallet, redirect to ZaloPay
           if (paymentMethod === 'zalopay') {
@@ -135,7 +152,7 @@ const PaymentPage = () => {
           }
 
           // For other payment methods, navigate to confirmation page
-          navigate(`${RoutePaths.PAYMENT_CONFIRM}?orderNumber=${response.data.order.orderNumber}`);
+          // navigate(`${RoutePaths.PAYMENT_CONFIRM}?orderNumber=${response.data.order.orderNumber}`);
         },
         onError: (error) => {
           message.error(error?.response?.data?.data?.message || 'Không thể tạo đơn hàng!');
@@ -353,9 +370,7 @@ const PaymentPage = () => {
           {/* Order Summary */}
           <div className="payment-right">
             <Card className="order-summary-card">
-              <TextDefault fs={24} fw="700" className="summary-title">
-                Đơn hàng của bạn
-              </TextDefault>
+              <p className="text-[2rem] font-semibold"> Đơn hàng của bạn</p>
 
               <Divider />
 

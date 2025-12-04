@@ -1,0 +1,51 @@
+/* Container dropdown */
+.dropdown-fix {
+  position: relative;
+  display: inline-block;
+}
+
+/* Nút dropdown */
+.dropdown-fix button {
+  background-color: #3498db;
+  color: white;
+  padding: 12px 20px;
+  font-size: 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Nội dung dropdown ẩn mặc định */
+.dropdown-content-fix {
+  display: none;
+  position: absolute;
+  background-color: white;
+  min-width: 160px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* Các item bên trong dropdown */
+.dropdown-content-fix a {
+  color: black;
+  padding: 12px 16px;
+  text-decoration: none;
+  display: block;
+  transition: background 0.3s;
+}
+
+.dropdown-content-fix a:hover {
+  background-color: #f1f1f1;
+}
+
+/* Hiển thị dropdown khi hover */
+.dropdown-fix:hover .dropdown-content-fix {
+  display: block;
+}
+
+/* Thêm hiệu ứng hover cho nút */
+.dropdown-fix:hover button {
+  background-color: #2980b9;
+}

@@ -81,6 +81,7 @@ class AuthTokenService {
   }
 
   async refreshAccessToken(): Promise<boolean> {
+    console.log('Refreshing access token...');
     const refreshToken = cookies.get<string>(REFRESH_TOKEN_KEY);
     if (!refreshToken || !this.dispatch) {
       return false;

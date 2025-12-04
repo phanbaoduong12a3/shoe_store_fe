@@ -1,19 +1,21 @@
 import TextDefault from '@/components/Text/Text';
 import { Button, Card, Flex, InputNumber, Spin, Empty, App, Popconfirm } from 'antd';
-import { DeleteOutlined, ArrowLeftOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { DeleteOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { RoutePaths } from '@/routers/routes-constants';
 import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { getCartAction, updateCartAction, removeFromCartAction } from '@/stores/cart';
+import { userOrderAction } from '@/stores/order';
 import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 import './my-order.scss';
 
-const MyOrderPage = () => {
+const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { cart, loading: cartLoading } = useAppSelector((state) => state.cart);
+  const { cart, loading: cartLoading, itemLoading } = useAppSelector((state) => state.cart);
   const { user, loading: authLoading } = useAppSelector((state) => state.auth);
+
   const { message } = App.useApp();
 
   const loadCart = React.useCallback(() => {
@@ -35,15 +37,20 @@ const MyOrderPage = () => {
     loadCart();
   }, [loadCart]);
 
-  const handleUpdateQuantity = (productId: string, variantId: string, newQuantity: number) => {
-    const sessionId = isLogged() ? user!._id : getOrCreateSessionId();
+  useEffect(() => {
+    if (user) {
+      dispatch(userOrderAction({}));
+    }
+  }, [dispatch, user]);
 
+  const handleUpdateQuantity = (productId: string, variantId: string, newQuantity: number) => {
     dispatch(
       updateCartAction({
         productId,
         variantId,
         quantity: newQuantity,
-        sessionId,
+        sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
+        userId: isLogged() ? user!._id : undefined,
         onSuccess: () => {
           message.success('Đã cập nhật số lượng!');
         },
@@ -55,13 +62,12 @@ const MyOrderPage = () => {
   };
 
   const handleRemoveItem = (productId: string, variantId: string) => {
-    const sessionId = isLogged() ? user!._id : getOrCreateSessionId();
-
     dispatch(
       removeFromCartAction({
         productId,
         variantId,
-        sessionId,
+        sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
+        userId: isLogged() ? user!._id : undefined,
         onSuccess: () => {
           message.success('Đã xóa sản phẩm khỏi giỏ hàng!');
         },
@@ -96,23 +102,8 @@ const MyOrderPage = () => {
 
   return (
     <div className="my-order-page">
-      <div className="page-header">
-        <Flex align="center" gap={16}>
-          <ShoppingCartOutlined style={{ fontSize: 32, color: '#1555d5' }} />
-          <div>
-            <TextDefault fs={32} fw="700">
-              Giỏ hàng của bạn
-            </TextDefault>
-            <TextDefault color="#6b7280" fs={14}>
-              {cart?.items.length || 0} sản phẩm
-            </TextDefault>
-          </div>
-        </Flex>
-        <Link to={RoutePaths.HOME}>
-          <Button icon={<ArrowLeftOutlined />} size="large">
-            Tiếp tục mua sắm
-          </Button>
-        </Link>
+      <div style={{ marginBottom: 32 }}>
+        <p className="text-[2rem] font-semibold"> Đơn hàng của bạn</p>
       </div>
 
       {!cart || cart.items.length === 0 ? (
@@ -217,16 +208,18 @@ const MyOrderPage = () => {
                           <TextDefault color="#6b7280" fs={14}>
                             Số lượng:
                           </TextDefault>
-                          <InputNumber
-                            min={1}
-                            max={99}
-                            value={item.quantity}
-                            onChange={(val) =>
-                              handleUpdateQuantity(item.productId._id, item.variantId, val || 1)
-                            }
-                            size="large"
-                            className="quantity-input"
-                          />
+                          <Spin spinning={!!itemLoading[item.variantId]} size="small">
+                            <InputNumber
+                              min={1}
+                              max={99}
+                              value={item.quantity}
+                              onChange={(val) =>
+                                handleUpdateQuantity(item.productId._id, item.variantId, val || 1)
+                              }
+                              size="large"
+                              className="quantity-input"
+                            />
+                          </Spin>
                         </div>
 
                         <div className="item-total">
@@ -329,4 +322,4 @@ const MyOrderPage = () => {
   );
 };
 
-export default MyOrderPage;
+export default Cart;
