@@ -2,14 +2,14 @@ import { useState, useRef } from 'react';
 
 export interface DropdownOption {
   label: string;
-  value: string | number;
+  value: string;
 }
 
 interface CustomDropdownProps {
   placeholder?: string;
-  value?: string | number;
+  value?: string;
   options: DropdownOption[];
-  onChange: (value: string | number) => void;
+  onChange: (value: string ) => void;
   width?: number | string;
 }
 
