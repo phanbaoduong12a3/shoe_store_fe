@@ -25,9 +25,7 @@ const CategoryPage = () => {
     dispatch(
       getCategoriesAction({
         isActive: true,
-        onSuccess: (data) => {
-          console.log('Categories loaded:', data);
-        },
+        onSuccess: (data) => {},
         onError: (error) => {
           message.error({
             content: error?.response?.data?.message || 'Không thể tải danh sách danh mục!',

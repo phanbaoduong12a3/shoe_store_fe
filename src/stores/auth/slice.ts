@@ -1,11 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import { postSigninAction, postSignupAction } from './actions';
-import { EAuthToken } from '@/variables/storage';
-
+import {
+  postSigninAction,
+  postSignupAction,
+  getUserInfoAction,
+  refreshTokenAction,
+} from './actions';
+import { authTokenService } from '@/services/auth-token-service';
 type TAuthState = {
   user: {
-    id: string;
+    _id: string;
     email: string;
     fullName: string;
     phone: string;
@@ -15,6 +19,7 @@ type TAuthState = {
   } | null;
   token: string | null;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   loading: boolean;
   error: string | null;
 };
@@ -23,6 +28,7 @@ const initialState: TAuthState = {
   user: null,
   token: null,
   isAuthenticated: false,
+  isAdmin: false,
   loading: false,
   error: null,
 };
@@ -36,8 +42,8 @@ export const authSlice = createSlice({
       state.token = null;
       state.isAuthenticated = false;
       state.error = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      // localStorage.removeItem(EAuthToken.ACCESS_TOKEN);
+      authTokenService.clearAuthTokens();
     },
     clearError: (state) => {
       state.error = null;
@@ -53,13 +59,15 @@ export const authSlice = createSlice({
       .addCase(postSigninAction.fulfilled, (state, action) => {
         state.loading = false;
         state.user = action.payload.data.user;
-        state.token = action.payload.data.token;
+        state.token = action.payload.data.accessToken;
         state.isAuthenticated = true;
+        state.isAdmin = action.payload.data.user.role === 'admin';
         state.error = null;
-        // Store in localStorage
-        localStorage.setItem(EAuthToken.ACCESS_TOKEN, action.payload.data.token);
-        localStorage.setItem('user', JSON.stringify(action.payload.data.user));
-        localStorage.setItem('userId', action.payload.data.user.id);
+        // localStorage.setItem(EAuthToken.ACCESS_TOKEN, action.payload.data.token);
+        authTokenService.setAuthTokens(
+          action.payload.data.accessToken,
+          action.payload.data.refreshToken || ''
+        );
       })
       .addCase(postSigninAction.rejected, (state, action) => {
         state.loading = false;
@@ -78,6 +86,43 @@ export const authSlice = createSlice({
       .addCase(postSignupAction.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Signup failed';
+      })
+      // Get User Info
+      .addCase(getUserInfoAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(getUserInfoAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.user = action.payload.user;
+        state.isAuthenticated = true;
+        state.isAdmin = action.payload.user.role === 'admin';
+        state.error = null;
+      })
+      .addCase(getUserInfoAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Fetch user info failed';
+        state.isAuthenticated = false;
+        state.user = null;
+      })
+      // Refresh Token
+      .addCase(refreshTokenAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(refreshTokenAction.fulfilled, (state, action) => {
+        state.loading = false;
+        state.token = action.payload.data.token;
+        state.isAuthenticated = true;
+        state.error = null;
+        // localStorage.setItem(EAuthToken.ACCESS_TOKEN, action.payload.data.token);
+        authTokenService.setAuthTokens(action.payload.data.token, action.payload.data.refreshToken);
+      })
+      .addCase(refreshTokenAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Refresh token failed';
+        state.isAuthenticated = false;
+        state.token = null;
       });
   },
 });

@@ -6,7 +6,7 @@ import TextDefault from '@/components/Text/Text';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { clearCartAction, getCartAction } from '@/stores/cart';
 import { createOrderAction } from '@/stores/order';
-import { getOrCreateSessionId, isUserLoggedIn } from '@/utils/cart-utils';
+import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 import { RoutePaths } from '@/routers/routes-constants';
 import type { CustomerInfo, ShippingAddress } from '@/services/order-service';
 import { createPaymentOrder } from '@/services/payment-service';
@@ -19,7 +19,9 @@ const PaymentPage = () => {
   const { cart, loading: cartLoading } = useAppSelector((state) => state.cart);
   const { loading: orderLoading } = useAppSelector((state) => state.order);
   const { message } = App.useApp();
-  const userId = localStorage.getItem('userId');
+  const user = useAppSelector((state) => state.auth.user);
+  const userId = user ? user._id : '';
+  const isLoggedIn = isLogged();
 
   const [paymentMethod, setPaymentMethod] = useState<
     'COD' | 'BANK_TRANSFER' | 'CREDIT_CARD' | 'zalopay'
@@ -28,8 +30,7 @@ const PaymentPage = () => {
   const [voucherCode, setVoucherCode] = useState('');
 
   useEffect(() => {
-    const isLoggedIn = isUserLoggedIn();
-    const sessionId = !isLoggedIn ? getOrCreateSessionId() : userId || '';
+    const sessionId = isLogged() ? userId : getOrCreateSessionId();
 
     dispatch(
       getCartAction({
@@ -55,6 +56,7 @@ const PaymentPage = () => {
   const discount = loyaltyPointsDiscount;
   const totalAmount = subtotal + shippingFee + tax - discount;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleSubmitOrder = async (values: any) => {
     if (!cart || cart.items.length === 0) {
       message.warning('Giỏ hàng trống!');
@@ -89,11 +91,9 @@ const PaymentPage = () => {
       subtotal: item.price * item.quantity,
     }));
 
-    const isLoggedIn = isUserLoggedIn();
-
     dispatch(
       createOrderAction({
-        userId: isLoggedIn && userId ? userId : undefined,
+        userId: isLogged() && userId ? userId : undefined,
         customer,
         shippingAddress,
         items,

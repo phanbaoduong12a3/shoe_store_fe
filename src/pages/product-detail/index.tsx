@@ -9,10 +9,12 @@ import { addToCartAction } from '@/stores/cart';
 import { RoutePaths } from '@/routers/routes-constants';
 import { Link } from 'react-router-dom';
 import type { Category, Brand } from '@/services/product-service';
-import { getOrCreateSessionId, isUserLoggedIn } from '@/utils/cart-utils';
+import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 import './product-detail.scss';
 
 const ProductDetailPage = () => {
+  const user = useAppSelector((state) => state.auth.user);
+  const userId = user ? user._id : '';
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { productDetail, loading } = useAppSelector((state) => state.product);
@@ -23,7 +25,6 @@ const ProductDetailPage = () => {
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [quantity, setQuantity] = useState(1);
-  const userId = localStorage.getItem('userId') || '';
 
   useEffect(() => {
     if (id) {
@@ -31,7 +32,6 @@ const ProductDetailPage = () => {
         getProductDetailAction({
           id,
           onSuccess: (data) => {
-            console.log('Product detail loaded:', data);
             if (data.data.product.variants.length > 0) {
               setSelectedColor(data.data.product.variants[0].color);
               setSelectedSize(data.data.product.variants[0].size);
@@ -51,10 +51,7 @@ const ProductDetailPage = () => {
       return;
     }
 
-    const isLoggedIn = isUserLoggedIn();
-    const sessionId = !isLoggedIn ? getOrCreateSessionId() : userId;
-
-    console.log('Session ID:', getOrCreateSessionId(), userId);
+    const sessionId = isLogged() ? userId : getOrCreateSessionId();
 
     dispatch(
       addToCartAction({
@@ -325,10 +322,10 @@ const ProductDetailPage = () => {
                       {product.specifications.gender === 'male'
                         ? 'Nam'
                         : product.specifications.gender === 'female'
-                          ? 'Nữ'
-                          : product.specifications.gender === 'unisex'
-                            ? 'Unisex'
-                            : 'Trẻ em'}
+                        ? 'Nữ'
+                        : product.specifications.gender === 'unisex'
+                        ? 'Unisex'
+                        : 'Trẻ em'}
                     </TextDefault>
                   </Flex>
                 )}

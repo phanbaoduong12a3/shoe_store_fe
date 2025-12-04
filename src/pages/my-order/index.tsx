@@ -3,26 +3,24 @@ import { Button, Card, Flex, InputNumber, Spin, Empty, App, Popconfirm } from 'a
 import { DeleteOutlined, ArrowLeftOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { RoutePaths } from '@/routers/routes-constants';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { getCartAction, updateCartAction, removeFromCartAction } from '@/stores/cart';
-import { getOrCreateSessionId, isUserLoggedIn } from '@/utils/cart-utils';
+import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 import './my-order.scss';
 
 const MyOrderPage = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const { cart, loading } = useAppSelector((state) => state.cart);
-  const userId = localStorage.getItem('userId') || '';
+  const { cart, loading: cartLoading } = useAppSelector((state) => state.cart);
+  const { user, loading: authLoading } = useAppSelector((state) => state.auth);
   const { message } = App.useApp();
 
-  const loadCart = () => {
-    const isLoggedIn = isUserLoggedIn();
-    const sessionId = !isLoggedIn ? getOrCreateSessionId() : userId;
-
+  const loadCart = React.useCallback(() => {
     dispatch(
       getCartAction({
-        sessionId,
+        userId: user ? user._id : undefined,
+        sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
         onSuccess: (data) => {
           console.log('Cart loaded:', data);
         },
@@ -31,16 +29,14 @@ const MyOrderPage = () => {
         },
       })
     );
-  };
+  }, [dispatch, user]);
 
   useEffect(() => {
     loadCart();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [loadCart]);
 
   const handleUpdateQuantity = (productId: string, variantId: string, newQuantity: number) => {
-    const isLoggedIn = isUserLoggedIn();
-    const sessionId = !isLoggedIn ? getOrCreateSessionId() : userId;
+    const sessionId = isLogged() ? user!._id : getOrCreateSessionId();
 
     dispatch(
       updateCartAction({
@@ -59,8 +55,7 @@ const MyOrderPage = () => {
   };
 
   const handleRemoveItem = (productId: string, variantId: string) => {
-    const isLoggedIn = isUserLoggedIn();
-    const sessionId = !isLoggedIn ? getOrCreateSessionId() : userId;
+    const sessionId = isLogged() ? user!._id : getOrCreateSessionId();
 
     dispatch(
       removeFromCartAction({
@@ -91,7 +86,7 @@ const MyOrderPage = () => {
   const isFreeShipping = subtotal >= freeShippingThreshold;
   const finalTotal = isFreeShipping ? subtotal + tax : total;
 
-  if (loading && !cart) {
+  if (cartLoading || authLoading) {
     return (
       <div className="loading-container">
         <Spin size="large" tip="Đang tải giỏ hàng..." />
@@ -307,7 +302,17 @@ const MyOrderPage = () => {
               size="large"
               block
               className="checkout-btn"
-              onClick={() => navigate(RoutePaths.PAYMENT)}
+              // onClick={() => navigate(RoutePaths.PAYMENT)}
+              onClick={() => {
+                if (isLogged()) {
+                  navigate(RoutePaths.PAYMENT);
+                } else {
+                  message.info('Vui lòng đăng nhập để tiếp tục thanh toán.');
+                  setTimeout(() => {
+                    navigate(RoutePaths.LOGIN);
+                  }, 1500);
+                }
+              }}
             >
               Tiến hành thanh toán
             </Button>

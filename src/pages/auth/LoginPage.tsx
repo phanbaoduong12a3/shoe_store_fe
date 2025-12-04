@@ -5,7 +5,11 @@ import TextDefault from '@/components/Text/Text';
 import { RoutePaths } from '@/routers/routes-constants';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '@/stores';
-import { postSigninAction } from '@/stores/auth';
+import { getUserInfoAction, postSigninAction } from '@/stores/auth';
+import { mergeCart } from '@/services/cart-service';
+import { sessionIdService } from '@/services/session-id-service';
+import { getCartAction } from '@/stores/cart';
+import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 
 interface LoginFormValues {
   email: string;
@@ -33,13 +37,42 @@ const LoginPage = () => {
           console.log('Login successful:', data);
           // Reset form
           form.resetFields();
-
           // Chuyển về trang chủ sau 1s
+
           setTimeout(() => {
             navigate(RoutePaths.HOME);
+
             // Reload để Header cập nhật
             // window.location.reload();
-          }, 1000);
+          }, 1500);
+
+          setTimeout(async () => {
+            const sessionId = sessionIdService.getSessionId();
+            if (sessionId) {
+              try {
+                await mergeCart(sessionId);
+              } catch (mergeError) {
+                console.error('Cart merge failed:', mergeError);
+              }
+            }
+
+            dispatch(getUserInfoAction());
+            const user = data.data.user;
+            dispatch(
+              getCartAction({
+                userId: user ? user._id : undefined,
+                sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
+                onSuccess: (data) => {
+                  console.log('Cart loaded:', data);
+                },
+                onError: (error) => {
+                  console.error('Error loading cart:', error);
+                },
+              })
+            );
+            // Reload để Header cập nhật
+            // window.location.reload();
+          }, 2000);
         },
         onError: (error) => {
           console.error('Login error:', error);
@@ -60,8 +93,8 @@ const LoginPage = () => {
         <h2 className="title">Chào mừng trở lại</h2>
         <p className="sub-title">Hãy đăng nhập tài khoản của bạn</p>
         <p className="demo-note">
-          <TextDefault fw="700">Demo Account:</TextDefault> email: demo@example.com, password:
-          password
+          <TextDefault fw="700">Demo Account:</TextDefault> email: user@example.com, password:
+          password123
         </p>
         <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item

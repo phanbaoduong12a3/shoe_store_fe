@@ -5,11 +5,14 @@ import { EAuthActions } from './constants';
 import {
   postSignin,
   postSignup,
+  getUserInfo,
   SigninRequest,
   SignupRequest,
   AuthResponse,
   SignupResponse,
+  User,
 } from '@/services/auth-service';
+import { postRefreshToken, RefreshTokenResponse } from '@/services/auth-service';
 
 interface PostSigninPayload extends SigninRequest {
   onSuccess?: (data: AuthResponse) => void;
@@ -75,4 +78,47 @@ const postSignupAction = createAsyncThunk(
   }
 );
 
-export { postSigninAction, postSignupAction };
+const getUserInfoAction = createAsyncThunk(
+  EAuthActions.GET_USER_INFO,
+  async (_, { rejectWithValue }) => {
+    try {
+      const user: User = await getUserInfo();
+      return { user };
+    } catch (error: any) {
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+interface RefreshTokenPayload {
+  refreshToken: string;
+  onSuccess?: (data: RefreshTokenResponse) => void;
+  onError?: (error: any) => void;
+}
+
+const refreshTokenAction = createAsyncThunk(
+  EAuthActions.REFRESH_TOKEN,
+  async (payload: RefreshTokenPayload, { rejectWithValue }) => {
+    const { refreshToken, onSuccess, onError } = payload;
+    try {
+      const response = await postRefreshToken(refreshToken);
+      if (onSuccess) {
+        onSuccess(response);
+      }
+      return response;
+    } catch (error: any) {
+      if (onError) {
+        onError(error);
+      }
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+export { postSigninAction, postSignupAction, getUserInfoAction, refreshTokenAction };

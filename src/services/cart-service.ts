@@ -2,6 +2,7 @@ import client from './api-clients';
 
 export interface AddToCartRequest {
   sessionId?: string;
+  userId?: string;
   productId: string;
   variantId: string;
   quantity: number;
@@ -82,10 +83,18 @@ export const addToCart = async (data: AddToCartRequest): Promise<AddToCartRespon
   return response.data;
 };
 
-export const getCart = async (sessionId?: string): Promise<GetCartResponse> => {
-  const params = sessionId ? { sessionId } : {};
-  const response = await client.get('/api/v1/cart', { params });
-  return response.data;
+export const getCart = async (sessionId?: string, userId?: string): Promise<GetCartResponse> => {
+  try {
+    const params: Record<string, string> = {};
+    if (sessionId) params.sessionId = sessionId;
+    if (userId) params.userId = userId;
+
+    const response = await client.get('/api/v1/cart', { params });
+    return response.data; // trả về thẳng cart
+  } catch (error) {
+    console.error('Error fetching cart:', error);
+    throw error;
+  }
 };
 
 export const updateCart = async (
@@ -119,5 +128,10 @@ export const clearCart = async (sessionId: string): Promise<CartResponse> => {
   const response = await client.delete(`/api/v1/cart/clear`, {
     params: { sessionId },
   });
+  return response.data;
+};
+
+export const mergeCart = async (sessionId: string): Promise<CartResponse> => {
+  const response = await client.post('/api/v1/cart/merge', { sessionId });
   return response.data;
 };
