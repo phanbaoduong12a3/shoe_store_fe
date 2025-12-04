@@ -20,6 +20,7 @@ import './product-page.scss';
 import CustomDropdown from '@/components/CustomDropdown';
 import { getBrandsAction } from '@/stores/brand';
 import { getCategoriesAction } from '@/stores/category';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const ProductPage = () => {
   const dispatch = useAppDispatch();
@@ -44,6 +45,8 @@ const ProductPage = () => {
   ];
   const [brandList, setBrandList] = useState<any[]>([]);
   const [categoryList, setCategoryList] = useState<any[]>([]);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   useEffect(() => {
     fetchBrands();
@@ -284,7 +287,7 @@ const ProductPage = () => {
             type="text"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record)}
+            onClick={() => handleOpenDelete(record)}
             className="delete-btn"
           />
         </Space>
@@ -296,35 +299,28 @@ const ProductPage = () => {
     message.info('Chức năng đang phát triển');
   };
 
-  const handleDelete = (record: Product) => {
-    Modal.confirm({
-      title: 'Xác nhận xóa',
-      icon: <ExclamationCircleOutlined />,
-      content: `Bạn có chắc chắn muốn xóa sản phẩm "${record.name}"?`,
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
-      onOk: () => {
-        dispatch(
-          deleteProductAction({
-            id: record._id,
-            onSuccess: (data: any) => {
-              message.success({
-                content: data.data.message || 'Xóa sản phẩm thành công!',
-                duration: 2,
-              });
-              fetchProducts();
-            },
-            onError: (error: any) => {
-              message.error({
-                content: error?.response?.data?.message || 'Xóa sản phẩm thất bại!',
-                duration: 3,
-              });
-            },
-          })
-        );
-      },
-    });
+  const handleOpenDelete = (record: Product) => {
+    setSelectedProduct(record);
+    setOpenDeleteModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedProduct) return;
+
+    dispatch(
+      deleteProductAction({
+        id: selectedProduct._id,
+        onSuccess: (data: any) => {
+          message.success(data.data.message || 'Xóa sản phẩm thành công!');
+          setOpenDeleteModal(false);
+          fetchProducts();
+        },
+        onError: (error: any) => {
+          message.error(error?.response?.data?.message || 'Xóa sản phẩm thất bại!');
+          setOpenDeleteModal(false);
+        },
+      })
+    );
   };
 
   const handleCreateModalSuccess = () => {
@@ -431,6 +427,15 @@ const ProductPage = () => {
         open={isCreateModalOpen}
         onCancel={() => setIsCreateModalOpen(false)}
         onSuccess={handleCreateModalSuccess}
+      />
+      <ConfirmModal
+        open={openDeleteModal}
+        title="Xác nhận xóa"
+        content={`Bạn có chắc chắn muốn xóa sản phẩm "${selectedProduct?.name}"?`}
+        okText="Xóa"
+        cancelText="Hủy"
+        onCancel={() => setOpenDeleteModal(false)}
+        onOk={handleConfirmDelete}
       />
     </div>
   );
