@@ -18,6 +18,7 @@ import { useAppDispatch } from '@/stores';
 import { createProductAction } from '@/stores/product';
 import { getBrandsAction } from '@/stores/brand';
 import { getCategoriesAction } from '@/stores/category';
+import CustomDropdown from '@/components/CustomDropdown';
 
 interface CreateProductModalProps {
   open: boolean;
@@ -168,13 +169,14 @@ const CreateProductModal = ({ open, onCancel, onSuccess }: CreateProductModalPro
             name="categoryId"
             rules={[{ required: true, message: 'Vui lòng chọn danh mục!' }]}
           >
-            <Select placeholder="Chọn danh mục">
-              {categories.map((cat) => (
-                <Select.Option key={cat._id} value={cat._id}>
-                  {cat.name}
-                </Select.Option>
-              ))}
-            </Select>
+            <CustomDropdown
+              placeholder="Danh mục"
+              options={categories?.map((b) => ({
+                label: b.name,
+                value: b._id,
+              }))}
+              onChange={(value) => form.setFieldsValue({ categoryId: value })}
+            />
           </Form.Item>
 
           <Form.Item
@@ -182,13 +184,14 @@ const CreateProductModal = ({ open, onCancel, onSuccess }: CreateProductModalPro
             name="brandId"
             rules={[{ required: true, message: 'Vui lòng chọn thương hiệu!' }]}
           >
-            <Select placeholder="Chọn thương hiệu">
-              {brands.map((brand) => (
-                <Select.Option key={brand._id} value={brand._id}>
-                  {brand.name}
-                </Select.Option>
-              ))}
-            </Select>
+            <CustomDropdown
+              placeholder="Thương hiệu"
+              options={brands?.map((b) => ({
+                label: b.name,
+                value: b._id,
+              }))}
+              onChange={(value) => form.setFieldsValue({ categoryId: value })}
+            />
           </Form.Item>
 
           <Space style={{ width: '100%' }} size="large">
