@@ -29,6 +29,7 @@ import {
 import { Product } from '@/services/product-service';
 import CreateProductModal from './components/CreateProductModal';
 import './product-page.scss';
+import CustomDropdown from '@/components/CustomDropdown';
 
 const ProductPage = () => {
   const dispatch = useAppDispatch();
@@ -45,6 +46,12 @@ const ProductPage = () => {
     maxPrice: undefined as number | undefined,
     gender: undefined as 'male' | 'female' | 'unisex' | 'kids' | undefined,
   });
+  const genderOptions = [
+    { label: 'Nam', value: 'male' },
+    { label: 'Nữ', value: 'female' },
+    { label: 'Unisex', value: 'unisex' },
+    { label: 'Trẻ em', value: 'kids' },
+  ];
 
   useEffect(() => {
     fetchProducts();
@@ -334,17 +341,17 @@ const ProductPage = () => {
             >
               {/* TODO: Load brands */}
             </Select>
-            <Select
+            <CustomDropdown
               placeholder="Giới tính"
-              allowClear
-              style={{ width: 120 }}
-              onChange={(value: any) => setFilters({ ...filters, gender: value })}
-            >
-              <Select.Option value="male">Nam</Select.Option>
-              <Select.Option value="female">Nữ</Select.Option>
-              <Select.Option value="unisex">Unisex</Select.Option>
-              <Select.Option value="kids">Trẻ em</Select.Option>
-            </Select>
+              value={filters.gender}
+              options={genderOptions.map((b) => ({
+                label: b.label,
+                value: b.value,
+              }))}
+              onChange={(value) => {
+                setFilters({ ...filters, gender: value as 'male' | 'female' | 'unisex' | 'kids' });
+              }}
+            />
             <InputNumber
               placeholder="Giá tối thiểu"
               style={{ width: 150 }}
