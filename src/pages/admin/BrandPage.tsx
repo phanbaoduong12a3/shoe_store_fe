@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Table, Card, Space, Button, App, Switch, Image, Modal, Input } from 'antd';
-import {
-  PlusOutlined,
-  EditOutlined,
-  DeleteOutlined,
-  ExclamationCircleOutlined,
-  SearchOutlined,
-} from '@ant-design/icons';
+import { Table, Card, Space, Button, App, Switch, Image, Input } from 'antd';
+import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { getBrandsAction, toggleBrandStatusAction, deleteBrandAction } from '@/stores/brand';
@@ -14,6 +8,7 @@ import { Brand } from '@/services/brand-service';
 import './brand-page.scss';
 import CreateBrandModal from './components/CreateBrandModal';
 import EditBrandModal from './components/EditBrandModal';
+import ConfirmModal from '@/components/ConfirmModal';
 
 const BrandPage = () => {
   const dispatch = useAppDispatch();
@@ -25,6 +20,7 @@ const BrandPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState('');
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   useEffect(() => {
     fetchBrands();
@@ -172,34 +168,33 @@ const BrandPage = () => {
   };
 
   const handleDelete = (record: Brand) => {
-    Modal.confirm({
-      title: 'Xác nhận xóa',
-      icon: <ExclamationCircleOutlined />,
-      content: `Bạn có chắc chắn muốn xóa thương hiệu "${record.name}"?`,
-      okText: 'Xóa',
-      okType: 'danger',
-      cancelText: 'Hủy',
-      onOk: () => {
-        dispatch(
-          deleteBrandAction({
-            id: record._id,
-            onSuccess: (data) => {
-              message.success({
-                content: data.data.message || 'Xóa thương hiệu thành công!',
-                duration: 2,
-              });
-              fetchBrands();
-            },
-            onError: (error) => {
-              message.error({
-                content: error?.response?.data?.message || 'Xóa thương hiệu thất bại!',
-                duration: 3,
-              });
-            },
-          })
-        );
-      },
-    });
+    setSelectedBrand(record);
+    setOpenConfirm(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!selectedBrand) return;
+
+    dispatch(
+      deleteBrandAction({
+        id: selectedBrand._id,
+        onSuccess: (data) => {
+          message.success({
+            content: data.data.message || 'Xóa thương hiệu thành công!',
+            duration: 2,
+          });
+          fetchBrands();
+          setOpenConfirm(false);
+        },
+        onError: (error) => {
+          message.error({
+            content: error?.response?.data?.message || 'Xóa thương hiệu thất bại!',
+            duration: 3,
+          });
+          setOpenConfirm(false);
+        },
+      })
+    );
   };
 
   const handleCreateModalSuccess = () => {
@@ -269,6 +264,16 @@ const BrandPage = () => {
           setSelectedBrand(null);
         }}
         onSuccess={handleEditModalSuccess}
+      />
+
+      <ConfirmModal
+        open={openConfirm}
+        title="Xác nhận xóa"
+        content={`Bạn có chắc chắn muốn xóa thương hiệu "${selectedBrand?.name}"?`}
+        okText="Xóa"
+        cancelText="Hủy"
+        onOk={handleConfirmDelete}
+        onCancel={() => setOpenConfirm(false)}
       />
     </div>
   );
