@@ -4,15 +4,16 @@ import { getProductsAction } from '@/stores/product';
 import { getCategoriesAction } from '@/stores/category';
 import { getBrandsAction } from '@/stores/brand';
 import HeroSection from './components/hero';
-// import BrandCarousel from './components/brand_carousel';
-// import CategoryCarousel from './components/category_carousel';
-import { Divider, Spin } from 'antd';
+import { Spin } from 'antd';
 import ProductCard from '@/container/product-card/ProductCard';
 import IntroSection from './components/intro_section';
-import { FacebookFilled, InstagramFilled, PinterestFilled, TwitchFilled } from '@ant-design/icons';
+import CategoryCarousel from './components/category_carousel';
+import BrandCarousel from './components/brand_carousel';
 const HomePage = () => {
   const dispatch = useAppDispatch();
   const { products, loading: productsLoading } = useAppSelector((state) => state.product);
+  const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
+  const { brands, loading: brandsLoading } = useAppSelector((state) => state.brand);
 
   const loadInitialData = useCallback(() => {
     // Không await từng cái → cho chạy song song
@@ -48,7 +49,7 @@ const HomePage = () => {
   return (
     <div className="mt-6">
       <HeroSection />
-      {/* <div>
+      <div>
         <h2 className="text-2xl font-bold mb-6 text-gray-800">DANH MỤC NỔI BẬT</h2>
         {categoriesLoading ? (
           <div className="flex justify-center items-center h-32">
@@ -56,7 +57,7 @@ const HomePage = () => {
           </div>
         ) : (
           <div>
-            <CategoryCarousel categories={[...categories]} />
+            <CategoryCarousel categories={categories} />
           </div>
         )}
       </div>
@@ -68,12 +69,10 @@ const HomePage = () => {
           </div>
         ) : (
           <div>
-            <BrandCarousel
-              brands={[...brands, ...brands, ...brands, ...brands, ...brands, ...brands]}
-            />
+            <BrandCarousel brands={brands} />
           </div>
         )}
-      </div> */}
+      </div>
       <div>
         <h2 className="text-2xl font-bold mb-6 text-red-600">GỢI Ý CHO BẠN</h2>
         {productsLoading ? (
@@ -113,15 +112,13 @@ const HomePage = () => {
           </p>
         </div>
 
-        <div className="flex gap-4">
+        {/* <div className="flex gap-4">
           <FacebookFilled style={{ fontSize: '42px' }} />
           <InstagramFilled style={{ fontSize: '42px' }} />
           <PinterestFilled style={{ fontSize: '42px' }} />
           <TwitchFilled style={{ fontSize: '42px' }} />
-        </div>
+        </div> */}
       </div>
-
-      <Divider />
     </div>
   );
 };

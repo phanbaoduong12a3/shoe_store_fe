@@ -74,7 +74,7 @@ export interface Order {
   totalAmount: number;
   paymentMethod: string;
   paymentStatus: string;
-  orderStatus: string;
+  status: string;
   note?: string;
   createdAt: string;
   updatedAt: string;
@@ -104,7 +104,17 @@ export const getOrders = async (params: GetOrdersParams = {}): Promise<GetOrders
   return response.data;
 };
 
+export const getUserOrders = async (params: GetOrdersParams = {}): Promise<GetOrdersResponse> => {
+  const response = await client.get('/api/v1/orders/my_orders', { params });
+  return response.data;
+};
+
 export const createOrder = async (data: CreateOrderRequest): Promise<CreateOrderResponse> => {
   const response = await client.post('/api/v1/orders', data);
+  return response.data;
+};
+
+export const cancelOrder = async (orderId: string, cancelReason: string) => {
+  const response = await client.put(`/api/v1/orders/${orderId}/cancel`, { cancelReason });
   return response.data;
 };

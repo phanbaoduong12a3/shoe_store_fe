@@ -17,10 +17,11 @@ import BrandPage from '@/pages/admin/BrandPage';
 import ProductPage from '@/pages/admin/ProductPage';
 import HomePage from '@/pages/home';
 import ProductDetailPage from '@/pages/product-detail';
-import MyOrderPage from '@/pages/my-order';
+import Cart from '@/pages/cart';
 import PaymentPage from '@/pages/payment';
 import PaymentConfirmPage from '@/pages/payment-confirm';
 import OrderPage from '@/pages/admin/OrderPage';
+import OrdersPage from '@/pages/orders';
 
 const AppRoutes = () => {
   const routes = useMemo(
@@ -34,7 +35,8 @@ const AppRoutes = () => {
               <Route element={<RegisterPage />} path={RoutePaths.REGISTER} />
               <Route element={<HomePage />} path={RoutePaths.HOME} />
               <Route path={RoutePaths.PRODUCT_DETAIL} element={<ProductDetailPage />} />
-              <Route path={RoutePaths.MY_ORDER} element={<MyOrderPage />} />
+              <Route path={RoutePaths.CART} element={<Cart />} />
+              <Route path={RoutePaths.MY_ORDER} element={<OrdersPage />} />
               <Route path={RoutePaths.PAYMENT} element={<PaymentPage />} />
               <Route path={RoutePaths.PAYMENT_CONFIRM} element={<PaymentConfirmPage />} />
             </Route>

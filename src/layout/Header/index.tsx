@@ -5,11 +5,14 @@ import { UserOutlined } from '@ant-design/icons';
 import { Avatar } from 'antd';
 import { MessageSquareText, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import './hot_fix.css';
 
 const Header = () => {
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.auth.user);
   const cartData = useAppSelector((state) => state.cart);
+  const { categories } = useAppSelector((state) => state.category);
+  const { brands, loading: brandsLoading } = useAppSelector((state) => state.brand);
   const handleLogout = () => {
     // localStorage.removeItem(EAuthToken.ACCESS_TOKEN);
     authTokenService.clearAuthTokens();
@@ -64,20 +67,20 @@ const Header = () => {
               //     <p className="text-white font-semibold">{user.fullName}</p>
               //   </div>
               // </Dropdown>
-              <div className="dropdown">
+              <div className="dropdown-fix">
                 <div className="flex items-center gap-2 cursor-pointer">
                   <Avatar src={user.avatar} size={36} icon={<UserOutlined />} />
-                  <div onClick={handleLogout}>Đăng xuất</div>
                 </div>
-                <div className="dropdown-content">
+                <div className="dropdown-content-fix">
                   <div onClick={() => navigate('/profile')}>Thông tin cá nhân</div>
-                  <a onClick={() => navigate(RoutePaths.REGISTER)}>Đăng ký</a>
+                  <a onClick={() => navigate(RoutePaths.MY_ORDER)}>Đơn hàng</a>
+                  <a onClick={handleLogout}>Đăng xuất</a>
                 </div>
               </div>
             ) : (
-              <div className="dropdown">
+              <div className="dropdown-fix">
                 <div>TÀI KHOẢN</div>
-                <div className="dropdown-content">
+                <div className="dropdown-content-fix">
                   <a onClick={() => navigate(RoutePaths.LOGIN)}>Đăng nhập</a>
                   <a onClick={() => navigate(RoutePaths.REGISTER)}>Đăng ký</a>
                 </div>
@@ -103,7 +106,7 @@ const Header = () => {
               // </Dropdown>
             )}
             <div
-              onClick={() => navigate(RoutePaths.MY_ORDER)}
+              onClick={() => navigate(RoutePaths.CART)}
               className="flex items-center hover:text-yellow-400 cursor-pointer gap-2"
             >
               GIỎ HÀNG ({cartData.cart?.items.length || 0})
@@ -152,8 +155,31 @@ const Header = () => {
         {/* MENU */}
         <nav className="mt-4 mb-2 max-w-container mx-auto bg-white px-10">
           <ul className="flex px-10 py-3 gap-6 font-semibold">
-            <li className="hover:text-yellow-600 cursor-pointer">THƯƠNG HIỆU</li>
-            <li className="hover:text-yellow-600 cursor-pointer">ĐỒNG HỒ</li>
+            <li className="hover:text-yellow-600 cursor-pointer relative group">
+              THƯƠNG HIỆU
+              <div
+                className="absolute left-0 top-full min-w-[200px] bg-white shadow-lg rounded mt-2 py-2 z-10 hidden group-hover:block"
+                style={{ border: '1px solid #eee' }}
+              >
+                {brandsLoading ? (
+                  <div className="px-4 py-2 text-gray-500">Đang tải...</div>
+                ) : (
+                  brands.map((brand) => (
+                    <a
+                      key={brand._id}
+                      href={`/brands/${brand._id}`}
+                      className="block px-4 py-2 hover:bg-yellow-100 text-black"
+                    >
+                      {brand.name}
+                    </a>
+                  ))
+                )}
+                {brands.length === 0 && !brandsLoading && (
+                  <div className="px-4 py-2 text-gray-500">Không có thương hiệu</div>
+                )}
+              </div>
+            </li>
+            {/* <li className="hover:text-yellow-600 cursor-pointer">ĐỒNG HỒ</li>
             <li className="hover:text-yellow-600 cursor-pointer">TÚI XÁCH</li>
             <li className="hover:text-yellow-600 cursor-pointer">NƯỚC HOA</li>
             <li className="hover:text-yellow-600 cursor-pointer">MỸ PHẨM</li>
@@ -163,7 +189,12 @@ const Header = () => {
             <li className="hover:text-yellow-600 cursor-pointer">KÍNH MẮT</li>
             <li className="hover:text-yellow-600 cursor-pointer">SON MÔI</li>
             <li className="hover:text-yellow-600 cursor-pointer">TRANG SỨC</li>
-            <li className="hover:text-yellow-600 cursor-pointer">TRANG ĐIỂM</li>
+            <li className="hover:text-yellow-600 cursor-pointer">TRANG ĐIỂM</li> */}
+            {categories.slice(0, 10).map((category) => (
+              <li className="hover:text-yellow-600 cursor-pointer" key={category._id}>
+                {category.name.toUpperCase()}
+              </li>
+            ))}
           </ul>
         </nav>
       </div>
