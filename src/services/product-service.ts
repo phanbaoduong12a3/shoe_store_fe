@@ -122,7 +122,9 @@ export const getProductDetail = async (id: string): Promise<GetProductDetailResp
 
 export interface ToggleProductStatusRequest {
   id: string;
-  field: 'isActive' | 'isFeatured' | 'isNew';
+  isActive: boolean;
+  isFeatured: boolean;
+  isNew: boolean;
 }
 
 export interface ToggleProductStatusResponse {
@@ -136,7 +138,7 @@ export interface ToggleProductStatusResponse {
 export const toggleProductStatus = async (
   data: ToggleProductStatusRequest
 ): Promise<ToggleProductStatusResponse> => {
-  const response = await client.patch(`/api/v1/admin/products/${data.id}/toggle/${data.field}`);
+  const response = await client.put(`/api/v1/admin/products/${data.id}/status`, data);
   return response.data;
 };
 

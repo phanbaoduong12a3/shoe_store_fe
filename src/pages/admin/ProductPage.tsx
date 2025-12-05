@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Table, Card, Space, Button, App, Switch, Image, Modal, Input, InputNumber } from 'antd';
-import {
-  EditOutlined,
-  DeleteOutlined,
-  ExclamationCircleOutlined,
-  SearchOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { Table, Card, Space, Button, App, Switch, Image, Input, InputNumber } from 'antd';
+import { EditOutlined, DeleteOutlined, SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import {
@@ -123,11 +117,18 @@ const ProductPage = () => {
     setCurrentPage(1);
   };
 
-  const handleToggleStatus = (product: Product, field: 'isActive' | 'isFeatured' | 'isNew') => {
+  const handleToggleStatus = (
+    id: string,
+    isActive: boolean,
+    isFeatured: boolean,
+    isNew: boolean
+  ) => {
     dispatch(
       toggleProductStatusAction({
-        id: product._id,
-        field,
+        id: id,
+        isActive: isActive,
+        isFeatured: isFeatured,
+        isNew: isNew,
         onSuccess: (data: any) => {
           message.success({
             content: data.data.message || 'Cập nhật trạng thái thành công!',
@@ -225,21 +226,27 @@ const ProductPage = () => {
         <Space direction="vertical" size="small">
           <Switch
             checked={record.isActive}
-            onChange={() => handleToggleStatus(record, 'isActive')}
+            onChange={() =>
+              handleToggleStatus(record._id, !record.isActive, record.isFeatured, record.isNew)
+            }
             checkedChildren="Hoạt động"
             unCheckedChildren="Ẩn"
             size="small"
           />
           <Switch
             checked={record.isFeatured}
-            onChange={() => handleToggleStatus(record, 'isFeatured')}
+            onChange={() =>
+              handleToggleStatus(record._id, record.isActive, !record.isFeatured, record.isNew)
+            }
             checkedChildren="Nổi bật"
             unCheckedChildren="Thường"
             size="small"
           />
           <Switch
             checked={record.isNew}
-            onChange={() => handleToggleStatus(record, 'isNew')}
+            onChange={() =>
+              handleToggleStatus(record._id, record.isActive, record.isFeatured, !record.isNew)
+            }
             checkedChildren="Mới"
             unCheckedChildren="Cũ"
             size="small"

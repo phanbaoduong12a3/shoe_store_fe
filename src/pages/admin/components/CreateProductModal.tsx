@@ -79,7 +79,7 @@ const CreateProductModal = ({ open, onCancel, onSuccess }: CreateProductModalPro
           price: values.price,
           salePrice: values.salePrice,
           costPrice: values.costPrice,
-          images,
+          images: images,
           variants: values.variants || [],
           specifications: {
             material: values.material,
