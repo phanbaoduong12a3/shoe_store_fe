@@ -1,5 +1,5 @@
 import TextDefault from '@/components/Text/Text';
-import { Card, Spin, Empty, Modal, Input } from 'antd';
+import { Card, Spin, Empty, Modal, Input, Pagination } from 'antd';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { userOrderAction, cancelOrderAction } from '@/stores/order';
@@ -19,14 +19,34 @@ const OrdersPage = () => {
   const [cancelModal, setCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [cancelReason, setCancelReason] = useState('');
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+
   // Tab state
-  const [activeTab, setActiveTab] = useState<'pending' | 'cancelled'>('pending');
+  const ORDER_TABS = [
+    { key: 'pending', label: 'Đang chờ xử lý' },
+    { key: 'confirmed', label: 'Đã xác nhận' },
+    { key: 'processing', label: 'Đang xử lý' },
+    { key: 'shipping', label: 'Đang giao hàng' },
+    { key: 'delivered', label: 'Đã giao' },
+    { key: 'cancelled', label: 'Đã hủy' },
+  ];
+  type OrderTabKey = (typeof ORDER_TABS)[number]['key'];
+  const [activeTab, setActiveTab] = useState<OrderTabKey>('pending');
 
   useEffect(() => {
     if (user) {
       dispatch(userOrderAction({}));
     }
   }, [dispatch, user]);
+
+  // Reset về trang 1 khi đổi tab
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setCurrentPage(1);
+  }, [activeTab]);
 
   const handleView = (order: Order) => {
     setSelectedOrder(order);
@@ -46,6 +66,13 @@ const OrdersPage = () => {
     setCancelReason('');
   };
 
+  const handlePageChange = (page: number, size?: number) => {
+    setCurrentPage(page);
+    if (size) {
+      setPageSize(size);
+    }
+  };
+
   const renderOrders = () => {
     if (orderLoading) {
       return (
@@ -57,80 +84,96 @@ const OrdersPage = () => {
     if (orderError) {
       return <div className="error-message">{orderError}</div>;
     }
-    const filteredOrders = orders?.filter((order) =>
-      activeTab === 'pending' ? order.status === 'pending' : order.status === 'cancelled'
-    );
+
+    const filteredOrders = orders?.filter((order) => order.status === activeTab);
+
     if (!filteredOrders || filteredOrders.length === 0) {
+      const tabLabel = ORDER_TABS.find((tab) => tab.key === activeTab)?.label || '';
       return (
         <Card className="empty-cart-card">
           <Empty
-            description={
-              activeTab === 'pending'
-                ? 'Không có đơn hàng đang chờ xử lý.'
-                : 'Không có đơn hàng đã hủy.'
-            }
+            description={`Không có đơn hàng ${tabLabel.toLowerCase()}.`}
             image={Empty.PRESENTED_IMAGE_SIMPLE}
           />
         </Card>
       );
     }
+
+    // Tính toán phân trang
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedOrders = filteredOrders.slice(startIndex, endIndex);
+
     return (
-      <div className="flex flex-col gap-5">
-        {filteredOrders.map((order) => (
-          <Card
-            key={order._id}
-            className="shadow-md rounded-xl mb-4"
-            bodyStyle={{ padding: '20px' }}
-          >
-            <div className="flex justify-between items-center">
-              <TextDefault fs={18} fw="700">
-                Đơn hàng #{order._id}
-              </TextDefault>
-              <div className="flex gap-3">
-                <button
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 shadow transition"
-                  onClick={() => handleView(order)}
-                >
-                  Xem
-                </button>
-                {activeTab === 'pending' && (
+      <>
+        <div className="flex flex-col gap-5">
+          {paginatedOrders.map((order) => (
+            <Card
+              key={order._id}
+              className="shadow-md rounded-xl mb-4"
+              bodyStyle={{ padding: '20px' }}
+            >
+              <div className="flex justify-between items-center">
+                <TextDefault fs={18} fw="700">
+                  Đơn hàng #{order._id}
+                </TextDefault>
+                <div className="flex gap-3">
                   <button
-                    className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-4 py-2 shadow transition"
-                    onClick={() => handleCancel(order)}
+                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg px-4 py-2 shadow transition"
+                    onClick={() => handleView(order)}
                   >
-                    Hủy
+                    Xem
                   </button>
-                )}
+                  {activeTab === 'pending' && (
+                    <button
+                      className="bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-4 py-2 shadow transition"
+                      onClick={() => handleCancel(order)}
+                    >
+                      Hủy
+                    </button>
+                  )}
+                </div>
               </div>
-            </div>
-          </Card>
-        ))}
-      </div>
+            </Card>
+          ))}
+        </div>
+
+        {/* Pagination */}
+        {filteredOrders.length > pageSize && (
+          <div className="flex justify-center mt-6">
+            <Pagination
+              current={currentPage}
+              total={filteredOrders.length}
+              pageSize={pageSize}
+              onChange={handlePageChange}
+            />
+          </div>
+        )}
+      </>
     );
   };
 
   return (
     <div className="mt-6">
       <p className="text-[2rem] font-semibold"> Đơn hàng của bạn</p>
-      <div className="max-w-2xl mx-auto mt-8 p-4 bg-gray-50 rounded-2xl shadow-lg">
+      <div className="max-w-container mx-auto mt-8 p-4 bg-gray-50 rounded-2xl shadow-lg">
         {/* Tabs */}
         <div className="flex gap-4 mb-6">
-          <button
-            className={`px-6 py-2 rounded-lg font-semibold transition ${
-              activeTab === 'pending' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700'
-            }`}
-            onClick={() => setActiveTab('pending')}
-          >
-            Đang chờ xử lý
-          </button>
-          <button
-            className={`px-6 py-2 rounded-lg font-semibold transition ${
-              activeTab === 'cancelled' ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-700'
-            }`}
-            onClick={() => setActiveTab('cancelled')}
-          >
-            Đã hủy
-          </button>
+          {ORDER_TABS.map((tab) => (
+            <button
+              key={tab.key}
+              className={`px-6 py-2 rounded-lg font-semibold transition ${
+                activeTab === tab.key
+                  ? tab.key === 'cancelled'
+                    ? 'bg-red-600 text-white'
+                    : 'bg-blue-600 text-white'
+                  : 'bg-gray-200 text-gray-700'
+              }`}
+              onClick={() => setActiveTab(tab.key as OrderTabKey)}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
         {renderOrders()}
 

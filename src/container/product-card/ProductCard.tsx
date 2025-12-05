@@ -7,12 +7,15 @@ import { Product } from '@/services/product-service';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { addToCartAction } from '@/stores/cart';
 import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
+import { useState } from 'react';
+import ImageSkeleton from '@/components/ImageSkeleton';
 
 interface IProps {
   product: Product;
 }
 
 const ProductCard = ({ product }: IProps) => {
+  const [loaded, setLoaded] = useState(false);
   const dispatch = useAppDispatch();
   const { message } = App.useApp();
   const { loading: addingToCart } = useAppSelector((state) => state.cart);
@@ -59,9 +62,11 @@ const ProductCard = ({ product }: IProps) => {
     <Link to={RoutePaths.PRODUCT_DETAIL_LINK(product._id)}>
       <Flex className="home-product-card" gap={24} vertical>
         <div className="home-product-image-wrapper">
+          {!loaded && <ImageSkeleton />}
           <img
             src={primaryImage?.url || 'https://via.placeholder.com/300'}
             alt={primaryImage?.alt || product.name}
+            onLoad={() => setLoaded(true)}
           />
           {product.isNew && <span className="home-product-badge home-product-badge-new">Mới</span>}
           {hasDiscount && <span className="home-product-badge home-product-badge-sale">Sale</span>}
