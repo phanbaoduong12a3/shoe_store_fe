@@ -15,6 +15,7 @@ import CustomDropdown from '@/components/CustomDropdown';
 import { getBrandsAction } from '@/stores/brand';
 import { getCategoriesAction } from '@/stores/category';
 import ConfirmModal from '@/components/ConfirmModal';
+import EditProductModal from './components/EditProductModal';
 
 const ProductPage = () => {
   const dispatch = useAppDispatch();
@@ -24,6 +25,7 @@ const ProductPage = () => {
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
   const [filters, setFilters] = useState({
     categoryId: undefined as string | undefined,
     brandId: undefined as string | undefined,
@@ -287,7 +289,7 @@ const ProductPage = () => {
           <Button
             type="text"
             icon={<EditOutlined />}
-            onClick={() => handleEdit()}
+            onClick={() => handleEdit(record)}
             className="edit-btn"
           />
           <Button
@@ -302,8 +304,9 @@ const ProductPage = () => {
     },
   ];
 
-  const handleEdit = () => {
-    message.info('Chức năng đang phát triển');
+  const handleEdit = (record: Product) => {
+    setSelectedProduct(record);
+    setIsUpdateModalOpen(true);
   };
 
   const handleOpenDelete = (record: Product) => {
@@ -332,6 +335,11 @@ const ProductPage = () => {
 
   const handleCreateModalSuccess = () => {
     setIsCreateModalOpen(false);
+    fetchProducts();
+  };
+
+  const handleUpdateModalSuccess = () => {
+    setIsUpdateModalOpen(false);
     fetchProducts();
   };
 
@@ -435,6 +443,12 @@ const ProductPage = () => {
         onCancel={() => setIsCreateModalOpen(false)}
         onSuccess={handleCreateModalSuccess}
       />
+      <EditProductModal
+        open={isUpdateModalOpen}
+        product={selectedProduct}
+        onSuccess={handleUpdateModalSuccess}
+        onCancel={() => setIsUpdateModalOpen(false)}
+      ></EditProductModal>
       <ConfirmModal
         open={openDeleteModal}
         title="Xác nhận xóa"

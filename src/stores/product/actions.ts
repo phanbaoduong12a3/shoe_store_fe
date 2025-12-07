@@ -15,6 +15,9 @@ import {
   deleteProduct,
   DeleteProductRequest,
   DeleteProductResponse,
+  UpdateProductRequest,
+  UpdateProductResponse,
+  updateProduct,
 } from '@/services/product-service';
 
 interface GetProductsPayload extends GetProductsParams {
@@ -84,12 +87,42 @@ interface CreateProductPayload extends CreateProductRequest {
   onError?: (error: any) => void;
 }
 
+interface UpdateProductPayload extends UpdateProductRequest {
+  onSuccess?: (data: UpdateProductResponse) => void;
+  onError?: (error: any) => void;
+}
+
 const createProductAction = createAsyncThunk(
   EProductActions.CREATE_PRODUCT,
   async (payload: CreateProductPayload, { rejectWithValue }) => {
     const { onSuccess, onError, ...data } = payload;
     try {
       const response = await createProduct(data);
+
+      if (onSuccess) {
+        onSuccess(response);
+      }
+
+      return response;
+    } catch (error: any) {
+      if (onError) {
+        onError(error);
+      }
+
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+const updateProductAction = createAsyncThunk(
+  EProductActions.UPDATE_PRODUCT,
+  async (payload: UpdateProductPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
+    try {
+      const response = await updateProduct(data);
 
       if (onSuccess) {
         onSuccess(response);
@@ -175,4 +208,5 @@ export {
   createProductAction,
   toggleProductStatusAction,
   deleteProductAction,
+  updateProductAction,
 };

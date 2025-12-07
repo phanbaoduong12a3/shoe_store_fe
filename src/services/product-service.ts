@@ -201,6 +201,50 @@ export interface CreateProductResponse {
   };
 }
 
+export interface UpdateProductRequest {
+  id: string;
+  name: string;
+  slug: string;
+  sku: string;
+  description?: string;
+  shortDescription?: string;
+  categoryId: string;
+  brandId: string;
+  price: number;
+  salePrice?: number;
+  costPrice?: number;
+  images?: File[];
+  variants: Array<{
+    color: string;
+    colorCode?: string;
+    size: number;
+    stock: number;
+    sku: string;
+  }>;
+  specifications?: {
+    material?: string;
+    sole?: string;
+    weight?: string;
+    origin?: string;
+    gender?: 'male' | 'female' | 'unisex' | 'kids';
+  };
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    metaKeywords?: string[];
+  };
+  isFeatured?: boolean;
+  isNew?: boolean;
+}
+
+export interface UpdateProductResponse {
+  status: number;
+  data: {
+    message: string;
+    product: Product;
+  };
+}
+
 export const createProduct = async (data: CreateProductRequest): Promise<CreateProductResponse> => {
   const formData = new FormData();
 
@@ -239,6 +283,51 @@ export const createProduct = async (data: CreateProductRequest): Promise<CreateP
   formData.append('isNew', String(data.isNew || false));
 
   const response = await client.post('/api/v1/admin/products', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+  return response.data;
+};
+
+export const updateProduct = async (data: UpdateProductRequest): Promise<UpdateProductResponse> => {
+  const formData = new FormData();
+  formData.append('id', data.id);
+  formData.append('name', data.name);
+  formData.append('slug', data.slug);
+  formData.append('sku', data.sku);
+  if (data.description) formData.append('description', data.description);
+  if (data.shortDescription) formData.append('shortDescription', data.shortDescription);
+  formData.append('categoryId', data.categoryId);
+  formData.append('brandId', data.brandId);
+  formData.append('price', String(data.price));
+  if (data.salePrice) formData.append('salePrice', String(data.salePrice));
+  if (data.costPrice) formData.append('costPrice', String(data.costPrice));
+
+  // Images
+  if (data.images && data.images.length > 0) {
+    data.images.forEach((image) => {
+      formData.append('images', image);
+    });
+  }
+
+  // Variants
+  formData.append('variants', JSON.stringify(data.variants));
+
+  // Specifications
+  if (data.specifications) {
+    formData.append('specifications', JSON.stringify(data.specifications));
+  }
+
+  // SEO
+  if (data.seo) {
+    formData.append('seo', JSON.stringify(data.seo));
+  }
+
+  formData.append('isFeatured', String(data.isFeatured || false));
+  formData.append('isNew', String(data.isNew || false));
+
+  const response = await client.put(`/api/v1/admin/products/${data.id}`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
