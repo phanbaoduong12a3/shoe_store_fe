@@ -51,14 +51,13 @@ const ProductDetailPage = () => {
       return;
     }
 
-    const sessionId = isLogged() ? userId : getOrCreateSessionId();
-
     dispatch(
       addToCartAction({
         productId: id,
         variantId: selectedVariant._id,
         quantity,
-        sessionId,
+        sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
+        userId: userId !== '' ? userId : undefined,
         onSuccess: () => {
           message.success({
             content: 'Đã thêm sản phẩm vào giỏ hàng! 🛒',

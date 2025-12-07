@@ -4,6 +4,8 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Brand } from '@/services/brand-service';
+import { Link } from 'react-router-dom';
+import { RoutePaths } from '@/routers/routes-constants';
 
 interface Props {
   brands: Brand[];
@@ -26,13 +28,15 @@ const BrandCarousel: React.FC<Props> = ({ brands }) => {
     >
       {brands.map((brand) => (
         <SwiperSlide key={brand._id}>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 h-32 flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer">
-            <img
-              src={brand.logo || 'https://example.com/default.jpg'}
-              alt={brand.name}
-              className="max-h-full max-w-full object-contain"
-            />
-          </div>
+          <Link to={RoutePaths.BRAND_DETAIL_LINK(brand._id)}>
+            <div className="bg-white border border-gray-200 rounded-lg p-6 h-32 flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer">
+              <img
+                src={brand.logo || 'https://example.com/default.jpg'}
+                alt={brand.name}
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          </Link>
         </SwiperSlide>
       ))}
     </Swiper>
