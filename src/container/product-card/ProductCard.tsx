@@ -42,15 +42,15 @@ const ProductCard = ({ product }: IProps) => {
         quantity: 1,
         sessionId: !isLogged() ? getOrCreateSessionId() : undefined,
         userId: userId !== '' ? userId : undefined,
-        onSuccess: (data) => {
+        onSuccess: () => {
           message.success({
-            content: data.data.message || 'Đã thêm vào giỏ hàng! 🛒',
+            content: 'Đã thêm vào giỏ hàng! 🛒',
             duration: 2,
           });
         },
-        onError: (error) => {
+        onError: () => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể thêm vào giỏ hàng!',
+            content: 'Không thể thêm vào giỏ hàng!',
             duration: 3,
           });
         },

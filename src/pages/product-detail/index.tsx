@@ -59,16 +59,15 @@ const ProductDetailPage = () => {
         variantId: selectedVariant._id,
         quantity,
         sessionId,
-        onSuccess: (data) => {
+        onSuccess: () => {
           message.success({
-            content: data.data.message || 'Đã thêm sản phẩm vào giỏ hàng! 🛒',
+            content: 'Đã thêm sản phẩm vào giỏ hàng! 🛒',
             duration: 2,
           });
         },
-        onError: (error) => {
+        onError: () => {
           message.error({
-            content:
-              error?.response?.data?.message || 'Không thể thêm vào giỏ hàng. Vui lòng thử lại!',
+            content: 'Không thể thêm vào giỏ hàng. Vui lòng thử lại!',
             duration: 3,
           });
         },
