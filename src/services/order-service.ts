@@ -99,6 +99,20 @@ export interface CreateOrderResponse {
   };
 }
 
+export interface OrderStatusRequest {
+  id: string;
+  status: string;
+  note: string;
+}
+
+export interface OrderStatusResponse {
+  status: number;
+  data: {
+    message: string;
+    product: Order;
+  };
+}
+
 export const getOrders = async (params: GetOrdersParams = {}): Promise<GetOrdersResponse> => {
   const response = await client.get('/api/v1/admin/orders', { params });
   return response.data;
@@ -116,5 +130,10 @@ export const createOrder = async (data: CreateOrderRequest): Promise<CreateOrder
 
 export const cancelOrder = async (orderId: string, cancelReason: string) => {
   const response = await client.put(`/api/v1/orders/${orderId}/cancel`, { cancelReason });
+  return response.data;
+};
+
+export const changeOrderStatus = async (data: OrderStatusRequest): Promise<OrderStatusResponse> => {
+  const response = await client.put(`/api/v1/admin/orders/${data.id}/status`, data);
   return response.data;
 };

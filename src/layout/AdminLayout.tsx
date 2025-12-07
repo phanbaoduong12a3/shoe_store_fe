@@ -58,16 +58,6 @@ const AdminLayout = () => {
       icon: <UserOutlined />,
       label: 'Người dùng',
     },
-    {
-      key: 'statistics',
-      icon: <BarChartOutlined />,
-      label: 'Thống kê',
-    },
-    {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: 'Cài đặt',
-    },
   ];
 
   // Dropdown menu cho user avatar

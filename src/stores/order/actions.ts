@@ -10,6 +10,9 @@ import {
   GetOrdersResponse,
   getUserOrders,
   cancelOrder,
+  OrderStatusRequest,
+  OrderStatusResponse,
+  changeOrderStatus,
 } from '@/services/order-service';
 
 interface CreateOrderPayload extends CreateOrderRequest {
@@ -127,4 +130,40 @@ const cancelOrderAction = createAsyncThunk(
   }
 );
 
-export { createOrderAction, getOrdersAction, userOrderAction, cancelOrderAction };
+interface OrderStatusPayload extends OrderStatusRequest {
+  onSuccess?: (data: OrderStatusResponse) => void;
+  onError?: (error: any) => void;
+}
+
+const changeOrderStatusAction = createAsyncThunk(
+  EOrderActions.CHANGE_STATUS,
+  async (payload: OrderStatusPayload, { rejectWithValue }) => {
+    const { onSuccess, onError, ...data } = payload;
+    try {
+      const response = await changeOrderStatus(data);
+
+      if (onSuccess) {
+        onSuccess(response);
+      }
+
+      return response;
+    } catch (error: any) {
+      if (onError) {
+        onError(error);
+      }
+
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+export {
+  createOrderAction,
+  getOrdersAction,
+  userOrderAction,
+  cancelOrderAction,
+  changeOrderStatusAction,
+};

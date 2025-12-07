@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Table, Card, Space, Button, App, Input, Select, InputNumber } from 'antd';
-import { EditOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Card, Space, Button, App, Input, Select, InputNumber, Tag } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
-import { getOrdersAction } from '@/stores/order';
+import { changeOrderStatusAction, getOrdersAction } from '@/stores/order';
 import { Order } from '@/services/order-service';
 import './order-page.scss';
 
@@ -67,55 +67,109 @@ const OrderPage = () => {
       title: 'Giá',
       dataIndex: 'subtotal',
       key: 'subtotal',
-      width: '12%',
+      width: '10%',
     },
     {
       title: 'Phí giao hàng',
       dataIndex: 'shippingFee',
       key: 'shippingFee',
-      width: '12%',
+      width: '10%',
     },
     {
       title: 'Thành tiền',
       dataIndex: 'totalAmount',
       key: 'totalAmount',
-      width: '12%',
+      width: '10%',
     },
     {
       title: 'Trạng thái',
       key: 'status',
-      width: '15%',
-      render: (status: any) => (
-        <div className="order-rating">
-          {status === 'pending' ? (
-            <>
-              <span>Chờ duyệt</span>
-            </>
-          ) : (
-            <span>Đã duyệt</span>
-          )}
-        </div>
-      ),
+      width: '10%',
+      render: (_: any, record: any) => {
+        const statusMap: Record<string, string> = {
+          pending: 'Chờ duyệt',
+          confirmed: 'Đã xác nhận',
+          processing: 'Đang xử lý',
+          shipping: 'Đang giao hàng',
+          delivered: 'Đã giao',
+          cancelled: 'Đã hủy',
+        };
+        const colorMap: Record<string, string> = {
+          pending: 'orange',
+          confirmed: 'blue',
+          processing: 'cyan',
+          shipping: 'purple',
+          delivered: 'green',
+          cancelled: 'red',
+        };
+
+        return (
+          <Tag color={colorMap[record.status] ?? 'default'}>
+            {statusMap[record.status] ?? 'Không xác định'}
+          </Tag>
+        );
+      },
+    },
+    {
+      title: 'Ghi chú',
+      dataIndex: 'cancelReason',
+      key: 'cancelReason',
+      width: '10%',
     },
     {
       title: 'Hành động',
       key: 'action',
-      width: '8%',
-      render: (_: any) => (
-        <Space size="small" className="action-buttons">
-          <Button
-            type="text"
-            icon={<EditOutlined />}
-            onClick={() => handleEdit()}
-            className="edit-btn"
-          />
-        </Space>
-      ),
+      width: '10%',
+      render: (_: any, record: any) => {
+        return (
+          <Space size="small" className="action-buttons">
+            {/* pending → duyệt */}
+            {record.status === 'pending' && (
+              <Button
+                type="primary"
+                onClick={() => handleChangeStatus(record._id, 'confirmed', '')}
+              >
+                Duyệt
+              </Button>
+            )}
+
+            {/* shipping → hoàn thành */}
+            {record.status === 'shipping' && (
+              <Button
+                type="primary"
+                onClick={() => handleChangeStatus(record._id, 'delivered', '')}
+              >
+                Hoàn thành
+              </Button>
+            )}
+          </Space>
+        );
+      },
     },
   ];
 
-  const handleEdit = () => {
-    message.info('Chức năng đang phát triển');
+  const handleChangeStatus = (id: string, status: string, note: string) => {
+    dispatch(
+      changeOrderStatusAction({
+        id: id,
+        status: status,
+        note: note,
+        onSuccess: () => {
+          message.success({
+            content: 'Cập nhật đơn hàng thành công!',
+            duration: 2,
+          });
+          fetchorders();
+        },
+        onError: () => {
+          message.error({
+            content: 'Cập nhật đơn hàng thất bại!',
+            duration: 3,
+          });
+          fetchorders();
+        },
+      })
+    );
   };
 
   return (

@@ -3,4 +3,5 @@ export enum EOrderActions {
   GET_ORDER = 'GET_ORDER',
   USER_ORDER = 'USER_ORDER',
   CANCEL_ORDER = 'CANCEL_ORDER',
+  CHANGE_STATUS = 'CHANGE_STATUS',
 }
