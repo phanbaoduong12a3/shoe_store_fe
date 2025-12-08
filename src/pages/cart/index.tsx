@@ -1,5 +1,5 @@
 import TextDefault from '@/components/Text/Text';
-import { Button, Card, Flex, InputNumber, Spin, Empty, App, Popconfirm } from 'antd';
+import { Button, Card, Flex, InputNumber, Spin, Empty, App } from 'antd';
 import { DeleteOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { RoutePaths } from '@/routers/routes-constants';
@@ -171,21 +171,18 @@ const Cart = () => {
                           </Flex>
                         </div>
 
-                        <Popconfirm
-                          title="Xóa sản phẩm"
-                          description="Bạn có chắc muốn xóa sản phẩm này?"
-                          onConfirm={() => handleRemoveItem(item.productId._id, item.variantId)}
-                          okText="Xóa"
-                          cancelText="Hủy"
-                          okButtonProps={{ danger: true }}
-                        >
-                          <Button
-                            type="text"
-                            danger
-                            icon={<DeleteOutlined />}
-                            className="delete-btn"
-                          />
-                        </Popconfirm>
+                        <Button
+                          type="text"
+                          danger
+                          icon={<DeleteOutlined />}
+                          className="delete-btn"
+                          onClick={() => {
+                            const ok = window.confirm('Bạn có chắc muốn xóa sản phẩm này?');
+                            if (ok) {
+                              handleRemoveItem(item.productId._id, item.variantId);
+                            }
+                          }}
+                        />
                       </Flex>
 
                       <Flex gap={16} align="center" className="price-quantity-row">

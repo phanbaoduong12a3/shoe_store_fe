@@ -22,6 +22,8 @@ import PaymentPage from '@/pages/payment';
 import PaymentConfirmPage from '@/pages/payment-confirm';
 import OrderPage from '@/pages/admin/OrderPage';
 import OrdersPage from '@/pages/orders';
+import BrandFilterProductPage from '@/pages/filter-product/brand';
+import CategoryFilterProductPage from '@/pages/filter-product/category';
 
 const AppRoutes = () => {
   const routes = useMemo(
@@ -35,6 +37,8 @@ const AppRoutes = () => {
               <Route element={<RegisterPage />} path={RoutePaths.REGISTER} />
               <Route element={<HomePage />} path={RoutePaths.HOME} />
               <Route path={RoutePaths.PRODUCT_DETAIL} element={<ProductDetailPage />} />
+              <Route path={RoutePaths.CATEGORY_DETAIL} element={<CategoryFilterProductPage />} />
+              <Route path={RoutePaths.BRAND_DETAIL} element={<BrandFilterProductPage />} />
               <Route path={RoutePaths.CART} element={<Cart />} />
               <Route path={RoutePaths.MY_ORDER} element={<OrdersPage />} />
               <Route path={RoutePaths.PAYMENT} element={<PaymentPage />} />

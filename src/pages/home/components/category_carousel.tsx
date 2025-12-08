@@ -3,6 +3,8 @@ import { Navigation } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { Category } from '@/services/category-service';
+import { Link } from 'react-router-dom';
+import { RoutePaths } from '@/routers/routes-constants';
 
 interface Props {
   categories: Category[];
@@ -25,13 +27,15 @@ export default function CategoryCarousel({ categories }: Props) {
     >
       {categories.map((category) => (
         <SwiperSlide key={category._id}>
-          <div className="bg-white border border-gray-200 rounded-lg p-6 h-32 flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer">
-            <img
-              src={category.image || 'https://example.com/image.jpg'}
-              alt={category.name}
-              className="max-h-full max-w-full object-contain"
-            />
-          </div>
+          <Link to={RoutePaths.CATEGORY_DETAIL_LINK(category._id)}>
+            <div className="bg-white border border-gray-200 rounded-lg p-6 h-32 flex items-center justify-center hover:shadow-lg transition-shadow cursor-pointer">
+              <img
+                src={category.image || 'https://example.com/image.jpg'}
+                alt={category.name}
+                className="max-h-full max-w-full object-contain"
+              />
+            </div>
+          </Link>
         </SwiperSlide>
       ))}
     </Swiper>

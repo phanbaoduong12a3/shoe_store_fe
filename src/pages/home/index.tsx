@@ -1,20 +1,33 @@
-import { useAppSelector } from '@/stores';
+import { useAppDispatch, useAppSelector } from '@/stores';
 import HeroSection from './components/hero';
 import { Spin } from 'antd';
 import ProductCard from '@/container/product-card/ProductCard';
 import IntroSection from './components/intro_section';
 import CategoryCarousel from './components/category_carousel';
 import BrandCarousel from './components/brand_carousel';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { getProductsAction } from '@/stores/product';
 
 const PRODUCTS_PER_PAGE = 8;
 
 const HomePage = () => {
+  const dispatch = useAppDispatch();
   const { products, loading: productsLoading } = useAppSelector((state) => state.product);
   const { categories, loading: categoriesLoading } = useAppSelector((state) => state.category);
   const { brands, loading: brandsLoading } = useAppSelector((state) => state.brand);
 
   const [displayedCount, setDisplayedCount] = useState(PRODUCTS_PER_PAGE);
+
+  useEffect(() => {
+    dispatch(
+      getProductsAction({
+        page: 1,
+        limit: 30,
+        onSuccess: (data) => console.log('Products loaded:', data),
+        onError: (err) => console.error('Error loading products:', err),
+      })
+    );
+  }, [dispatch]);
 
   return (
     <div className="mt-6">

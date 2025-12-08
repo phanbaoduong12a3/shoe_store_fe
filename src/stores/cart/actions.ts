@@ -56,6 +56,7 @@ const getCartAction = createAsyncThunk(
   async (payload: GetCartPayload, { rejectWithValue }) => {
     try {
       const { onSuccess, sessionId, userId } = payload;
+      console.log('Fetching cart with sessionId:', sessionId, 'and userId:', userId);
       const response = await getCart(sessionId, userId);
 
       if (onSuccess) {
