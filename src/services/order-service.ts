@@ -30,16 +30,12 @@ export interface OrderItem {
 export interface GetOrdersParams {
   page?: number;
   limit?: number;
-  categoryId?: string;
-  brandId?: string;
+
   search?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  gender?: 'male' | 'female' | 'unisex' | 'kids';
+
   sortBy?: string;
   order?: 'asc' | 'desc';
-  isFeatured?: boolean;
-  isNew?: boolean;
+  status?: string;
 }
 
 export interface CreateOrderRequest {

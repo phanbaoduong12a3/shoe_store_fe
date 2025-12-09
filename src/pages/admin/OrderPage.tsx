@@ -10,21 +10,26 @@ import './order-page.scss';
 const OrderPage = () => {
   const dispatch = useAppDispatch();
   const { orders, total, loading } = useAppSelector((state) => state.order);
+  const ORDER_TABS = [
+    { key: '', label: 'Tất cả' },
+    { key: 'pending', label: 'Đang chờ xử lý' },
+    { key: 'confirmed', label: 'Đã xác nhận' },
+    { key: 'processing', label: 'Đang xử lý' },
+    { key: 'shipping', label: 'Đang giao hàng' },
+    { key: 'delivered', label: 'Đã hoàn thành' },
+    { key: 'cancelled', label: 'Đã hủy' },
+  ];
+  type OrderTabKey = (typeof ORDER_TABS)[number]['key'];
+  const [activeTab, setActiveTab] = useState<OrderTabKey>('');
   const { message } = App.useApp();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState('');
-  const [filters, setFilters] = useState({
-    categoryId: undefined as string | undefined,
-    brandId: undefined as string | undefined,
-    minPrice: undefined as number | undefined,
-    maxPrice: undefined as number | undefined,
-    gender: undefined as 'male' | 'female' | 'unisex' | 'kids' | undefined,
-  });
+  const [status, setStatus] = useState('');
 
   useEffect(() => {
     fetchorders();
-  }, [currentPage, pageSize, searchText, filters]);
+  }, [currentPage, pageSize, searchText, status]);
 
   const fetchorders = () => {
     dispatch(
@@ -32,7 +37,7 @@ const OrderPage = () => {
         page: currentPage,
         limit: pageSize,
         search: searchText || undefined,
-        ...filters,
+        status: status,
         onSuccess: (data: any) => {
           console.log('orders loaded:', data);
         },
@@ -91,7 +96,7 @@ const OrderPage = () => {
           confirmed: 'Đã xác nhận',
           processing: 'Đang xử lý',
           shipping: 'Đang giao hàng',
-          delivered: 'Đã giao',
+          delivered: 'Đã hoàn thành',
           cancelled: 'Đã hủy',
         };
         const colorMap: Record<string, string> = {
@@ -120,23 +125,66 @@ const OrderPage = () => {
       title: 'Hành động',
       key: 'action',
       width: '10%',
+
       render: (_: any, record: any) => {
+        const colorMap: Record<string, string> = {
+          pending: 'orange',
+          confirmed: 'blue',
+          processing: 'cyan',
+          shipping: 'purple',
+          delivered: 'green',
+          cancelled: 'red',
+        };
         return (
           <Space size="small" className="action-buttons">
             {/* pending → duyệt */}
             {record.status === 'pending' && (
               <Button
                 type="primary"
+                style={{
+                  backgroundColor: colorMap[record.status],
+                  borderColor: colorMap[record.status],
+                }}
                 onClick={() => handleChangeStatus(record._id, 'confirmed', '')}
               >
                 Duyệt
               </Button>
             )}
 
+            {/* duyệt → xử lý đơn hàng */}
+            {record.status === 'confirmed' && (
+              <Button
+                type="primary"
+                style={{
+                  backgroundColor: colorMap[record.status],
+                  borderColor: colorMap[record.status],
+                }}
+                onClick={() => handleChangeStatus(record._id, 'processing', '')}
+              >
+                Xử lý đơn hàng
+              </Button>
+            )}
+            {/* xử lý đơn hàng → giao hàng */}
+            {record.status === 'processing' && (
+              <Button
+                type="primary"
+                style={{
+                  backgroundColor: colorMap[record.status],
+                  borderColor: colorMap[record.status],
+                }}
+                onClick={() => handleChangeStatus(record._id, 'shipping', '')}
+              >
+                Giao hàng
+              </Button>
+            )}
             {/* shipping → hoàn thành */}
             {record.status === 'shipping' && (
               <Button
                 type="primary"
+                style={{
+                  backgroundColor: colorMap[record.status],
+                  borderColor: colorMap[record.status],
+                }}
                 onClick={() => handleChangeStatus(record._id, 'delivered', '')}
               >
                 Hoàn thành
@@ -191,49 +239,35 @@ const OrderPage = () => {
       >
         <div className="filter-section">
           <Space wrap>
-            <Select
-              placeholder="Danh mục"
-              allowClear
-              style={{ width: 150 }}
-              onChange={(value: any) => setFilters({ ...filters, categoryId: value })}
-            >
-              {/* TODO: Load categories */}
-            </Select>
-            <Select
-              placeholder="Thương hiệu"
-              allowClear
-              style={{ width: 150 }}
-              onChange={(value: any) => setFilters({ ...filters, brandId: value })}
-            >
-              {/* TODO: Load brands */}
-            </Select>
-            <Select
-              placeholder="Giới tính"
-              allowClear
-              style={{ width: 120 }}
-              onChange={(value: any) => setFilters({ ...filters, gender: value })}
-            >
-              <Select.Option value="male">Nam</Select.Option>
-              <Select.Option value="female">Nữ</Select.Option>
-              <Select.Option value="unisex">Unisex</Select.Option>
-              <Select.Option value="kids">Trẻ em</Select.Option>
-            </Select>
-            <InputNumber
-              placeholder="Giá tối thiểu"
-              style={{ width: 150 }}
-              formatter={(value: any) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              onChange={(value: any) =>
-                setFilters({ ...filters, minPrice: (value as number) || undefined })
-              }
-            />
-            <InputNumber
-              placeholder="Giá tối đa"
-              style={{ width: 150 }}
-              formatter={(value: any) => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-              onChange={(value: any) =>
-                setFilters({ ...filters, maxPrice: (value as number) || undefined })
-              }
-            />
+            {ORDER_TABS.map((tab) => {
+              const isActive = activeTab === tab.key;
+              const tabColorMap: Record<string, string> = {
+                pending: 'orange',
+                confirmed: 'blue',
+                processing: 'cyan',
+                shipping: 'purple',
+                delivered: 'green',
+                cancelled: 'red',
+              };
+              const activeColor = tabColorMap[tab.key] || 'blue';
+
+              return (
+                <button
+                  key={tab.key}
+                  className={`
+        px-6 py-2 rounded-lg font-semibold transition
+        ${isActive ? `text-white` : 'bg-gray-200 text-gray-700'}
+      `}
+                  style={isActive ? { backgroundColor: activeColor } : undefined}
+                  onClick={() => {
+                    setStatus(tab.key);
+                    setActiveTab(tab.key as OrderTabKey);
+                  }}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
           </Space>
         </div>
 
