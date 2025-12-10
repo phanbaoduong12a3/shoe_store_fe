@@ -180,55 +180,136 @@ const OrdersPage = () => {
         {/* Modal xem chi tiết đơn hàng */}
         <Modal
           open={viewModal}
-          title={<p className="text-[1.125rem]">Thông tin đơn hàng</p>}
+          title={
+            <p className="text-[1.125rem]">
+              {' '}
+              <strong>Thông tin đơn hàng</strong>
+            </p>
+          }
           onCancel={() => setViewModal(false)}
           footer={null}
           centered
+          width={800}
         >
           {selectedOrder && (
-            <div className="flex flex-col gap-2 text-[1.125rem]">
-              <p>
-                <span>Mã đơn hàng:</span> {selectedOrder._id}
-              </p>
-              <p>
-                <span>Số điện thoại:</span> {selectedOrder.customer.phone}
-              </p>
-              <p>
-                <span>Tên khách hàng:</span> {selectedOrder.customer.name}
-              </p>
-              <p>
-                <span>Email:</span> {selectedOrder.customer.email}
-              </p>
-              <p>
-                <span>Tiền hàng:</span> {selectedOrder.subtotal.toLocaleString('vi-VN')}đ
-              </p>
-              <p>
-                <span>Phí vận chuyển:</span> {selectedOrder.shippingFee.toLocaleString('vi-VN')}đ
-              </p>
-              <p>
-                <span>Giảm giá:</span> {(selectedOrder.discount || 0).toLocaleString('vi-VN')}đ
-              </p>
-              <p>
-                <span>Mã voucher:</span> {selectedOrder.voucherCode || 'Không có'}
-              </p>
-              <p className="flex gap-2">
-                <span>Ngày đặt:</span>
-                {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}
-              </p>
-              <p className="flex gap-2">
-                <span>Tổng tiền:</span> {selectedOrder.totalAmount.toLocaleString('vi-VN')}đ
-              </p>
-              <p className="flex gap-2">
-                <span>Trạng thái:</span> {selectedOrder.status}
-              </p>
-              <p>
-                <span>Phương thức thanh toán:</span> {selectedOrder.paymentMethod}
-              </p>
-              <p className="flex gap-2">
-                <span>Địa chỉ giao hàng:</span> {selectedOrder.shippingAddress.address}-
-                {selectedOrder.shippingAddress.city}-{selectedOrder.shippingAddress.district}-
-                {selectedOrder.shippingAddress.ward}
-              </p>
+            <div className="flex flex-col gap-4 text-[1.05rem]">
+              {/* ==== Thông tin đơn hàng ==== */}
+              <div className="grid grid-cols-2 gap-2">
+                <p>
+                  <strong>Mã đơn hàng:</strong> {selectedOrder._id}
+                </p>
+                <p>
+                  <strong>Số điện thoại:</strong> {selectedOrder.customer.phone}
+                </p>
+
+                <p>
+                  <strong>Tên khách hàng:</strong> {selectedOrder.customer.name}
+                </p>
+                <p>
+                  <strong>Email:</strong> {selectedOrder.customer.email}
+                </p>
+
+                <p>
+                  <strong>Tiền hàng:</strong> {selectedOrder.subtotal.toLocaleString('vi-VN')}đ
+                </p>
+                <p>
+                  <strong>Phí vận chuyển:</strong>{' '}
+                  {selectedOrder.shippingFee.toLocaleString('vi-VN')}đ
+                </p>
+
+                <p>
+                  <strong>Giảm giá:</strong> {(selectedOrder.discount || 0).toLocaleString('vi-VN')}
+                  đ
+                </p>
+                <p>
+                  <strong>Mã voucher:</strong> {selectedOrder.voucherCode || 'Không có'}
+                </p>
+
+                <p>
+                  <strong>Ngày đặt:</strong>{' '}
+                  {new Date(selectedOrder.createdAt).toLocaleString('vi-VN')}
+                </p>
+                <p>
+                  <strong>Tổng tiền:</strong> {selectedOrder.totalAmount.toLocaleString('vi-VN')}đ
+                </p>
+
+                <p className="col-span-2">
+                  <strong>Phương thức thanh toán:</strong>{' '}
+                  {{
+                    cod: 'Thanh toán khi nhận hàng',
+                    momo: 'Thanh toán qua MoMo',
+                    zalopay: 'Thanh toán qua ZaloPay',
+                    banking: 'Thanh toán chuyển khoản',
+                  }[selectedOrder.paymentMethod] || 'Không xác định'}
+                </p>
+
+                <p className="col-span-2">
+                  <strong>Địa chỉ giao hàng:</strong>
+                  {selectedOrder.shippingAddress.address} -{selectedOrder.shippingAddress.ward} -
+                  {selectedOrder.shippingAddress.district} -{selectedOrder.shippingAddress.city}
+                </p>
+              </div>
+
+              {/* ===================== Bảng sản phẩm ===================== */}
+              <h3 className="text-lg font-semibold mt-4">Sản phẩm</h3>
+
+              <table className="w-full border border-gray-300 rounded-md overflow-hidden">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="border p-2">Ảnh</th>
+                    <th className="border p-2">Sản phẩm</th>
+                    <th className="border p-2">Màu</th>
+                    <th className="border p-2">Size</th>
+                    <th className="border p-2">Giá</th>
+                    <th className="border p-2">SL</th>
+                    <th className="border p-2">Tổng</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {selectedOrder.items.map((item) => {
+                    const image = item.productId?.images?.[0]?.url;
+
+                    return (
+                      <tr key={item.sku}>
+                        {/* Ảnh */}
+                        <td className="border p-2 text-center">
+                          <img
+                            src={image}
+                            alt={item.productName}
+                            className="w-16 h-16 object-cover rounded"
+                          />
+                        </td>
+
+                        {/* Tên */}
+                        <td className="border p-2">
+                          <div className="font-medium">{item.productName}</div>
+                          <div className="text-sm text-gray-500">SKU: {item.sku}</div>
+                        </td>
+
+                        {/* Màu */}
+                        <td className="border p-2 text-center">{item.color}</td>
+
+                        {/* Size */}
+                        <td className="border p-2 text-center">{item.size}</td>
+
+                        {/* Giá */}
+                        <td className="border p-2 text-right">
+                          {item.price.toLocaleString('vi-VN')}đ
+                        </td>
+
+                        {/* Số lượng */}
+                        <td className="border p-2 text-center">{item.quantity}</td>
+
+                        {/* Tổng */}
+                        <td className="border p-2 text-right font-semibold">
+                          {item.subtotal.toLocaleString('vi-VN')}đ
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
             </div>
           )}
         </Modal>

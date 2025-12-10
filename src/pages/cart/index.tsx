@@ -103,7 +103,7 @@ const Cart = () => {
   return (
     <div className="my-order-page">
       <div style={{ marginBottom: 32 }}>
-        <p className="text-[2rem] font-semibold"> Đơn hàng của bạn</p>
+        <p className="text-[2rem] font-semibold"> Quản lý giỏ hàng</p>
       </div>
 
       {!cart || cart.items.length === 0 ? (

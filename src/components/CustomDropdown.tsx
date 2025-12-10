@@ -9,7 +9,7 @@ interface CustomDropdownProps {
   placeholder?: string;
   value?: string;
   options: DropdownOption[];
-  onChange: (value: string ) => void;
+  onChange: (value: string) => void;
   width?: number | string;
 }
 
@@ -18,7 +18,7 @@ export default function CustomDropdown({
   value,
   options,
   onChange,
-  width = 150,
+  width = 200,
 }: CustomDropdownProps) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);

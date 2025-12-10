@@ -26,6 +26,7 @@ export interface OrderItem {
   quantity: number;
   price: number;
   subtotal: number;
+  image?: string;
 }
 export interface GetOrdersParams {
   page?: number;
@@ -36,6 +37,8 @@ export interface GetOrdersParams {
   sortBy?: string;
   order?: 'asc' | 'desc';
   status?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
 }
 
 export interface CreateOrderRequest {

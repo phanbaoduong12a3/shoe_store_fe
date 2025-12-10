@@ -11,6 +11,7 @@ import {
   AuthResponse,
   SignupResponse,
   User,
+  UserDetail,
 } from '@/services/auth-service';
 import { postRefreshToken, RefreshTokenResponse } from '@/services/auth-service';
 
@@ -82,7 +83,7 @@ const getUserInfoAction = createAsyncThunk(
   EAuthActions.GET_USER_INFO,
   async (_, { rejectWithValue }) => {
     try {
-      const user: User = await getUserInfo();
+      const user: UserDetail = await getUserInfo();
       return { user };
     } catch (error: any) {
       if (!error.response) {

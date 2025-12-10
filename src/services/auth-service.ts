@@ -12,6 +12,32 @@ export interface SignupRequest {
   phone: string;
 }
 
+export interface UserAddress {
+  _id: string;
+  recipientName: string;
+  phone: string;
+  address: string;
+  ward: string;
+  district: string;
+  city: string;
+  isDefault: boolean;
+}
+
+export interface UserDetail {
+  _id: string;
+  email: string;
+  fullName: string;
+  phone: string;
+  avatar: string;
+  role: string;
+  wishlist: string[];
+  loyaltyPoints: number;
+  addresses: UserAddress[];
+  createdAt: string;
+  updatedAt: string;
+  __v: number;
+  refreshToken: string;
+}
 export interface User {
   _id: string;
   email: string;
@@ -49,7 +75,7 @@ export const postSignup = async (data: SignupRequest): Promise<SignupResponse> =
   return response.data;
 };
 
-export const getUserInfo = async (): Promise<User> => {
+export const getUserInfo = async (): Promise<UserDetail> => {
   const response = await client.get('/api/v1/me');
   return response.data.data.user;
 };

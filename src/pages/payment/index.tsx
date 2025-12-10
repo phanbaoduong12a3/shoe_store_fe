@@ -11,6 +11,7 @@ import { RoutePaths } from '@/routers/routes-constants';
 import type { CustomerInfo, ShippingAddress } from '@/services/order-service';
 import { createPaymentOrder } from '@/services/payment-service';
 import './payment.scss';
+import { getUserInfoAction } from '@/stores/auth';
 
 const PaymentPage = () => {
   const [form] = Form.useForm();
@@ -29,6 +30,35 @@ const PaymentPage = () => {
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
 
+  const loadUserInfo = useCallback(() => {
+    dispatch(getUserInfoAction())
+      .unwrap()
+      .then((data) => {
+        const user = data?.user;
+        if (!user) return;
+
+        const defaultAddress = user.addresses?.find((a) => a.isDefault);
+
+        form.setFieldsValue({
+          customerName: user.fullName || '',
+          customerPhone: user.phone || '',
+          customerEmail: user.email || '',
+
+          recipientName: defaultAddress?.recipientName || user.fullName || '',
+          recipientPhone: defaultAddress?.phone || user.phone || '',
+          address: defaultAddress?.address || '',
+          ward: defaultAddress?.ward || '',
+          district: defaultAddress?.district || '',
+          city: defaultAddress?.city || '',
+        });
+      })
+      .catch((err) => {
+        console.error('Load user info error:', err);
+      });
+  }, [dispatch, form]);
+  useEffect(() => {
+    loadUserInfo();
+  }, [loadUserInfo]);
   const loadCart = useCallback(() => {
     dispatch(
       getCartAction({
@@ -94,6 +124,7 @@ const PaymentPage = () => {
       quantity: item.quantity,
       price: item.price,
       subtotal: item.price * item.quantity,
+      image: item.image,
     }));
 
     dispatch(
@@ -121,7 +152,7 @@ const PaymentPage = () => {
               getCartAction({
                 userId: userId,
                 onSuccess: () => {
-                  navigate(`${RoutePaths.CART}`);
+                  navigate(`${RoutePaths.MY_ORDER}`);
                 },
                 onError: (error) => {
                   console.error('Error reloading cart:', error);
@@ -207,34 +238,16 @@ const PaymentPage = () => {
                 </TextDefault>
               </Flex>
 
-              <Form.Item
-                label="Họ và tên"
-                name="customerName"
-                rules={[{ required: true, message: 'Vui lòng nhập họ tên!' }]}
-              >
-                <Input size="large" placeholder="Nguyễn Văn A" />
+              <Form.Item label="Họ và tên" name="customerName">
+                <Input size="large" placeholder="Nguyễn Văn A" disabled />
               </Form.Item>
 
-              <Form.Item
-                label="Số điện thoại"
-                name="customerPhone"
-                rules={[
-                  { required: true, message: 'Vui lòng nhập số điện thoại!' },
-                  { pattern: /^[0-9]{10}$/, message: 'Số điện thoại không hợp lệ!' },
-                ]}
-              >
-                <Input size="large" placeholder="0123456789" />
+              <Form.Item label="Số điện thoại" name="customerPhone">
+                <Input size="large" placeholder="0123456789" disabled />
               </Form.Item>
 
-              <Form.Item
-                label="Email"
-                name="customerEmail"
-                rules={[
-                  { required: true, message: 'Vui lòng nhập email!' },
-                  { type: 'email', message: 'Email không hợp lệ!' },
-                ]}
-              >
-                <Input size="large" placeholder="example@email.com" />
+              <Form.Item label="Email" name="customerEmail">
+                <Input size="large" placeholder="example@email.com" disabled />
               </Form.Item>
             </Card>
 
@@ -283,15 +296,6 @@ const PaymentPage = () => {
                 >
                   <Input size="large" placeholder="Phường 1" />
                 </Form.Item>
-
-                <Form.Item
-                  label="Quận/Huyện"
-                  name="district"
-                  rules={[{ required: true, message: 'Vui lòng nhập quận/huyện!' }]}
-                  style={{ flex: 1 }}
-                >
-                  <Input size="large" placeholder="Quận 1" />
-                </Form.Item>
               </Flex>
 
               <Form.Item
@@ -317,7 +321,7 @@ const PaymentPage = () => {
                 onChange={(e) => setPaymentMethod(e.target.value)}
                 className="payment-methods"
               >
-                <Radio value="COD" className="payment-method-option">
+                <Radio value="cod" className="payment-method-option">
                   <Flex vertical gap={4}>
                     <TextDefault fw="600">Thanh toán khi nhận hàng (COD)</TextDefault>
                     <TextDefault fs={13} color="#6b7280">
@@ -325,7 +329,7 @@ const PaymentPage = () => {
                     </TextDefault>
                   </Flex>
                 </Radio>
-                <Radio value="BANK_TRANSFER" className="payment-method-option">
+                <Radio value="banking" className="payment-method-option">
                   <Flex vertical gap={4}>
                     <TextDefault fw="600">Chuyển khoản ngân hàng</TextDefault>
                     <TextDefault fs={13} color="#6b7280">
@@ -333,7 +337,7 @@ const PaymentPage = () => {
                     </TextDefault>
                   </Flex>
                 </Radio>
-                <Radio value="CREDIT_CARD" className="payment-method-option">
+                <Radio value="momo" className="payment-method-option">
                   <Flex vertical gap={4}>
                     <TextDefault fw="600">Thẻ tín dụng/Ghi nợ</TextDefault>
                     <TextDefault fs={13} color="#6b7280">

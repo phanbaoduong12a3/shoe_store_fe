@@ -260,9 +260,6 @@ const ProductDetailPage = () => {
               >
                 Thêm vào giỏ hàng
               </Button>
-              <Button size="large" icon={<HeartOutlined />} className="wishlist-btn">
-                Yêu thích
-              </Button>
             </Flex>
           </Flex>
         </div>

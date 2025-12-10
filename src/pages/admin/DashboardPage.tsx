@@ -39,6 +39,7 @@ export interface DashboardData {
 }
 interface TopProduct {
   _id: string;
+  productImage: string;
   productName: string;
   totalQuantity: number;
   totalRevenue: number;
@@ -91,6 +92,10 @@ export default function ShopeeDashboard() {
   useEffect(() => {
     fetchData();
   }, [range, granularity]);
+  const fixedData = (data?.timeSeries || []).map((item, index) => ({
+    ...item,
+    date: item.date || `Lần ${index + 1}`,
+  }));
 
   if (!data && loading) return <Spin tip="Đang tải dữ liệu..." style={{ padding: 50 }} />;
   if (!data)
@@ -107,7 +112,25 @@ export default function ShopeeDashboard() {
 
   const topProductColumns: ColumnsType<TopProduct> = [
     {
-      title: 'Sản phẩm',
+      title: 'Ảnh',
+      dataIndex: 'productImage',
+      width: '15%',
+      render: (productImage: string) => (
+        <img
+          src={productImage}
+          alt="product"
+          style={{
+            width: 60,
+            height: 60,
+            objectFit: 'cover',
+            borderRadius: 8,
+            border: '1px solid #eee',
+          }}
+        />
+      ),
+    },
+    {
+      title: 'Tên sản phẩm',
       dataIndex: 'productName',
       width: '40%',
     },
@@ -229,7 +252,7 @@ export default function ShopeeDashboard() {
           <Col span={24}>
             <Card title="Phân tích Doanh thu, Lợi nhuận và Đơn hủy" style={{ height: 400 }}>
               <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={data?.timeSeries || []}>
+                <LineChart data={fixedData || []}>
                   <XAxis dataKey="date" />
                   <YAxis yAxisId="left" domain={['auto', 'auto']} tickFormatter={formatCurrency} />
                   <YAxis yAxisId="right" orientation="right" stroke="#ff4d4f" />
