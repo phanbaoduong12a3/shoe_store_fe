@@ -20,6 +20,7 @@ import { getBrandsAction } from '@/stores/brand';
 import { getCategoriesAction } from '@/stores/category';
 import CustomDropdown from '@/components/CustomDropdown';
 import { Product } from '@/services/product-service';
+import { RcFile } from 'antd/es/upload/interface';
 
 interface EditProductModalProps {
   open: boolean;
@@ -39,6 +40,7 @@ const EditProductModal = ({ open, product, onCancel, onSuccess }: EditProductMod
 
   useEffect(() => {
     if (product && open) {
+      console.log('product: ', product);
       dispatch(
         getCategoriesAction({
           isActive: true,
@@ -59,34 +61,75 @@ const EditProductModal = ({ open, product, onCancel, onSuccess }: EditProductMod
         })
       );
       form.setFieldsValue({
-        ...product,
+        name: product.name,
+        slug: product.slug,
+        sku: product.sku,
+        description: product.description,
+        shortDescription: product.shortDescription,
+
         categoryId:
           typeof product.categoryId === 'string' ? product.categoryId : product.categoryId?._id,
 
         brandId: typeof product.brandId === 'string' ? product.brandId : product.brandId?._id,
-        metaKeywords: product?.seo?.metaKeywords || [],
+
+        price: product.price,
+        salePrice: product.salePrice,
+        costPrice: product.costPrice,
+
+        variants: product.variants || [],
+        specifications: product.specifications || {},
+        seo: product.seo || { metaKeywords: [] },
+
+        isFeatured: product.isFeatured,
+        isNew: product.isNew,
       });
 
-      if (product.images?.length) {
-        setFileList(
-          product.images.map((img, index) => ({
-            uid: String(index),
-            name: img.alt || `image-${index}`,
-            status: 'done',
-            url: img.url,
-            isPrimary: img.isPrimary,
-            thumbUrl: img.url,
-          }))
-        );
+      if (product.images?.length > 0) {
+        const convertOldImages = async () => {
+          const converted: UploadFile[] = await Promise.all(
+            product.images.map(async (img, index) => {
+              const file = await urlToFile(img.url, img.alt || `image-${index}.jpg`);
+
+              const rcFile = toRcFile(file, String(index));
+
+              return {
+                uid: String(index),
+                name: img.alt || `image-${index}`,
+                status: 'done',
+                url: img.url,
+                thumbUrl: img.url,
+                isPrimary: img.isPrimary,
+                originFileObj: rcFile,
+                size: rcFile.size,
+                type: rcFile.type,
+              };
+            })
+          );
+
+          setFileList(converted);
+        };
+
+        convertOldImages();
+      } else {
+        setFileList([]);
       }
     }
   }, [product, open]);
+  const toRcFile = (file: File, uid: string): RcFile => {
+    const rc = file as RcFile;
+    rc.uid = uid;
+    return rc;
+  };
+  const urlToFile = async (url: string, filename: string) => {
+    const res = await fetch(url);
+    const blob = await res.blob();
+    return new File([blob], filename, { type: blob.type });
+  };
 
   const handleSubmit = async () => {
     try {
       const values = await form.validateFields();
       setLoading(true);
-
       const images = fileList.map((file) => file.originFileObj).filter(Boolean) as File[];
 
       dispatch(
