@@ -8,6 +8,7 @@ export const RoutePaths = {
   ADMIN_BRANDS: '/admin/brands',
   ADMIN_PRODUCTS: '/admin/products',
   ADMIN_ORDERS: '/admin/orders',
+  ADMIN_USERS: '/admin/users',
 
   PRODUCT_DETAIL: '/product-detail/:id',
   CATEGORY_DETAIL: '/category-detail/:id',

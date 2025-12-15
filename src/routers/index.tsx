@@ -24,6 +24,7 @@ import OrderPage from '@/pages/admin/OrderPage';
 import OrdersPage from '@/pages/orders';
 import BrandFilterProductPage from '@/pages/filter-product/brand';
 import CategoryFilterProductPage from '@/pages/filter-product/category';
+import UserPage from '@/pages/admin/UserPage';
 
 const AppRoutes = () => {
   const routes = useMemo(
@@ -55,6 +56,7 @@ const AppRoutes = () => {
               <Route element={<BrandPage />} path={RoutePaths.ADMIN_BRANDS} />
               <Route element={<ProductPage />} path={RoutePaths.ADMIN_PRODUCTS} />
               <Route element={<OrderPage />} path={RoutePaths.ADMIN_ORDERS} />
+              <Route element={<UserPage />} path={RoutePaths.ADMIN_USERS} />
             </Route>
           </>
         )
