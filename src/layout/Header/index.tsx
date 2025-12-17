@@ -40,10 +40,6 @@ const Header = () => {
 
           {/* Right menu */}
           <div className="flex items-center gap-4">
-            <a href="#" className="text-yellow-400! font-semibold">
-              TẠO SHOP
-            </a>
-
             {user ? (
               <div className="dropdown-fix">
                 <div className="flex items-center gap-2 cursor-pointer">

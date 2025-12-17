@@ -75,12 +75,11 @@
       /* ===== User menu ===== */
       .user-menu {
         position: absolute;
-        top: calc(100% + 8px);
+        top: calc(100%);
         right: 0;
-        min-width: 180px;
+        min-width: 120px;
         background-color: #fff;
         border-radius: 8px;
-        padding: 4px 0;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         z-index: 1000;
       }

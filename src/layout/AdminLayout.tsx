@@ -65,11 +65,11 @@ const AdminLayout = () => {
 
   // Dropdown menu cho user avatar
   const userMenuItems: MenuProps['items'] = [
-    {
-      key: 'profile',
-      icon: <UserOutlined />,
-      label: 'Thông tin cá nhân',
-    },
+    // {
+    //   key: 'profile',
+    //   icon: <UserOutlined />,
+    //   label: 'Thông tin cá nhân',
+    // },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
