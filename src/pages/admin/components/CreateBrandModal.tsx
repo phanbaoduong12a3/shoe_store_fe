@@ -34,7 +34,7 @@ const CreateBrandModal = ({ open, onCancel, onSuccess }: CreateBrandModalProps) 
           isActive: values.isActive ?? true,
           onSuccess: (data) => {
             message.success({
-              content: data.data.message || 'Tạo thương hiệu thành công!',
+              content: 'Tạo thương hiệu thành công!',
               duration: 2,
             });
             form.resetFields();
@@ -44,7 +44,7 @@ const CreateBrandModal = ({ open, onCancel, onSuccess }: CreateBrandModalProps) 
           },
           onError: (error) => {
             message.error({
-              content: error?.response?.data?.message || 'Tạo thương hiệu thất bại!',
+              content: 'Tạo thương hiệu thất bại!',
               duration: 3,
             });
             setLoading(false);

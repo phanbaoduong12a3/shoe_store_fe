@@ -59,7 +59,7 @@ const EditCategoryModal = ({ open, category, onCancel, onSuccess }: EditCategory
           displayOrder: values.displayOrder,
           onSuccess: (data) => {
             message.success({
-              content: data.data.message || 'Cập nhật danh mục thành công!',
+              content: 'Cập nhật danh mục thành công!',
               duration: 2,
             });
             form.resetFields();
@@ -69,7 +69,7 @@ const EditCategoryModal = ({ open, category, onCancel, onSuccess }: EditCategory
           },
           onError: (error) => {
             message.error({
-              content: error?.response?.data?.message || 'Cập nhật danh mục thất bại!',
+              content: 'Cập nhật danh mục thất bại!',
               duration: 3,
             });
             setLoading(false);

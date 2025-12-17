@@ -63,9 +63,9 @@ const ProductPage = () => {
         onSuccess: (data: any) => {
           console.log('Products loaded:', data);
         },
-        onError: (error: any) => {
+        onError: () => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể tải danh sách sản phẩm!',
+            content: 'Không thể tải danh sách sản phẩm!',
             duration: 3,
           });
         },
@@ -82,9 +82,9 @@ const ProductPage = () => {
         onSuccess: (data: any) => {
           setBrandList(data?.data?.brands || []);
         },
-        onError: (error: any) => {
+        onError: () => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể tải danh sách thương hiệu!',
+            content: 'Không thể tải danh sách thương hiệu!',
             duration: 3,
           });
         },
@@ -99,9 +99,9 @@ const ProductPage = () => {
         onSuccess: (data: any) => {
           setCategoryList(data?.data?.categories || []);
         },
-        onError: (error: any) => {
+        onError: () => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể tải danh sách thương hiệu!',
+            content: 'Không thể tải danh sách thương hiệu!',
             duration: 3,
           });
         },
@@ -131,15 +131,15 @@ const ProductPage = () => {
         isActive: isActive,
         isFeatured: isFeatured,
         isNew: isNew,
-        onSuccess: (data: any) => {
+        onSuccess: () => {
           message.success({
-            content: data.data.message || 'Cập nhật trạng thái thành công!',
+            content: 'Cập nhật trạng thái thành công!',
             duration: 2,
           });
         },
-        onError: (error: any) => {
+        onError: () => {
           message.error({
-            content: error?.response?.data?.message || 'Cập nhật trạng thái thất bại!',
+            content: 'Cập nhật trạng thái thất bại!',
             duration: 3,
           });
         },
@@ -320,13 +320,13 @@ const ProductPage = () => {
     dispatch(
       deleteProductAction({
         id: selectedProduct._id,
-        onSuccess: (data: any) => {
-          message.success(data.data.message || 'Xóa sản phẩm thành công!');
+        onSuccess: () => {
+          message.success('Xóa sản phẩm thành công!');
           setOpenDeleteModal(false);
           fetchProducts();
         },
-        onError: (error: any) => {
-          message.error(error?.response?.data?.message || 'Xóa sản phẩm thất bại!');
+        onError: () => {
+          message.error('Xóa sản phẩm thất bại!');
           setOpenDeleteModal(false);
         },
       })

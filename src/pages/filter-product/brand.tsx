@@ -40,7 +40,7 @@ const BrandFilterProductPage = () => {
         },
         onError: (error: any) => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể tải danh sách thương hiệu!',
+            content: 'Không thể tải danh sách thương hiệu!',
             duration: 3,
           });
         },
@@ -62,7 +62,7 @@ const BrandFilterProductPage = () => {
           },
           onError: (error) => {
             message.error({
-              content: error?.response?.data?.message || 'Không thể tải danh sách sản phẩm!',
+              content: 'Không thể tải danh sách sản phẩm!',
               duration: 3,
             });
           },

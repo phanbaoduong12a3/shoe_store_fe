@@ -97,7 +97,7 @@ const CreateProductModal = ({ open, onCancel, onSuccess }: CreateProductModalPro
           isNew: values.isNew || false,
           onSuccess: (data) => {
             message.success({
-              content: data.data.message || 'Tạo sản phẩm thành công!',
+              content: 'Tạo sản phẩm thành công!',
               duration: 2,
             });
             form.resetFields();
@@ -107,7 +107,7 @@ const CreateProductModal = ({ open, onCancel, onSuccess }: CreateProductModalPro
           },
           onError: (error) => {
             message.error({
-              content: error?.response?.data?.message || 'Tạo sản phẩm thất bại!',
+              content: 'Tạo sản phẩm thất bại!',
               duration: 3,
             });
             setLoading(false);

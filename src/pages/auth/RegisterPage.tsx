@@ -29,7 +29,7 @@ const RegisterPage = () => {
         phone: values.phone,
         onSuccess: (data) => {
           message.success({
-            content: data.data.message || 'Đăng ký tài khoản thành công! 🎉',
+            content: 'Đăng ký tài khoản thành công! 🎉',
             duration: 3,
           });
 
@@ -43,7 +43,7 @@ const RegisterPage = () => {
         },
         onError: (error) => {
           message.error({
-            content: error?.response?.data?.message || 'Đăng ký thất bại! Vui lòng thử lại.',
+            content: 'Đăng ký thất bại! Vui lòng thử lại.',
             duration: 3,
           });
         },

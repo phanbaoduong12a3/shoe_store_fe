@@ -36,7 +36,7 @@ const CreateCategoryModal = ({ open, onCancel, onSuccess }: CreateCategoryModalP
           displayOrder: values.displayOrder,
           onSuccess: (data) => {
             message.success({
-              content: data.data.message || 'Tạo danh mục thành công!',
+              content: 'Tạo danh mục thành công!',
               duration: 2,
             });
             form.resetFields();
@@ -46,7 +46,7 @@ const CreateCategoryModal = ({ open, onCancel, onSuccess }: CreateCategoryModalP
           },
           onError: (error) => {
             message.error({
-              content: error?.response?.data?.message || 'Tạo danh mục thất bại!',
+              content: 'Tạo danh mục thất bại!',
               duration: 3,
             });
             setLoading(false);

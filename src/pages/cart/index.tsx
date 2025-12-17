@@ -55,7 +55,7 @@ const Cart = () => {
           message.success('Đã cập nhật số lượng!');
         },
         onError: (error) => {
-          message.error(error?.response?.data?.message || 'Không thể cập nhật số lượng!');
+          message.error('Không thể cập nhật số lượng!');
         },
       })
     );
@@ -72,7 +72,7 @@ const Cart = () => {
           message.success('Đã xóa sản phẩm khỏi giỏ hàng!');
         },
         onError: (error) => {
-          message.error(error?.response?.data?.message || 'Không thể xóa sản phẩm!');
+          message.error('Không thể xóa sản phẩm!');
         },
       })
     );

@@ -48,9 +48,7 @@ const AdminLoginPage = () => {
         },
         onError: (error) => {
           const errorMessage =
-            error?.response?.data?.message ||
-            error?.message ||
-            'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!';
+            error?.message || 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!';
           message.error({
             content: errorMessage,
             duration: 3,

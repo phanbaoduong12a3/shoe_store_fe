@@ -31,7 +31,7 @@ const LoginPage = () => {
         password: values.password,
         onSuccess: (data) => {
           message.success({
-            content: data.data.message || 'Đăng nhập thành công! 🎉',
+            content: 'Đăng nhập thành công! 🎉',
             duration: 2,
           });
           console.log('Login successful:', data);
@@ -77,9 +77,7 @@ const LoginPage = () => {
         onError: (error) => {
           console.error('Login error:', error);
           message.error({
-            content:
-              error?.response?.data?.message ||
-              'Đăng nhập thất bạiiii! Vui lòng kiểm tra lại email và mật khẩu.',
+            content: 'Đăng nhập thất bạiiii! Vui lòng kiểm tra lại email và mật khẩu.',
             duration: 3,
           });
         },

@@ -154,7 +154,7 @@ const EditProductModal = ({ open, product, onCancel, onSuccess }: EditProductMod
 
           onSuccess: (data) => {
             message.success({
-              content: data.data.message || 'Cập nhật sản phẩm thành công!',
+              content: 'Cập nhật sản phẩm thành công!',
               duration: 2,
             });
             setLoading(false);
@@ -163,7 +163,7 @@ const EditProductModal = ({ open, product, onCancel, onSuccess }: EditProductMod
 
           onError: (error) => {
             message.error({
-              content: error?.response?.data?.message || 'Cập nhật thất bại!',
+              content: 'Cập nhật thất bại!',
               duration: 3,
             });
             setLoading(false);

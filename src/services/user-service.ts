@@ -46,7 +46,23 @@ export interface GetUsersResponse {
   };
 }
 
+export interface DeleteUserRequest {
+  id: string;
+}
+
+export interface DeleteUserResponse {
+  status: number;
+  data: {
+    message: string;
+  };
+}
+
 export const getListUsers = async (params: GetUsersParams = {}): Promise<GetUsersResponse> => {
   const response = await client.get('/api/v1/admin/users', { params });
+  return response.data;
+};
+
+export const deleteUser = async (data: DeleteUserRequest): Promise<DeleteUserResponse> => {
+  const response = await client.delete(`/api/v1/admin/users/${data.id}`);
   return response.data;
 };

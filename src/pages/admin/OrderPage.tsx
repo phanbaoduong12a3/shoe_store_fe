@@ -72,7 +72,7 @@ const OrderPage = () => {
         },
         onError: (error: any) => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể tải danh sách sản phẩm!',
+            content: 'Không thể tải danh sách sản phẩm!',
             duration: 3,
           });
         },

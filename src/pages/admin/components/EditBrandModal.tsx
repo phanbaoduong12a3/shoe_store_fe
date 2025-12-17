@@ -65,7 +65,7 @@ const EditBrandModal = ({ open, brand, onCancel, onSuccess }: EditBrandModalProp
           isActive: values.isActive ?? true,
           onSuccess: (data) => {
             message.success({
-              content: data.data.message || 'Cập nhật thương hiệu thành công!',
+              content: 'Cập nhật thương hiệu thành công!',
               duration: 2,
             });
             form.resetFields();
@@ -75,7 +75,7 @@ const EditBrandModal = ({ open, brand, onCancel, onSuccess }: EditBrandModalProp
           },
           onError: (error) => {
             message.error({
-              content: error?.response?.data?.message || 'Cập nhật thương hiệu thất bại!',
+              content: 'Cập nhật thương hiệu thất bại!',
               duration: 3,
             });
             setLoading(false);

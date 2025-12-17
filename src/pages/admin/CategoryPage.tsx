@@ -28,7 +28,7 @@ const CategoryPage = () => {
         onSuccess: (data) => {},
         onError: (error) => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể tải danh sách danh mục!',
+            content: 'Không thể tải danh sách danh mục!',
             duration: 3,
           });
         },

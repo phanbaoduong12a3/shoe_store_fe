@@ -1,21 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Table, Card, Space, Button, App, Image, Input } from 'antd';
-import { PlusOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
-import { Brand } from '@/services/brand-service';
 import './brand-page.scss';
 import CreateBrandModal from './components/CreateBrandModal';
 import ConfirmModal from '@/components/ConfirmModal';
 import { UserDetail } from '@/services/user-service';
-import { getListUserAction } from '@/stores/user/actions';
+import { deleteUserAction, getListUserAction } from '@/stores/user/actions';
 
 const UserPage = () => {
   const dispatch = useAppDispatch();
   const { users, loading, total } = useAppSelector((state) => state.user);
   const { message } = App.useApp();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserDetail | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState('');
@@ -51,29 +50,8 @@ const UserPage = () => {
 
   const handleSearch = (value: string) => {
     setSearchText(value);
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
   };
-
-  // const handleToggleStatus = (brand: Brand) => {
-  //   dispatch(
-  //     toggleUserstatusAction({
-  //       id: brand._id,
-  //       isActive: !brand.isActive,
-  //       onSuccess: (data) => {
-  //         message.success({
-  //           content: data.data.message || 'Cập nhật trạng thái thành công!',
-  //           duration: 2,
-  //         });
-  //       },
-  //       onError: (error) => {
-  //         message.error({
-  //           content: error?.response?.data?.message || 'Cập nhật trạng thái thất bại!',
-  //           duration: 3,
-  //         });
-  //       },
-  //     })
-  //   );
-  // };
 
   const columns: ColumnsType<UserDetail> = [
     {
@@ -82,7 +60,7 @@ const UserPage = () => {
       key: 'avatar',
       width: '10%',
       render: (avatar: string) => (
-        <div className="avatar-logo-preview">
+        <div className="user-logo-preview">
           {avatar ? (
             <Image
               src={avatar}
@@ -103,7 +81,7 @@ const UserPage = () => {
       dataIndex: 'fullName',
       key: 'fullName',
       width: '20%',
-      render: (text) => <span className="user-fullName">{text}</span>,
+      render: (text) => <span className="user-name">{text}</span>,
     },
     {
       title: 'Email',
@@ -125,7 +103,7 @@ const UserPage = () => {
       key: 'role',
       width: '10%',
       render: (text) => (
-        <span className="user-phone">{text === 'customer' ? 'Khách hàng' : 'Admin'}</span>
+        <span className="user-role">{text === 'customer' ? 'Khách hàng' : 'Admin'}</span>
       ),
     },
     {
@@ -134,7 +112,7 @@ const UserPage = () => {
       key: 'createdAt',
       width: '10%',
       render: (date: string) => (
-        <span className="brand-date">{new Date(date).toLocaleDateString('vi-VN')}</span>
+        <span className="user-date">{new Date(date).toLocaleDateString('vi-VN')}</span>
       ),
     },
     {
@@ -147,7 +125,7 @@ const UserPage = () => {
             type="text"
             danger
             icon={<DeleteOutlined />}
-            onClick={() => console.log(record)}
+            onClick={() => handleDelete(record)}
             className="delete-btn"
           />
         </Space>
@@ -155,35 +133,35 @@ const UserPage = () => {
     },
   ];
 
-  const handleDelete = (record: Brand) => {
-    setSelectedBrand(record);
+  const handleDelete = (record: UserDetail) => {
+    setSelectedUser(record);
     setOpenConfirm(true);
   };
 
-  // const handleConfirmDelete = () => {
-  //   if (!selectedBrand) return;
+  const handleConfirmDelete = () => {
+    if (!selectedUser) return;
 
-  //   dispatch(
-  //     deleteBrandAction({
-  //       id: selectedBrand._id,
-  //       onSuccess: (data) => {
-  //         message.success({
-  //           content: data.data.message || 'Xóa thương hiệu thành công!',
-  //           duration: 2,
-  //         });
-  //         fetchUsers();
-  //         setOpenConfirm(false);
-  //       },
-  //       onError: (error) => {
-  //         message.error({
-  //           content: error?.response?.data?.message || 'Xóa thương hiệu thất bại!',
-  //           duration: 3,
-  //         });
-  //         setOpenConfirm(false);
-  //       },
-  //     })
-  //   );
-  // };
+    dispatch(
+      deleteUserAction({
+        id: selectedUser._id,
+        onSuccess: (data) => {
+          message.success({
+            content: 'Xóa người dùng thành công!',
+            duration: 2,
+          });
+          fetchUsers();
+          setOpenConfirm(false);
+        },
+        onError: (error) => {
+          message.error({
+            content: 'Xóa người dùng thất bại!',
+            duration: 3,
+          });
+          setOpenConfirm(false);
+        },
+      })
+    );
+  };
 
   const handleCreateModalSuccess = () => {
     setIsCreateModalOpen(false);
@@ -191,9 +169,9 @@ const UserPage = () => {
   };
 
   return (
-    <div className="brand-page">
+    <div className="user-page">
       <Card
-        className="brand-card"
+        className="user-card"
         title="Quản lý người dùng"
         extra={
           <Space>
@@ -204,14 +182,6 @@ const UserPage = () => {
               style={{ width: 250 }}
               prefix={<SearchOutlined />}
             />
-            {/* <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => setIsCreateModalOpen(true)}
-              className="add-brand-btn"
-            >
-              Thêm người dùng
-            </Button> */}
           </Space>
         }
       >
@@ -226,7 +196,7 @@ const UserPage = () => {
             pageSize: pageSize,
             total: total,
             showSizeChanger: true,
-            showTotal: (total) => `Tổng ${total} thương hiệu`,
+            showTotal: (total) => `Tổng ${total} người dùng`,
             pageSizeOptions: ['10', '20', '50', '100'],
           }}
         />
@@ -241,11 +211,11 @@ const UserPage = () => {
       <ConfirmModal
         open={openConfirm}
         title="Xác nhận xóa"
-        content={`Bạn có chắc chắn muốn xóa người dùng "${selectedBrand?.name}"?`}
+        content={`Bạn có chắc chắn muốn xóa người dùng "${selectedUser?.fullName}"?`}
         okText="Xóa"
         cancelText="Hủy"
         onOk={() => {
-          console.log('');
+          handleConfirmDelete();
         }}
         onCancel={() => setOpenConfirm(false)}
       />

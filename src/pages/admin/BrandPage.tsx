@@ -37,7 +37,7 @@ const BrandPage = () => {
         },
         onError: (error) => {
           message.error({
-            content: error?.response?.data?.message || 'Không thể tải danh sách thương hiệu!',
+            content: 'Không thể tải danh sách thương hiệu!',
             duration: 3,
           });
         },
@@ -62,13 +62,13 @@ const BrandPage = () => {
         isActive: !brand.isActive,
         onSuccess: (data) => {
           message.success({
-            content: data.data.message || 'Cập nhật trạng thái thành công!',
+            content: 'Cập nhật trạng thái thành công!',
             duration: 2,
           });
         },
         onError: (error) => {
           message.error({
-            content: error?.response?.data?.message || 'Cập nhật trạng thái thất bại!',
+            content: 'Cập nhật trạng thái thất bại!',
             duration: 3,
           });
         },
@@ -180,7 +180,7 @@ const BrandPage = () => {
         id: selectedBrand._id,
         onSuccess: (data) => {
           message.success({
-            content: data.data.message || 'Xóa thương hiệu thành công!',
+            content: 'Xóa thương hiệu thành công!',
             duration: 2,
           });
           fetchBrands();
@@ -188,7 +188,7 @@ const BrandPage = () => {
         },
         onError: (error) => {
           message.error({
-            content: error?.response?.data?.message || 'Xóa thương hiệu thất bại!',
+            content: 'Xóa thương hiệu thất bại!',
             duration: 3,
           });
           setOpenConfirm(false);

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { UserDetail } from '@/services/auth-service';
-import { getListUserAction } from './actions';
+import { deleteUserAction, getListUserAction } from './actions';
 
 export type TUserState = {
   users: UserDetail[];
@@ -34,6 +34,18 @@ const userSlice = createSlice({
     builder.addCase(getListUserAction.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || 'Failed to fetch users';
+    });
+    // Delete User
+    builder.addCase(deleteUserAction.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteUserAction.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(deleteUserAction.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || 'Failed to delete user';
     });
   },
 });
