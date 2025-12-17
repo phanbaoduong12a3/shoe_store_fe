@@ -70,9 +70,9 @@ const OrderPage = () => {
         onSuccess: (data: any) => {
           console.log('orders loaded:', data);
         },
-        onError: (error: any) => {
+        onError: () => {
           message.error({
-            content: 'Không thể tải danh sách sản phẩm!',
+            content: 'Không thể tải danh sách đơn hàng!',
             duration: 3,
           });
         },

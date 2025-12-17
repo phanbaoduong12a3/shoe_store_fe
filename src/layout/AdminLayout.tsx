@@ -1,27 +1,30 @@
-import { useState } from 'react';
-import { Layout, Menu, Avatar, Dropdown, Button, theme } from 'antd';
+import { useEffect, useRef, useState } from 'react';
+import { Layout, Menu, Avatar, Button, theme, message } from 'antd';
 import {
   DashboardOutlined,
   ShoppingOutlined,
   UserOutlined,
-  SettingOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   TagsOutlined,
   ShoppingCartOutlined,
-  BarChartOutlined,
   ShopOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
 import './admin-layout.scss';
+import { postSignoutAction } from '@/stores/auth/actions';
+import { useAppDispatch } from '@/stores';
 
 const { Header, Sider, Content } = Layout;
 
 const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const menuRef = useRef<HTMLDivElement>(null);
+  const [open, setOpen] = useState(false);
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
@@ -68,18 +71,9 @@ const AdminLayout = () => {
       label: 'Thông tin cá nhân',
     },
     {
-      key: 'settings',
-      icon: <SettingOutlined />,
-      label: 'Cài đặt',
-    },
-    {
-      type: 'divider',
-    },
-    {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: 'Đăng xuất',
-      danger: true,
     },
   ];
 
@@ -89,13 +83,40 @@ const AdminLayout = () => {
 
   const handleUserMenuClick = ({ key }: { key: string }) => {
     if (key === 'logout') {
-      // TODO: Implement logout logic
-      console.log('Logout');
-      navigate('/login');
+      dispatch(
+        postSignoutAction({
+          onSuccess: () => {
+            message.success({
+              content: 'Đăng xuất thành công!',
+              duration: 2,
+            });
+            navigate('/admin/login');
+          },
+          onError: () => {
+            message.error({
+              content: 'Đăng xuất thất bại!',
+              duration: 3,
+            });
+          },
+        })
+      );
     } else {
       navigate(`/admin/${key}`);
     }
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
 
   return (
     <Layout className="admin-layout">
@@ -133,21 +154,45 @@ const AdminLayout = () => {
             />
           </div>
           <div className="header-right">
-            <Dropdown
-              menu={{ items: userMenuItems, onClick: handleUserMenuClick }}
-              placement="bottomRight"
-              trigger={['click']}
-            >
-              <div className="user-info">
-                <Avatar size="large" icon={<UserOutlined />} style={{ cursor: 'pointer' }} />
-                {!collapsed && (
-                  <div className="user-details">
-                    <span className="user-name">Admin User</span>
-                    <span className="user-role">Quản trị viên</span>
-                  </div>
-                )}
+            <div className="relative" ref={menuRef}>
+              {/* User info */}
+              <div
+                className="user-info"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setOpen((prev) => !prev);
+                }}
+              >
+                <Avatar size="large" icon={<UserOutlined />} />
+                <span className="user-name">Admin</span>
               </div>
-            </Dropdown>
+
+              {/* Menu */}
+              {open && (
+                <div className="user-menu">
+                  {userMenuItems.map((item, index) => {
+                    if (item?.type === 'divider') {
+                      return <div key={`divider-${index}`} className="menu-divider" />;
+                    }
+
+                    return (
+                      <div
+                        key={item?.key}
+                        className={`menu-item ${item?.key === 'logout' ? 'danger' : ''}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleUserMenuClick({ key: item?.key as string });
+                          setOpen(false);
+                        }}
+                      >
+                        <span className="menu-icon">{(item as any)?.icon}</span>
+                        <span>{item?.label}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
         </Header>
         <Content

@@ -12,6 +12,8 @@ import {
   SignupResponse,
   User,
   UserDetail,
+  SignoutResponse,
+  postSignout,
 } from '@/services/auth-service';
 import { postRefreshToken, RefreshTokenResponse } from '@/services/auth-service';
 
@@ -22,6 +24,11 @@ interface PostSigninPayload extends SigninRequest {
 
 interface PostSignupPayload extends SignupRequest {
   onSuccess?: (data: SignupResponse) => void;
+  onError?: (error: any) => void;
+}
+
+interface PostSignoutPayload {
+  onSuccess?: (data: SignoutResponse) => void;
   onError?: (error: any) => void;
 }
 
@@ -79,6 +86,33 @@ const postSignupAction = createAsyncThunk(
   }
 );
 
+const postSignoutAction = createAsyncThunk(
+  EAuthActions.POST_SIGNOUT,
+  async (payload: PostSignoutPayload, { rejectWithValue }) => {
+    const { onSuccess, onError } = payload;
+    try {
+      const response = await postSignout();
+
+      // Call onSuccess callback if provided
+      if (onSuccess) {
+        onSuccess(response);
+      }
+
+      return response;
+    } catch (error: any) {
+      // Call onError callback if provided
+      if (onError) {
+        onError(error);
+      }
+
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
 const getUserInfoAction = createAsyncThunk(
   EAuthActions.GET_USER_INFO,
   async (_, { rejectWithValue }) => {
@@ -122,4 +156,10 @@ const refreshTokenAction = createAsyncThunk(
   }
 );
 
-export { postSigninAction, postSignupAction, getUserInfoAction, refreshTokenAction };
+export {
+  postSigninAction,
+  postSignupAction,
+  postSignoutAction,
+  getUserInfoAction,
+  refreshTokenAction,
+};

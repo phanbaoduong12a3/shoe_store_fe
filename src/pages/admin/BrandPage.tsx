@@ -35,7 +35,7 @@ const BrandPage = () => {
         onSuccess: (data) => {
           console.log('Brands loaded:', data);
         },
-        onError: (error) => {
+        onError: () => {
           message.error({
             content: 'Không thể tải danh sách thương hiệu!',
             duration: 3,
@@ -60,13 +60,13 @@ const BrandPage = () => {
       toggleBrandStatusAction({
         id: brand._id,
         isActive: !brand.isActive,
-        onSuccess: (data) => {
+        onSuccess: () => {
           message.success({
             content: 'Cập nhật trạng thái thành công!',
             duration: 2,
           });
         },
-        onError: (error) => {
+        onError: () => {
           message.error({
             content: 'Cập nhật trạng thái thất bại!',
             duration: 3,
@@ -178,7 +178,7 @@ const BrandPage = () => {
     dispatch(
       deleteBrandAction({
         id: selectedBrand._id,
-        onSuccess: (data) => {
+        onSuccess: () => {
           message.success({
             content: 'Xóa thương hiệu thành công!',
             duration: 2,
@@ -186,7 +186,7 @@ const BrandPage = () => {
           fetchBrands();
           setOpenConfirm(false);
         },
-        onError: (error) => {
+        onError: () => {
           message.error({
             content: 'Xóa thương hiệu thất bại!',
             duration: 3,

@@ -58,6 +58,13 @@ export interface AuthResponse {
   };
 }
 
+export interface SignoutResponse {
+  status: number;
+  data: {
+    message: string;
+  };
+}
+
 export interface SignupResponse {
   status: number;
   data: {
@@ -91,5 +98,10 @@ export interface RefreshTokenResponse {
 
 export const postRefreshToken = async (refreshToken: string): Promise<RefreshTokenResponse> => {
   const response = await client.post('/api/v1/refresh-token', { refreshToken });
+  return response.data;
+};
+
+export const postSignout = async (): Promise<SignoutResponse> => {
+  const response = await client.post('/api/v1/signOut');
   return response.data;
 };

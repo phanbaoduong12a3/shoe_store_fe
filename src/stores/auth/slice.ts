@@ -5,6 +5,7 @@ import {
   postSignupAction,
   getUserInfoAction,
   refreshTokenAction,
+  postSignoutAction,
 } from './actions';
 import { authTokenService } from '@/services/auth-token-service';
 type TAuthState = {
@@ -86,6 +87,19 @@ export const authSlice = createSlice({
       .addCase(postSignupAction.rejected, (state, action) => {
         state.loading = false;
         state.error = action.error.message || 'Signup failed';
+      })
+      // Signout
+      .addCase(postSignoutAction.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(postSignoutAction.fulfilled, (state) => {
+        state.loading = false;
+        state.error = null;
+      })
+      .addCase(postSignoutAction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message || 'Signout failed';
       })
       // Get User Info
       .addCase(getUserInfoAction.pending, (state) => {
