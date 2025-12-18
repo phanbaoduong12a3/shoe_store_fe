@@ -4,7 +4,7 @@ import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import './brand-page.scss';
-import CreateBrandModal from './components/CreateBrandModal';
+import CreateBrandModal from '../components/CreateBrandModal';
 import ConfirmModal from '@/components/ConfirmModal';
 import { UserDetail } from '@/services/user-service';
 import { deleteUserAction, getListUserAction } from '@/stores/user/actions';

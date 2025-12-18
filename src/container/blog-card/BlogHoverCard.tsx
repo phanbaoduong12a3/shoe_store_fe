@@ -7,21 +7,11 @@ interface Props {
   title: string;
   excerpt?: string;
   height: number;
-  tags?: string[];
   activeTag: string;
   viewCount?: number;
 }
 
-const BlogHoverCard = ({
-  image,
-  title,
-  excerpt,
-  height,
-  tags = [],
-  activeTag,
-  viewCount = 0,
-}: Props) => {
-  console.log('tags', tags);
+const BlogHoverCard = ({ image, title, excerpt, height, activeTag, viewCount = 0 }: Props) => {
   return (
     <motion.div
       whileHover={{ y: -8 }}
@@ -47,18 +37,12 @@ const BlogHoverCard = ({
         />
 
         {/* TAG BADGE */}
-        {tags?.length > 0 && (
-          <div className="absolute top-3 left-3 flex gap-2">
-            {tags.slice(0, 1).map((t) => (
-              <span
-                key={t}
-                className="bg-yellow-400 text-black text-xs px-2 py-1 rounded font-semibold"
-              >
-                {activeTag}
-              </span>
-            ))}
-          </div>
-        )}
+
+        <div className="absolute top-3 left-3 flex gap-2">
+          <span className="bg-yellow-400 text-black text-xs px-2 py-1 rounded font-semibold">
+            {activeTag}
+          </span>
+        </div>
 
         {/* VIEW COUNT */}
         <div className="absolute top-3 right-3 flex items-center gap-1 text-xs text-white bg-black/50 px-2 py-1 rounded">

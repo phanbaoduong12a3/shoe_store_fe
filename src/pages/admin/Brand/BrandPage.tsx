@@ -6,8 +6,8 @@ import { useAppDispatch, useAppSelector } from '@/stores';
 import { getBrandsAction, toggleBrandStatusAction, deleteBrandAction } from '@/stores/brand';
 import { Brand } from '@/services/brand-service';
 import './brand-page.scss';
-import CreateBrandModal from './components/CreateBrandModal';
-import EditBrandModal from './components/EditBrandModal';
+import CreateBrandModal from '../components/CreateBrandModal';
+import EditBrandModal from '../components/EditBrandModal';
 import ConfirmModal from '@/components/ConfirmModal';
 
 const BrandPage = () => {

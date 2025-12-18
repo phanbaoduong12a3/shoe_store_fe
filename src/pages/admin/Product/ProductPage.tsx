@@ -9,13 +9,13 @@ import {
   deleteProductAction,
 } from '@/stores/product';
 import { Product } from '@/services/product-service';
-import CreateProductModal from './components/CreateProductModal';
+import CreateProductModal from '../components/CreateProductModal';
 import './product-page.scss';
 import CustomDropdown from '@/components/CustomDropdown';
 import { getBrandsAction } from '@/stores/brand';
 import { getCategoriesAction } from '@/stores/category';
 import ConfirmModal from '@/components/ConfirmModal';
-import EditProductModal from './components/EditProductModal';
+import EditProductModal from '../components/EditProductModal';
 
 const ProductPage = () => {
   const dispatch = useAppDispatch();

@@ -5,8 +5,8 @@ import type { ColumnsType } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { getCategoriesAction } from '@/stores/category';
 import { Category } from '@/services/category-service';
-import CreateCategoryModal from './components/CreateCategoryModal';
-import EditCategoryModal from './components/EditCategoryModal';
+import CreateCategoryModal from '../components/CreateCategoryModal';
+import EditCategoryModal from '../components/EditCategoryModal';
 import './category-page.scss';
 
 const CategoryPage = () => {

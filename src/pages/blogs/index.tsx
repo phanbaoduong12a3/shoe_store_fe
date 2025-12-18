@@ -3,21 +3,35 @@ import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-import { getBlogsAction } from '@/stores/blog/slice';
 import BlogSkeleton from '@/container/blog-card/BlogSkeleton';
 import BlogTagMenu from './BlogTagMenu ';
 import { fadeItem, staggerContainer } from '@/container/blog-card/animations';
 import BlogHoverCard from '@/container/blog-card/BlogHoverCard';
+import { getListBlogAction } from '@/stores/blog/actions';
+import { App } from 'antd';
 
 const BlogBrandPage = () => {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { message } = App.useApp();
   const { blogs, loading } = useAppSelector((s) => s.blog);
 
   const [activeTag, setActiveTag] = useState<string>();
 
   useEffect(() => {
-    dispatch(getBlogsAction({ tag: activeTag }));
+    dispatch(
+      getListBlogAction({
+        onSuccess: (data) => {
+          console.log('Blogs loaded:', data);
+        },
+        onError: () => {
+          message.error({
+            content: 'Không thể tải danh sách bài viết!',
+            duration: 3,
+          });
+        },
+      })
+    );
   }, [activeTag]);
 
   const tags = useMemo(() => {
@@ -71,8 +85,7 @@ const BlogBrandPage = () => {
               title={featured.title}
               excerpt={featured.excerpt}
               height={420}
-              tags={featured.tags?.[0]?.split(',')}
-              activeTag={activeTag || ''}
+              activeTag={activeTag || 'giày'}
               viewCount={featured.viewCount}
             />
           </motion.div>
@@ -88,8 +101,7 @@ const BlogBrandPage = () => {
                   image={b.thumbnail}
                   title={b.title}
                   height={200}
-                  tags={b.tags?.[0]?.split(',')}
-                  activeTag={activeTag || ''}
+                  activeTag={activeTag || 'giày'}
                   viewCount={b.viewCount}
                 />
               </motion.div>
@@ -114,8 +126,7 @@ const BlogBrandPage = () => {
                 image={b.thumbnail}
                 title={b.title}
                 height={160}
-                tags={b.tags?.[0]?.split(',')}
-                activeTag={activeTag || ''}
+                activeTag={activeTag || 'giày'}
                 viewCount={b.viewCount}
               />
             </motion.div>

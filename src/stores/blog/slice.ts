@@ -1,50 +1,53 @@
-// stores/blog/index.ts
 import { createSlice } from '@reduxjs/toolkit';
-import axios from 'axios';
-import { AppDispatch } from 'recharts/types/state/store';
+import { deleteBlogAction, getListBlogAction } from './actions';
+import { BlogDetail } from '@/services/blog-service';
 
-interface BlogState {
-  blogs: any[];
+export type TBlogState = {
+  blogs: BlogDetail[];
+  total: number;
   loading: boolean;
-}
+  error: string | null;
+};
 
-const initialState: BlogState = {
+const initialState: TBlogState = {
   blogs: [],
+  total: 0,
   loading: false,
+  error: null,
 };
 
 const blogSlice = createSlice({
   name: 'blog',
   initialState,
-  reducers: {
-    startLoading(state) {
+  reducers: {},
+  extraReducers: (builder) => {
+    // Get Blogs
+    builder.addCase(getListBlogAction.pending, (state) => {
       state.loading = true;
-    },
-    getBlogsSuccess(state, action) {
-      state.blogs = action.payload;
+      state.error = null;
+    });
+    builder.addCase(getListBlogAction.fulfilled, (state, action) => {
       state.loading = false;
-    },
-    getBlogsFail(state) {
+      state.blogs = action.payload.data.blogs;
+      state.total = action.payload.data.pagination.total;
+    });
+    builder.addCase(getListBlogAction.rejected, (state, action) => {
       state.loading = false;
-    },
+      state.error = action.error.message || 'Failed to fetch blogs';
+    });
+    // Delete Blog
+    builder.addCase(deleteBlogAction.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(deleteBlogAction.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(deleteBlogAction.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || 'Failed to delete blog';
+    });
   },
 });
 
-export const { startLoading, getBlogsSuccess, getBlogsFail } = blogSlice.actions;
-
 export const blogReducer = blogSlice.reducer;
-
-/* ACTION */
-export const getBlogsAction =
-  ({ tag }: { tag?: string }) =>
-  async (dispatch: AppDispatch) => {
-    try {
-      dispatch(startLoading());
-      const res = await axios.get('http://localhost:8080/api/v1/blogs', {
-        params: { tag },
-      });
-      dispatch(getBlogsSuccess(res.data.data.blogs));
-    } catch (e) {
-      dispatch(getBlogsFail());
-    }
-  };
