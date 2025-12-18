@@ -25,7 +25,7 @@ const Header = () => {
         <div className="max-w-container w-full mx-auto flex justify-between items-center px-10">
           {/* Left menu */}
           <div className="flex items-center gap-2">
-            <a href="#" className="hover:text-yellow-400">
+            <a href="/blogs" className="hover:text-yellow-400">
               Blog
             </a>
             <span>|</span>

@@ -7,6 +7,7 @@ import { productReducer } from './product';
 import { cartReducer } from './cart';
 import { orderReducer } from './order';
 import { userReducer } from './user';
+import { blogReducer } from './blog/slice';
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -16,6 +17,7 @@ const rootReducer = combineReducers({
   cart: cartReducer,
   order: orderReducer,
   user: userReducer,
+  blog: blogReducer,
 });
 
 export default rootReducer;
