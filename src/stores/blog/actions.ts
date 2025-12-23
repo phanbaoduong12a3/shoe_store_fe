@@ -13,6 +13,9 @@ import {
   CreateBlogRequest,
   CreateBlogResponse,
   createBlog,
+  UpdateBlogRequest,
+  UpdateBlogResponse,
+  updateBlog,
 } from '@/services/blog-service';
 
 interface GetBlogsPayload extends GetBlogsParams {
@@ -105,6 +108,36 @@ const createBlogAction = createAsyncThunk(
   }
 );
 
+interface UpdateBlogPayload extends UpdateBlogRequest {
+  onSuccess?: (data: UpdateBlogResponse) => void;
+  onError?: (error: any) => void;
+}
+
+const updateBlogAction = createAsyncThunk(
+  EBlogActions.UPDATE_BLOG,
+  async (payload: UpdateBlogPayload, { rejectWithValue }) => {
+    try {
+      const { onSuccess, onError, ...data } = payload;
+      const response = await updateBlog(data);
+
+      if (onSuccess) {
+        onSuccess(response);
+      }
+
+      return response;
+    } catch (error: any) {
+      if (payload.onError) {
+        payload.onError(error);
+      }
+
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
 interface ToggleBlogStatusPayload extends ToggleBlogStatusRequest {
   onSuccess?: (data: ToggleBlogStatusResponse) => void;
   onError?: (error: any) => void;
@@ -135,4 +168,10 @@ const toggleBlogStatusAction = createAsyncThunk(
   }
 );
 
-export { getListBlogAction, deleteBlogAction, toggleBlogStatusAction, createBlogAction };
+export {
+  getListBlogAction,
+  deleteBlogAction,
+  toggleBlogStatusAction,
+  createBlogAction,
+  updateBlogAction,
+};

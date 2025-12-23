@@ -9,6 +9,7 @@ import ConfirmModal from '@/components/ConfirmModal';
 import { BlogDetail } from '@/services/blog-service';
 import { deleteBlogAction, getListBlogAction, toggleBlogStatusAction } from '@/stores/blog/actions';
 import CreateBlogModal from '../components/CreateBlogModal';
+import EditBlogModal from '../components/EditBlogModal';
 
 const BlogPage = () => {
   const dispatch = useAppDispatch();
@@ -21,6 +22,7 @@ const BlogPage = () => {
   const [openConfirm, setOpenConfirm] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<BlogDetail | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     fetchBlogs();
@@ -87,6 +89,15 @@ const BlogPage = () => {
         },
       })
     );
+  };
+  const handleEdit = (record: BlogDetail) => {
+    setSelectedBlog(record);
+    setIsEditModalOpen(true);
+  };
+  const handleEditModalSuccess = () => {
+    setIsEditModalOpen(false);
+    setSelectedBlog(null);
+    fetchBlogs();
   };
   const columns: ColumnsType<BlogDetail> = [
     {
@@ -176,8 +187,13 @@ const BlogPage = () => {
       width: 100,
       align: 'center',
       render: (_, record) => (
-        <Space>
-          <Button type="text" icon={<EditOutlined />} />
+        <Space size="small" className="action-buttons">
+          <Button
+            type="text"
+            icon={<EditOutlined />}
+            onClick={() => handleEdit(record)}
+            className="edit-btn"
+          />
           <Button
             type="text"
             danger
@@ -240,6 +256,16 @@ const BlogPage = () => {
           setIsCreateModalOpen(false);
           fetchBlogs();
         }}
+      />
+
+      <EditBlogModal
+        open={isEditModalOpen}
+        blog={selectedBlog}
+        onCancel={() => {
+          setIsEditModalOpen(false);
+          setSelectedBlog(null);
+        }}
+        onSuccess={handleEditModalSuccess}
       />
 
       <ConfirmModal

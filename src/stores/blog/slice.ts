@@ -4,6 +4,7 @@ import {
   deleteBlogAction,
   getListBlogAction,
   toggleBlogStatusAction,
+  updateBlogAction,
 } from './actions';
 import { BlogDetail } from '@/services/blog-service';
 
@@ -37,6 +38,18 @@ const blogSlice = createSlice({
     builder.addCase(createBlogAction.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || 'Failed to create blog';
+    });
+    // Update Blog
+    builder.addCase(updateBlogAction.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(updateBlogAction.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(updateBlogAction.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || 'Failed to update blog';
     });
     // Get Blogs
     builder.addCase(getListBlogAction.pending, (state) => {

@@ -63,7 +63,7 @@ const EditBrandModal = ({ open, brand, onCancel, onSuccess }: EditBrandModalProp
           description: values.description,
           logo: fileList[0] as any,
           isActive: values.isActive ?? true,
-          onSuccess: (data) => {
+          onSuccess: () => {
             message.success({
               content: 'Cập nhật thương hiệu thành công!',
               duration: 2,
@@ -73,7 +73,7 @@ const EditBrandModal = ({ open, brand, onCancel, onSuccess }: EditBrandModalProp
             setLoading(false);
             onSuccess();
           },
-          onError: (error) => {
+          onError: () => {
             message.error({
               content: 'Cập nhật thương hiệu thất bại!',
               duration: 3,

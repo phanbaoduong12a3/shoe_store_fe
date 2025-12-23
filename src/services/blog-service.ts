@@ -1,4 +1,5 @@
 import client from './api-clients';
+import { AntdUploadFileObject } from './brand-service';
 
 export interface BlogDetail {
   _id: string;
@@ -112,6 +113,56 @@ export const createBlog = async (data: CreateBlogRequest): Promise<CreateBlogRes
     },
   });
   return response.data;
+};
+
+export interface UpdateBlogRequest {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  excerpt?: string;
+  categoryId: string;
+  tags?: string[];
+  thumbnail?: AntdUploadFileObject;
+  isPublished: boolean;
+}
+
+export interface UpdateBlogResponse {
+  status: number;
+  data: {
+    message: string;
+    blog: BlogDetail;
+  };
+}
+
+export const updateBlog = async (data: UpdateBlogRequest): Promise<UpdateBlogResponse> => {
+  const formData = new FormData();
+  formData.append('title', data.title);
+  formData.append('slug', data.slug);
+  formData.append('content', data.content);
+  if (data.excerpt) formData.append('excerpt', data.excerpt);
+  formData.append('isPublished', String(data.isPublished));
+  formData.append('categoryId', data.categoryId);
+  if (data.tags && data.tags.length > 0) {
+    formData.append('tags', JSON.stringify(data.tags));
+  }
+  if (data.thumbnail && data.thumbnail.originFileObj) {
+    const file = data.thumbnail.originFileObj;
+    if (file) {
+      formData.append('thumbnail', file as File);
+    }
+  }
+
+  try {
+    const response = await client.put(`/api/v1/admin/blogs/${data.id}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
 };
 
 export const getListBlogs = async (params: GetBlogsParams = {}): Promise<GetBlogsResponse> => {
