@@ -3,7 +3,7 @@ import { Table, Card, Space, Button, App, Image, Input } from 'antd';
 import { DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
-import './brand-page.scss';
+import './user-page.scss';
 import CreateBrandModal from '../components/CreateBrandModal';
 import ConfirmModal from '@/components/ConfirmModal';
 import { UserDetail } from '@/services/user-service';
@@ -144,7 +144,7 @@ const UserPage = () => {
     dispatch(
       deleteUserAction({
         id: selectedUser._id,
-        onSuccess: (data) => {
+        onSuccess: () => {
           message.success({
             content: 'Xóa người dùng thành công!',
             duration: 2,
@@ -152,7 +152,7 @@ const UserPage = () => {
           fetchUsers();
           setOpenConfirm(false);
         },
-        onError: (error) => {
+        onError: () => {
           message.error({
             content: 'Xóa người dùng thất bại!',
             duration: 3,

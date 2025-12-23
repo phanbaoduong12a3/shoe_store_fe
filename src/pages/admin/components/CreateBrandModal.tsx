@@ -32,7 +32,7 @@ const CreateBrandModal = ({ open, onCancel, onSuccess }: CreateBrandModalProps) 
           description: values.description,
           logo: logoFile,
           isActive: values.isActive ?? true,
-          onSuccess: (data) => {
+          onSuccess: () => {
             message.success({
               content: 'Tạo thương hiệu thành công!',
               duration: 2,
@@ -42,7 +42,7 @@ const CreateBrandModal = ({ open, onCancel, onSuccess }: CreateBrandModalProps) 
             setLoading(false);
             onSuccess();
           },
-          onError: (error) => {
+          onError: () => {
             message.error({
               content: 'Tạo thương hiệu thất bại!',
               duration: 3,

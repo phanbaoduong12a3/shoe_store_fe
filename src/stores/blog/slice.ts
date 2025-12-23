@@ -1,5 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { deleteBlogAction, getListBlogAction } from './actions';
+import {
+  createBlogAction,
+  deleteBlogAction,
+  getListBlogAction,
+  toggleBlogStatusAction,
+} from './actions';
 import { BlogDetail } from '@/services/blog-service';
 
 export type TBlogState = {
@@ -21,6 +26,18 @@ const blogSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // Create Brand
+    builder.addCase(createBlogAction.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(createBlogAction.fulfilled, (state) => {
+      state.loading = false;
+    });
+    builder.addCase(createBlogAction.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || 'Failed to create blog';
+    });
     // Get Blogs
     builder.addCase(getListBlogAction.pending, (state) => {
       state.loading = true;
@@ -46,6 +63,10 @@ const blogSlice = createSlice({
     builder.addCase(deleteBlogAction.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error.message || 'Failed to delete blog';
+    });
+    // Toggle BLog Status
+    builder.addCase(toggleBlogStatusAction.pending, (state) => {
+      state.error = null;
     });
   },
 });

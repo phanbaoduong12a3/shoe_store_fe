@@ -7,6 +7,12 @@ import {
   GetBlogsParams,
   GetBlogsResponse,
   deleteBLog,
+  ToggleBlogStatusRequest,
+  ToggleBlogStatusResponse,
+  toggleBlogStatus,
+  CreateBlogRequest,
+  CreateBlogResponse,
+  createBlog,
 } from '@/services/blog-service';
 
 interface GetBlogsPayload extends GetBlogsParams {
@@ -69,4 +75,64 @@ const deleteBlogAction = createAsyncThunk(
   }
 );
 
-export { getListBlogAction, deleteBlogAction };
+interface CreateBlogPayload extends CreateBlogRequest {
+  onSuccess?: (data: CreateBlogResponse) => void;
+  onError?: (error: any) => void;
+}
+
+const createBlogAction = createAsyncThunk(
+  EBlogActions.CREATE_BLOG,
+  async (payload: CreateBlogPayload, { rejectWithValue }) => {
+    try {
+      const { onSuccess, onError, ...data } = payload;
+      const response = await createBlog(data);
+
+      if (onSuccess) {
+        onSuccess(response);
+      }
+
+      return response;
+    } catch (error: any) {
+      if (payload.onError) {
+        payload.onError(error);
+      }
+
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+interface ToggleBlogStatusPayload extends ToggleBlogStatusRequest {
+  onSuccess?: (data: ToggleBlogStatusResponse) => void;
+  onError?: (error: any) => void;
+}
+
+const toggleBlogStatusAction = createAsyncThunk(
+  EBlogActions.TOGGLE_BLOG_STATUS,
+  async (payload: ToggleBlogStatusPayload, { rejectWithValue }) => {
+    try {
+      const { onSuccess, onError, ...data } = payload;
+      const response = await toggleBlogStatus(data);
+
+      if (onSuccess) {
+        onSuccess(response);
+      }
+
+      return response;
+    } catch (error: any) {
+      if (payload.onError) {
+        payload.onError(error);
+      }
+
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
+
+export { getListBlogAction, deleteBlogAction, toggleBlogStatusAction, createBlogAction };
