@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Table, Card, Space, Button, App, Input, Select, InputNumber, Tag, Modal } from 'antd';
+import { Table, Card, Space, Button, App, Input, Tag, Modal } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
-import { changeOrderStatusAction, getOrdersAction } from '@/stores/order';
+import { cancelOrderAction, changeOrderStatusAction, getOrdersAction } from '@/stores/order';
 import { Order } from '@/services/order-service';
 import './order-page.scss';
 import CustomDropdown from '@/components/CustomDropdown';
+import TextDefault from '@/components/Text/Text';
 
 const OrderPage = () => {
   const dispatch = useAppDispatch();
@@ -46,6 +47,8 @@ const OrderPage = () => {
   const [viewModal, setViewModal] = useState(false);
   const [cancelModal, setCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [cancelReason, setCancelReason] = useState('');
+
   const handleView = (order: Order) => {
     setSelectedOrder(order);
     setViewModal(true);
@@ -54,6 +57,15 @@ const OrderPage = () => {
   const handleCancel = (order: Order) => {
     setSelectedOrder(order);
     setCancelModal(true);
+  };
+
+  const handleCancelOrder = () => {
+    if (selectedOrder) {
+      dispatch(cancelOrderAction({ orderId: selectedOrder._id, reason: cancelReason }));
+    }
+    setCancelModal(false);
+    setCancelReason('');
+    fetchorders();
   };
 
   useEffect(() => {
@@ -171,16 +183,28 @@ const OrderPage = () => {
               Xem
             </Button>
             {record.status === 'pending' && (
-              <Button
-                type="primary"
-                style={{
-                  backgroundColor: colorMap[record.status],
-                  borderColor: colorMap[record.status],
-                }}
-                onClick={() => handleChangeStatus(record._id, 'confirmed', '')}
-              >
-                Duyệt
-              </Button>
+              <>
+                <Button
+                  type="primary"
+                  style={{
+                    backgroundColor: colorMap[record.status],
+                    borderColor: colorMap[record.status],
+                  }}
+                  onClick={() => handleChangeStatus(record._id, 'confirmed', '')}
+                >
+                  Duyệt
+                </Button>
+                <Button
+                  type="primary"
+                  style={{
+                    backgroundColor: colorMap['cancelled'],
+                    borderColor: colorMap['cancelled'],
+                  }}
+                  onClick={() => handleCancel(record)}
+                >
+                  Hủy
+                </Button>
+              </>
             )}
 
             {/* duyệt → xử lý đơn hàng */}
@@ -474,6 +498,26 @@ const OrderPage = () => {
             </table>
           </div>
         )}
+      </Modal>
+      {/* Modal hỏi lý do hủy */}
+      <Modal
+        open={cancelModal}
+        title={`Hủy đơn hàng #${selectedOrder?.orderNumber}`}
+        onCancel={() => setCancelModal(false)}
+        onOk={handleCancelOrder}
+        okText="Xác nhận hủy"
+        cancelText="Đóng"
+        centered
+      >
+        <div className="flex flex-col gap-2">
+          <TextDefault color="#6b7280">Vui lòng nhập lý do hủy đơn hàng:</TextDefault>
+          <Input.TextArea
+            value={cancelReason}
+            onChange={(e) => setCancelReason(e.target.value)}
+            rows={3}
+            placeholder="Nhập lý do hủy..."
+          />
+        </div>
       </Modal>
     </div>
   );
