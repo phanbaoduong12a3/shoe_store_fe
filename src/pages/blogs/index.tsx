@@ -1,5 +1,5 @@
 import { useAppDispatch, useAppSelector } from '@/stores';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
@@ -15,14 +15,32 @@ const BlogBrandPage = () => {
   const navigate = useNavigate();
   const { message } = App.useApp();
   const { blogs, loading } = useAppSelector((s) => s.blog);
+  const [allTags, setAllTags] = useState<string[]>([]);
 
   const [activeTag, setActiveTag] = useState<string>();
 
   useEffect(() => {
     dispatch(
       getListBlogAction({
+        tag: activeTag || undefined,
+        isPublished: true,
         onSuccess: (data) => {
           console.log('Blogs loaded:', data);
+          if (!activeTag) {
+            const set = new Set<string>();
+
+            data.data.blogs.forEach((b: any) =>
+              b.tags?.forEach((t: string) =>
+                t
+                  .split(',')
+                  .map((x) => x.trim().toLowerCase())
+                  .filter(Boolean)
+                  .forEach((x) => set.add(x))
+              )
+            );
+
+            setAllTags(Array.from(set));
+          }
         },
         onError: () => {
           message.error({
@@ -33,14 +51,6 @@ const BlogBrandPage = () => {
       })
     );
   }, [activeTag]);
-
-  const tags = useMemo(() => {
-    const set = new Set<string>();
-    blogs.forEach((b) =>
-      b.tags?.forEach((t: string) => t.split(',').forEach((x) => set.add(x.trim())))
-    );
-    return Array.from(set);
-  }, [blogs]);
 
   if (loading) {
     return (
@@ -54,10 +64,6 @@ const BlogBrandPage = () => {
 
   if (!blogs.length) return null;
 
-  const featured = blogs[0];
-  const sideBlogs = blogs.slice(1, 5);
-  const others = blogs.slice(5);
-
   return (
     <div className="bg-white py-10">
       <div className="max-w-7xl mx-auto px-4">
@@ -66,68 +72,34 @@ const BlogBrandPage = () => {
           Thông tin thương hiệu nổi bật trên toàn thế giới
         </p>
 
-        <BlogTagMenu tags={tags} activeTag={activeTag} onChange={setActiveTag} />
+        <BlogTagMenu tags={allTags} activeTag={activeTag} onChange={setActiveTag} />
 
-        {/* TOP */}
         <motion.div
           variants={staggerContainer}
           initial="hidden"
           animate="show"
-          className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-10"
+          className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          lg:grid-cols-3
+          gap-6
+        "
         >
-          <motion.div
-            variants={fadeItem}
-            className="lg:col-span-2"
-            onClick={() => navigate(`/category-detail/${featured.categoryId._id}`)}
-          >
-            <BlogHoverCard
-              image={featured.thumbnail}
-              title={featured.title}
-              excerpt={featured.excerpt}
-              height={420}
-              activeTag={activeTag || 'giày'}
-              viewCount={featured.viewCount}
-            />
-          </motion.div>
-
-          <div className="grid grid-cols-2 gap-4">
-            {sideBlogs.map((b) => (
-              <motion.div
-                key={b._id}
-                variants={fadeItem}
-                onClick={() => navigate(`/category-detail/${b.categoryId._id}`)}
-              >
-                <BlogHoverCard
-                  image={b.thumbnail}
-                  title={b.title}
-                  height={200}
-                  activeTag={activeTag || 'giày'}
-                  viewCount={b.viewCount}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
-
-        {/* BOTTOM */}
-        <motion.div
-          variants={staggerContainer}
-          initial="hidden"
-          animate="show"
-          className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4"
-        >
-          {others.map((b) => (
+          {blogs.map((b) => (
             <motion.div
               key={b._id}
               variants={fadeItem}
-              onClick={() => navigate(`/category-detail/${b.categoryId._id}`)}
             >
               <BlogHoverCard
                 image={b.thumbnail}
                 title={b.title}
-                height={160}
+                excerpt={b.excerpt}
+                content={b.content}
+                height={320}
                 activeTag={activeTag || 'giày'}
                 viewCount={b.viewCount}
+                onNavigate={() => navigate(`/category-detail/${b.categoryId._id}`)}
               />
             </motion.div>
           ))}

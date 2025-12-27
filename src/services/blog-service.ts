@@ -32,6 +32,7 @@ export interface GetBlogsParams {
   limit?: number;
   isPublished?: boolean;
   categoryId?: string;
+  tag?: string;
   authorId?: string;
   search?: string;
   sortBy?: string;
