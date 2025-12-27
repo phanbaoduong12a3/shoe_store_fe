@@ -9,6 +9,7 @@ export const RoutePaths = {
   ADMIN_PRODUCTS: '/admin/products',
   ADMIN_ORDERS: '/admin/orders',
   ADMIN_USERS: '/admin/users',
+  ADMIN_BLOGS: '/admin/blogs',
 
   PRODUCT_DETAIL: '/product-detail/:id',
   CATEGORY_DETAIL: '/category-detail/:id',
@@ -21,4 +22,5 @@ export const RoutePaths = {
   MY_ORDER: '/my-order',
   PAYMENT: '/payment',
   PAYMENT_CONFIRM: '/payment-confirm',
+  BLOGS: '/blogs',
 };

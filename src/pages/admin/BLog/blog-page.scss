@@ -1,0 +1,113 @@
+.blog-page {
+  padding: 24px;
+
+  .ant-card {
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  }
+
+  .ant-table {
+    .ant-table-thead > tr > th {
+      background: #fafafa;
+      font-weight: 600;
+    }
+
+    .ant-table-tbody > tr:hover > td {
+      background: #fafafa;
+    }
+  }
+
+  .blog-title {
+    font-size: 14px;
+    color: #262626;
+  }
+  
+  .status-toggle {
+      .ant-switch {
+        &.ant-switch-checked {
+          background-color: #52c41a;
+        }
+      }
+    }
+
+  .ellipsis-multiline {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; // 👈 số dòng muốn hiển thị
+  overflow: hidden;
+
+  line-height: 1.5;
+  max-height: calc(1.5em * 3); // line-height * số dòng
+  color: #595959;
+}
+
+
+  .clickable {
+    cursor: pointer;
+    color: #1677ff;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+
+  .popover-content {
+    max-width: 500px;
+    white-space: pre-wrap;
+    line-height: 1.6;
+  }
+
+  .no-image {
+    width: 50px;
+    height: 50px;
+    background: #f5f5f5;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ant-pagination {
+    margin-top: 20px;
+  }
+/* FIX AntD Table ép nowrap */
+.ant-table-cell {
+  white-space: normal !important;
+}
+
+/* Nội dung trong cell */
+.cell-content {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; // số dòng
+  overflow: hidden;
+
+  line-height: 1.5;
+  max-height: calc(1.5em * 3);
+
+  cursor: pointer;
+  color: #595959;
+}
+
+/* FIX popover bị cắt */
+.ant-table-body {
+  overflow: visible !important;
+}
+
+/* Popover nội dung */
+.blog-content-popover {
+  .ant-popover-inner {
+    max-width: 600px;
+  }
+
+  .popover-content {
+    white-space: pre-wrap;
+    line-height: 1.6;
+    max-height: 400px;
+    overflow-y: auto;
+  }
+}
+
+}

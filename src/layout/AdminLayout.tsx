@@ -10,6 +10,7 @@ import {
   TagsOutlined,
   ShoppingCartOutlined,
   ShopOutlined,
+  FileDoneOutlined,
 } from '@ant-design/icons';
 import { Outlet, useNavigate } from 'react-router-dom';
 import type { MenuProps } from 'antd';
@@ -60,6 +61,11 @@ const AdminLayout = () => {
       key: 'users',
       icon: <UserOutlined />,
       label: 'Người dùng',
+    },
+    {
+      key: 'blogs',
+      icon: <FileDoneOutlined />,
+      label: 'Bài viết',
     },
   ];
 

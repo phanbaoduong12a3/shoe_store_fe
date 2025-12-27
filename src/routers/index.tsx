@@ -11,20 +11,22 @@ import UserLayout from '@/layout/UserLayout';
 import RegisterPage from '@/pages/auth/RegisterPage';
 import AdminLayout from '@/layout/AdminLayout';
 import DashboardPage from '@/pages/admin/DashboardPage';
-import AdminLoginPage from '@/pages/admin/AdminLoginPage';
-import CategoryPage from '@/pages/admin/CategoryPage';
-import BrandPage from '@/pages/admin/BrandPage';
-import ProductPage from '@/pages/admin/ProductPage';
+import AdminLoginPage from '@/pages/admin/Login/AdminLoginPage';
+import CategoryPage from '@/pages/admin/Category/CategoryPage';
+import BrandPage from '@/pages/admin/Brand/BrandPage';
+import ProductPage from '@/pages/admin/Product/ProductPage';
 import HomePage from '@/pages/home';
 import ProductDetailPage from '@/pages/product-detail';
 import Cart from '@/pages/cart';
 import PaymentPage from '@/pages/payment';
 import PaymentConfirmPage from '@/pages/payment-confirm';
-import OrderPage from '@/pages/admin/OrderPage';
+import OrderPage from '@/pages/admin/Order/OrderPage';
 import OrdersPage from '@/pages/orders';
 import BrandFilterProductPage from '@/pages/filter-product/brand';
 import CategoryFilterProductPage from '@/pages/filter-product/category';
-import UserPage from '@/pages/admin/UserPage';
+import UserPage from '@/pages/admin/User/UserPage';
+import BlogBrandPage from '@/pages/blogs';
+import BlogPage from '@/pages/admin/BLog/BlogPage';
 
 const AppRoutes = () => {
   const routes = useMemo(
@@ -44,6 +46,7 @@ const AppRoutes = () => {
               <Route path={RoutePaths.MY_ORDER} element={<OrdersPage />} />
               <Route path={RoutePaths.PAYMENT} element={<PaymentPage />} />
               <Route path={RoutePaths.PAYMENT_CONFIRM} element={<PaymentConfirmPage />} />
+              <Route path={RoutePaths.BLOGS} element={<BlogBrandPage />} />
             </Route>
 
             {/* admin login - no layout */}
@@ -57,6 +60,7 @@ const AppRoutes = () => {
               <Route element={<ProductPage />} path={RoutePaths.ADMIN_PRODUCTS} />
               <Route element={<OrderPage />} path={RoutePaths.ADMIN_ORDERS} />
               <Route element={<UserPage />} path={RoutePaths.ADMIN_USERS} />
+              <Route element={<BlogPage />} path={RoutePaths.ADMIN_BLOGS} />
             </Route>
           </>
         )
