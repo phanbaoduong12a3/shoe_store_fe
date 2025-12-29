@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Table, Card, Space, Button, App, Input, Tag, Modal } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { Table, Card, Space, Button, App, Input, Tag, Modal, Form, UploadFile } from 'antd';
+import { PlusOutlined, SearchOutlined } from '@ant-design/icons';
 import type { ColumnsType, TablePaginationConfig } from 'antd/es/table';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { cancelOrderAction, userOrderAction } from '@/stores/order';
@@ -8,6 +8,8 @@ import { Order } from '@/services/order-service';
 import './order-page.scss';
 import CustomDropdown from '@/components/CustomDropdown';
 import TextDefault from '@/components/Text/Text';
+import { Rate, Upload } from 'antd';
+import { createReviewAction } from '@/stores/review';
 
 const OrdersPage = () => {
   const dispatch = useAppDispatch();
@@ -28,6 +30,7 @@ const OrdersPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [searchText, setSearchText] = useState('');
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [filters, setFilters] = useState({
     status: '' as string | '',
     paymentMethod: undefined as string | undefined,
@@ -99,6 +102,57 @@ const OrdersPage = () => {
   const handleSearch = (value: string) => {
     setSearchText(value);
     setCurrentPage(1);
+  };
+
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState('');
+
+  const [reviewModal, setReviewModal] = useState(false);
+  const [reviewItem, setReviewItem] = useState<any>(null);
+
+  const handleSubmitReview = async () => {
+    if (!rating || !comment) {
+      return message.warning('Vui lòng nhập đầy đủ đánh giá');
+    }
+    const images = fileList.map((file) => file.originFileObj).filter(Boolean) as File[];
+    const formData = new FormData();
+    formData.append('productId', reviewItem.productId?._id);
+    formData.append('orderId', selectedOrder?._id?.toString() || '');
+    formData.append('rating', rating.toString());
+    formData.append('comment', comment);
+
+    try {
+      dispatch(
+        createReviewAction({
+          productId: reviewItem.productId?._id,
+          orderId: selectedOrder?._id?.toString() || '',
+          rating: rating,
+          comment: comment,
+          images: images,
+          onSuccess: () => {
+            message.success({
+              content: 'Tạo đánh giá thành công!',
+              duration: 2,
+            });
+            setFileList([]);
+          },
+          onError: () => {
+            message.error({
+              content: 'Tạo đánh giá thất bại!',
+              duration: 3,
+            });
+          },
+        })
+      );
+      setReviewModal(false);
+    } catch (err: any) {
+      message.error(err?.response?.data?.data?.message || 'Lỗi gửi đánh giá');
+    }
+  };
+
+  const openReviewModal = (item: any) => {
+    setReviewItem(item);
+    setReviewModal(true);
   };
 
   const columns: ColumnsType<Order> = [
@@ -373,6 +427,7 @@ const OrdersPage = () => {
                   <th className="border p-2">Giá</th>
                   <th className="border p-2">SL</th>
                   <th className="border p-2">Tổng</th>
+                  <th className="border p-2">Đánh giá</th>
                 </tr>
               </thead>
 
@@ -393,7 +448,6 @@ const OrdersPage = () => {
                       {/* Tên */}
                       <td className="border p-2">
                         <div className="font-medium">{item.productName}</div>
-                        <div className="text-sm text-gray-500">SKU: {item.sku}</div>
                       </td>
 
                       {/* Màu */}
@@ -414,11 +468,84 @@ const OrdersPage = () => {
                       <td className="border p-2 text-right font-semibold">
                         {item.subtotal.toLocaleString('vi-VN')}đ
                       </td>
+
+                      {/* Đánh giá */}
+                      <td className="border p-2 text-center">
+                        {selectedOrder.status === 'delivered' ? (
+                          <Button size="small" type="primary" onClick={() => openReviewModal(item)}>
+                            Đánh giá
+                          </Button>
+                        ) : (
+                          <span className="text-gray-400 text-sm">Chưa giao</span>
+                        )}
+                      </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={reviewModal}
+        title="Đánh giá sản phẩm"
+        onCancel={() => setReviewModal(false)}
+        footer={null}
+        centered
+      >
+        {reviewItem && (
+          <div className="flex flex-col gap-4">
+            {/* Thông tin sản phẩm */}
+            <div className="flex gap-4 items-center">
+              <img src={reviewItem.image} className="w-16 h-16 object-cover rounded" />
+              <div>
+                <p className="font-semibold">{reviewItem.productName}</p>
+                <p className="text-sm text-gray-500">
+                  Size: {reviewItem.size} – Màu: {reviewItem.color}
+                </p>
+              </div>
+            </div>
+
+            <Form.Item label="Hình ảnh sản phẩm" help="Tối đa 10 ảnh">
+              <Upload
+                listType="picture-card"
+                fileList={fileList}
+                onChange={({ fileList }) => setFileList(fileList.slice(0, 10))}
+                beforeUpload={() => false}
+                maxCount={10}
+                multiple
+              >
+                {fileList.length < 10 && (
+                  <div>
+                    <PlusOutlined />
+                    <div style={{ marginTop: 8 }}>Upload</div>
+                  </div>
+                )}
+              </Upload>
+            </Form.Item>
+
+            {/* Rating */}
+            <div>
+              <p className="font-medium mb-1">Đánh giá sao</p>
+              <Rate value={rating} onChange={setRating} />
+            </div>
+
+            {/* Comment */}
+            <div>
+              <p className="font-medium mb-1">Nhận xét</p>
+              <Input.TextArea
+                rows={4}
+                placeholder="Chia sẻ cảm nhận của bạn về sản phẩm..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+            </div>
+            {/* Submit */}
+            <Button type="primary" block onClick={handleSubmitReview}>
+              Gửi đánh giá
+            </Button>
           </div>
         )}
       </Modal>
