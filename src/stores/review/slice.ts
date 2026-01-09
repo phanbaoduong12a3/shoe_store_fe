@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { createReviewAction } from './actions';
+import { createReviewAction, getReviewsAction } from './actions';
 import { ReviewDetail } from '@/services/review-service';
 
 export type TReviewState = {
@@ -21,6 +21,20 @@ const reviewSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
+    // Get Reviews
+    builder.addCase(getReviewsAction.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    });
+    builder.addCase(getReviewsAction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.reviews = action.payload.data.reviews;
+      state.total = action.payload.data.pagination.total;
+    });
+    builder.addCase(getReviewsAction.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.error.message || 'Failed to fetch reviews';
+    });
     // Create Review
     builder.addCase(createReviewAction.pending, (state) => {
       state.loading = true;

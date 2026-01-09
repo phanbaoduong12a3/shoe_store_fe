@@ -1,7 +1,43 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { EReviewActions } from './constants';
-import { createReview, CreateReviewRequest, CreateReviewResponse } from '@/services/review-service';
+import {
+  createReview,
+  CreateReviewRequest,
+  CreateReviewResponse,
+  getReviews,
+  GetReviewsParams,
+  GetReviewsResponse,
+} from '@/services/review-service';
 
+interface GetReviewsPayload extends GetReviewsParams {
+  onSuccess?: (data: GetReviewsResponse) => void;
+  onError?: (error: any) => void;
+}
+
+const getReviewsAction = createAsyncThunk(
+  EReviewActions.GET_REVIEWS,
+  async (payload: GetReviewsPayload, { rejectWithValue }) => {
+    try {
+      const { onSuccess, onError, ...params } = payload;
+      const response = await getReviews(params);
+
+      if (onSuccess) {
+        onSuccess(response);
+      }
+
+      return response;
+    } catch (error: any) {
+      if (payload.onError) {
+        payload.onError(error);
+      }
+
+      if (!error.response) {
+        throw error;
+      }
+      return rejectWithValue(error.response);
+    }
+  }
+);
 interface CreateReviewPayload extends CreateReviewRequest {
   onSuccess?: (data: CreateReviewResponse) => void;
   onError?: (error: any) => void;
@@ -32,4 +68,4 @@ const createReviewAction = createAsyncThunk(
   }
 );
 
-export { createReviewAction };
+export { createReviewAction, getReviewsAction };

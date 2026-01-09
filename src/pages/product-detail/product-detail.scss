@@ -2,6 +2,13 @@
   max-width: 1400px;
   margin: 0 auto;
   padding: 40px 20px;
+.review-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
 
   .loading-container {
     display: flex;

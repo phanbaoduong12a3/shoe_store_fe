@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Button, Flex, InputNumber, Spin, Tag, Breadcrumb, App } from 'antd';
-import { ShoppingCartOutlined, HeartOutlined, StarFilled } from '@ant-design/icons';
+import { ShoppingCartOutlined, StarFilled } from '@ant-design/icons';
 import TextDefault from '@/components/Text/Text';
 import { useAppDispatch, useAppSelector } from '@/stores';
 import { getProductDetailAction } from '@/stores/product';
@@ -11,6 +11,7 @@ import { Link } from 'react-router-dom';
 import type { Category, Brand } from '@/services/product-service';
 import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 import './product-detail.scss';
+import { getReviewsAction } from '@/stores/review';
 
 const ProductDetailPage = () => {
   const user = useAppSelector((state) => state.auth.user);
@@ -18,6 +19,7 @@ const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const dispatch = useAppDispatch();
   const { productDetail, loading } = useAppSelector((state) => state.product);
+  const { reviews } = useAppSelector((state) => state.review);
   const { loading: addingToCart } = useAppSelector((state) => state.cart);
   const { message } = App.useApp();
 
@@ -36,6 +38,17 @@ const ProductDetailPage = () => {
               setSelectedColor(data.data.product.variants[0].color);
               setSelectedSize(data.data.product.variants[0].size);
             }
+          },
+          onError: (error) => {
+            console.error('Error loading product detail:', error);
+          },
+        })
+      );
+      dispatch(
+        getReviewsAction({
+          productId: id,
+          onSuccess: (data) => {
+            console.log('Review loaded:', data);
           },
           onError: (error) => {
             console.error('Error loading product detail:', error);
@@ -327,6 +340,59 @@ const ProductDetailPage = () => {
               </div>
             </div>
           )}
+
+          {/* REVIEW SECTION */}
+          <div className="detail-block">
+            <TextDefault fs={24} fw="700" className="section-title">
+              Đánh giá sản phẩm
+            </TextDefault>
+
+            {/* Tổng quan */}
+
+            {/* Danh sách review */}
+            <Flex vertical gap={24}>
+              {reviews && reviews.length > 0 ? (
+                reviews.map((review) => (
+                  <div key={review._id} className="review-item">
+                    <Flex gap={16} align="flex-start">
+                      <img
+                        src={review.reviewer.avatar}
+                        alt={review.reviewer.name}
+                        className="review-avatar"
+                      />
+
+                      <Flex vertical gap={8} style={{ flex: 1 }}>
+                        <Flex justify="space-between">
+                          <TextDefault fw="600">{review.reviewer.name}</TextDefault>
+                          <TextDefault color="#9ca3af" fs={12}>
+                            {new Date(review.createdAt).toLocaleDateString('vi-VN')}
+                          </TextDefault>
+                        </Flex>
+
+                        <Flex gap={4}>
+                          {Array.from({ length: review.rating }).map((_, i) => (
+                            <StarFilled key={i} style={{ color: '#fadb14' }} />
+                          ))}
+                        </Flex>
+
+                        <TextDefault>{review.comment}</TextDefault>
+
+                        {review.images && review.images.length > 0 && (
+                          <Flex gap={8} wrap="wrap" className="review-images">
+                            {review.images.map((img, idx) => (
+                              <img key={idx} src={img} alt="review" />
+                            ))}
+                          </Flex>
+                        )}
+                      </Flex>
+                    </Flex>
+                  </div>
+                ))
+              ) : (
+                <TextDefault color="#6b7280">Chưa có đánh giá nào cho sản phẩm này</TextDefault>
+              )}
+            </Flex>
+          </div>
         </Flex>
       </div>
     </div>

@@ -59,3 +59,35 @@ export const createReview = async (data: CreateReviewRequest): Promise<CreateRev
   });
   return response.data;
 };
+
+export interface GetReviewsParams {
+  page?: number;
+  limit?: number;
+  productId?: string;
+  rating?: number;
+  sortBy?: string;
+  order?: 'asc' | 'desc';
+}
+
+export interface GetReviewsResponse {
+  status: number;
+  data: {
+    reviews: ReviewDetail[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+    statistics: {
+      totalReviews: number;
+      avgRating: number;
+      ratingDistribution: number[];
+    };
+  };
+}
+
+export const getReviews = async (params: GetReviewsParams = {}): Promise<GetReviewsResponse> => {
+  const response = await client.get(`/api/v1/reviews/product/${params.productId}`, { params });
+  return response.data;
+};
