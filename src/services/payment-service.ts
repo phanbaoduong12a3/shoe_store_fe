@@ -14,3 +14,11 @@ export const createPaymentOrder = async (
   const response = await client.post('/api/v1/vnpay/create_order_v2', data);
   return response.data;
 };
+
+export async function createVNPayOrder(orderId: string, amount: number) {
+  const response = await client.post('/api/v1/vnpay/create-payment', {
+    orderId: orderId,
+    amount: amount,
+  });
+  return response.data;
+}

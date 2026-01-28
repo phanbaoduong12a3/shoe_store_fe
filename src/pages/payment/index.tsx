@@ -9,7 +9,7 @@ import { createOrderAction } from '@/stores/order';
 import { getOrCreateSessionId, isLogged } from '@/utils/cart-utils';
 import { RoutePaths } from '@/routers/routes-constants';
 import type { CustomerInfo, ShippingAddress } from '@/services/order-service';
-import { createPaymentOrder } from '@/services/payment-service';
+import { createVNPayOrder } from '@/services/payment-service';
 import './payment.scss';
 import { getUserInfoAction } from '@/stores/auth';
 
@@ -24,9 +24,9 @@ const PaymentPage = () => {
   const userId = user ? user._id : '';
   const isLoggedIn = isLogged();
 
-  const [paymentMethod, setPaymentMethod] = useState<
-    'COD' | 'BANK_TRANSFER' | 'CREDIT_CARD' | 'zalopay'
-  >('COD');
+  const [paymentMethod, setPaymentMethod] = useState<'COD' | 'banking' | 'CREDIT_CARD' | 'zalopay'>(
+    'COD'
+  );
   const [loyaltyPoints, setLoyaltyPoints] = useState(0);
   const [voucherCode, setVoucherCode] = useState('');
 
@@ -142,7 +142,7 @@ const PaymentPage = () => {
         totalAmount,
         paymentMethod: paymentMethod.toLowerCase(),
         note: values.note,
-        onSuccess: async () => {
+        onSuccess: async (data) => {
           message.success('Đặt hàng thành công! 🎉');
 
           // Clear cart after successful order
@@ -160,20 +160,13 @@ const PaymentPage = () => {
               })
             );
           }
-          //  else {
-          //   dispatch(clearCartAction({ sessionId: getOrCreateSessionId() }));
-          // }
 
-          // If payment method is E-Wallet, redirect to ZaloPay
-          if (paymentMethod === 'zalopay') {
+          if (paymentMethod === 'banking') {
             try {
-              const paymentResponse = await createPaymentOrder({
-                newTotal: totalAmount,
-              });
+              const paymentResponse = await createVNPayOrder(data.data.order._id, totalAmount);
 
-              if (paymentResponse.vnpUrl) {
-                // Redirect to ZaloPay payment page
-                window.location.href = paymentResponse.vnpUrl;
+              if (paymentResponse.status === 200) {
+                window.location.href = paymentResponse.data.paymentUrl;
                 return;
               }
             } catch (error) {
@@ -182,8 +175,6 @@ const PaymentPage = () => {
             }
           }
 
-          // For other payment methods, navigate to confirmation page
-          // navigate(`${RoutePaths.PAYMENT_CONFIRM}?orderNumber=${response.data.order.orderNumber}`);
         },
         onError: (error) => {
           message.error(error?.response?.data?.data?.message || 'Không thể tạo đơn hàng!');
@@ -221,6 +212,7 @@ const PaymentPage = () => {
         <TextDefault fs={32} fw="700">
           Thanh toán
         </TextDefault>
+        <br />
         <TextDefault color="#6b7280">
           Vui lòng điền đầy đủ thông tin để hoàn tất đơn hàng
         </TextDefault>
@@ -331,43 +323,13 @@ const PaymentPage = () => {
                 </Radio>
                 <Radio value="banking" className="payment-method-option">
                   <Flex vertical gap={4}>
-                    <TextDefault fw="600">Chuyển khoản ngân hàng</TextDefault>
+                    <TextDefault fw="600">Thanh toán qua VNPay</TextDefault>
                     <TextDefault fs={13} color="#6b7280">
-                      Chuyển khoản qua tài khoản ngân hàng
-                    </TextDefault>
-                  </Flex>
-                </Radio>
-                <Radio value="momo" className="payment-method-option">
-                  <Flex vertical gap={4}>
-                    <TextDefault fw="600">Thẻ tín dụng/Ghi nợ</TextDefault>
-                    <TextDefault fs={13} color="#6b7280">
-                      Thanh toán bằng thẻ Visa, Mastercard
-                    </TextDefault>
-                  </Flex>
-                </Radio>
-                <Radio value="zalopay" className="payment-method-option">
-                  <Flex vertical gap={4}>
-                    <TextDefault fw="600">Ví điện tử (ZaloPay)</TextDefault>
-                    <TextDefault fs={13} color="#6b7280">
-                      Thanh toán qua ZaloPay
+                      Thanh toán online với VNPay
                     </TextDefault>
                   </Flex>
                 </Radio>
               </Radio.Group>
-            </Card>
-
-            {/* Additional Info */}
-            <Card className="info-card">
-              <TextDefault fs={18} fw="700" style={{ marginBottom: 16 }}>
-                Thông tin bổ sung
-              </TextDefault>
-
-              <Form.Item label="Ghi chú đơn hàng" name="note">
-                <Input.TextArea
-                  rows={4}
-                  placeholder="Ghi chú về đơn hàng, ví dụ: thời gian hay chỉ dẫn địa điểm giao hàng chi tiết hơn"
-                />
-              </Form.Item>
             </Card>
           </div>
 

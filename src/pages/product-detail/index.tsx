@@ -347,8 +347,6 @@ const ProductDetailPage = () => {
               Đánh giá sản phẩm
             </TextDefault>
 
-            {/* Tổng quan */}
-
             {/* Danh sách review */}
             <Flex vertical gap={24}>
               {reviews && reviews.length > 0 ? (
