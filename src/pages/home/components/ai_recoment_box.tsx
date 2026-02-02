@@ -1,18 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, X, ShoppingCart } from 'lucide-react';
+import { Send, X, ChevronRight } from 'lucide-react'; // Đổi ShoppingCart thành ChevronRight cho giống ảnh
 
 export default function AiShoeChat() {
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<any[]>([
-    { role: 'ai', content: '👋 Chào bạn! Mình là AI tư vấn giày.\nBạn cần tìm mẫu gì nhỉ?' },
+    {
+      role: 'ai',
+      content: '👋 Chào bạn! Mình là AI tư vấn phụ kiện thể thao.\nBạn cần tìm mẫu gì nhỉ?',
+    },
   ]);
   const [dbProducts, setDbProducts] = useState<any[]>([]);
   const [apiHistory, setApiHistory] = useState<any[]>([]);
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
-  // 1. Fetch dữ liệu sản phẩm thật từ API của bạn
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -47,8 +49,6 @@ export default function AiShoeChat() {
         body: JSON.stringify({ prompt: userText, history: apiHistory }),
       });
       const data = await res.json();
-
-      // So khớp ID từ AI trả về với dbProducts
       const recommended = dbProducts.filter((p) => data.recommendedIds?.includes(p._id));
 
       setMessages((prev) => [...prev, { role: 'ai', content: data.reply, products: recommended }]);
@@ -71,11 +71,9 @@ export default function AiShoeChat() {
         .dot-flashing { animation: dot 1s infinite; font-weight: bold; }
         @keyframes dot { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
         .no-scrollbar::-webkit-scrollbar { display: none; }
-        .card-scroll::-webkit-scrollbar { height: 4px; }
-        .card-scroll::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
       `}</style>
 
-      {/* NÚT MỞ (ICON ROBOT) */}
+      {/* NÚT MỞ */}
       {!open && (
         <button
           onClick={() => setOpen(true)}
@@ -125,14 +123,14 @@ export default function AiShoeChat() {
           <div
             style={{
               padding: '15px',
-              backgroundColor: '#000',
+              backgroundColor: '#3095DE',
               color: '#fff',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
             }}
           >
-            <span style={{ fontWeight: 'bold', fontSize: '14px' }}>🤖 AI Tư vấn giày</span>
+            <span style={{ fontWeight: 'bold', fontSize: '14px' }}>🤖 AI Tư vấn</span>
             <X onClick={() => setOpen(false)} size={20} style={{ cursor: 'pointer' }} />
           </div>
 
@@ -151,7 +149,7 @@ export default function AiShoeChat() {
                     display: 'inline-block',
                     padding: '10px 14px',
                     borderRadius: '15px',
-                    backgroundColor: msg.role === 'user' ? '#000' : '#fff',
+                    backgroundColor: msg.role === 'user' ? '#3095DE' : '#fff',
                     color: msg.role === 'user' ? '#fff' : '#000',
                     border: msg.role === 'user' ? 'none' : '1px solid #eee',
                     fontSize: '13px',
@@ -162,129 +160,81 @@ export default function AiShoeChat() {
                   {msg.content}
                 </div>
 
-                {/* HIỂN THỊ CARD SẢN PHẨM TỪ DB */}
+                {/* ✅ PHẦN CARD ĐÃ SỬA: HIỂN THỊ THEO DANH SÁCH DỌC GIỐNG ẢNH */}
                 {msg.products && msg.products.length > 0 && (
                   <div
-                    className="card-scroll no-scrollbar"
                     style={{
-                      display: 'flex',
-                      gap: '10px',
-                      overflowX: 'auto',
                       marginTop: '10px',
-                      paddingBottom: '5px',
-                      cursor: 'grab',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '8px',
                     }}
                   >
                     {msg.products.map((p: any) => {
                       const primaryImage =
                         p.images?.find((img: any) => img.isPrimary)?.url || p.images?.[0]?.url;
-
                       return (
                         <div
                           key={p._id}
+                          onClick={() => (window.location.href = `/product-detail/${p._id}`)}
                           style={{
-                            minWidth: '140px', // Thu nhỏ chiều rộng card
-                            maxWidth: '140px',
-                            flexShrink: 0,
+                            display: 'flex',
+                            alignItems: 'center',
                             backgroundColor: '#fff',
-                            border: '1px solid #eee',
-                            borderRadius: '10px',
-                            overflow: 'hidden',
-                            boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                            padding: '10px',
+                            borderRadius: '16px', // Bo góc lớn giống ảnh
+                            border: '1px solid #f0f0f0',
+                            cursor: 'pointer',
+                            transition: 'background 0.2s',
+                            boxShadow: '0 2px 4px rgba(0,0,0,0.02)',
                           }}
+                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#fcfcfc')}
+                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#fff')}
                         >
-                          {/* Ảnh sản phẩm nhỏ gọn */}
-                          <div style={{ position: 'relative', backgroundColor: '#f8f8f8' }}>
+                          {/* Khối chứa ảnh */}
+                          <div
+                            style={{
+                              width: '50px',
+                              height: '50px',
+                              borderRadius: '10px',
+                              overflow: 'hidden',
+                              backgroundColor: '#f5f5f5',
+                              flexShrink: 0,
+                            }}
+                          >
                             <img
-                              src={primaryImage || 'https://via.placeholder.com/150'}
-                              style={{
-                                width: '100%',
-                                height: '85px',
-                                objectFit: 'contain',
-                                padding: '5px',
-                              }} // Ảnh nhỏ và gọn hơn
+                              src={primaryImage || 'https://via.placeholder.com/50'}
+                              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                               alt={p.name}
                             />
-                            {p.salePrice && p.salePrice < p.price && (
-                              <span
-                                style={{
-                                  position: 'absolute',
-                                  top: '4px',
-                                  left: '4px',
-                                  backgroundColor: '#ff4d4f',
-                                  color: '#fff',
-                                  fontSize: '8px',
-                                  padding: '1px 4px',
-                                  borderRadius: '3px',
-                                  fontWeight: 'bold',
-                                }}
-                              >
-                                SALE
-                              </span>
-                            )}
                           </div>
 
-                          <div style={{ padding: '8px' }}>
-                            {/* Tên sản phẩm - Cắt ngắn bằng dấu ... */}
-                            <div
-                              style={{
-                                fontSize: '11px',
-                                fontWeight: '600',
-                                whiteSpace: 'nowrap', // Không cho xuống dòng
-                                overflow: 'hidden', // Ẩn phần thừa
-                                textOverflow: 'ellipsis', // Hiện dấu ...
-                                color: '#333',
-                              }}
-                              title={p.name} // Di chuột vào vẫn hiện tên đầy đủ
-                            >
+                          {/* Khối chứa thông tin */}
+                          <div
+                            style={{
+                              flex: 1,
+                              marginLeft: '12px',
+                              display: 'flex',
+                              flexDirection: 'column',
+                            }}
+                          >
+                            <span style={{ fontSize: '14px', fontWeight: 'bold', color: '#333' }}>
                               {p.name}
-                            </div>
-
-                            {/* Giá tiền */}
-                            <div
-                              style={{ marginTop: '4px', display: 'flex', flexDirection: 'column' }}
-                            >
-                              <span
-                                style={{ color: '#2563eb', fontSize: '12px', fontWeight: 'bold' }}
-                              >
-                                {(p.salePrice || p.price).toLocaleString()}đ
-                              </span>
-                              {p.salePrice && p.salePrice < p.price && (
-                                <span
-                                  style={{
-                                    color: '#999',
-                                    fontSize: '9px',
-                                    textDecoration: 'line-through',
-                                  }}
-                                >
-                                  {p.price.toLocaleString()}đ
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Nút bấm nhỏ hơn */}
-                            <button
-                              onClick={() => (window.location.href = `/product-detail/${p._id}`)}
+                            </span>
+                            <span
                               style={{
-                                width: '100%',
-                                marginTop: '6px',
-                                padding: '5px 0',
-                                backgroundColor: '#000',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '5px',
-                                fontSize: '10px',
-                                fontWeight: '500',
-                                cursor: 'pointer',
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                gap: '4px',
+                                fontSize: '14px',
+                                fontWeight: 'bold',
+                                color: '#00D166',
+                                marginTop: '2px',
                               }}
                             >
-                              <ShoppingCart size={10} /> XEM
-                            </button>
+                              {(p.salePrice || p.price).toLocaleString('vi-VN')} đ
+                            </span>
                           </div>
+
+                          {/* Icon mũi tên sang phải */}
+                          <ChevronRight size={18} style={{ color: '#ccc', marginLeft: '8px' }} />
                         </div>
                       );
                     })}
@@ -322,7 +272,7 @@ export default function AiShoeChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Hỏi về giày..."
+                placeholder="Hỏi về sản phẩm..."
                 style={{
                   flex: 1,
                   border: 'none',
